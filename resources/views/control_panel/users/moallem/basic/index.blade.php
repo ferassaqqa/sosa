@@ -13,7 +13,7 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                <h4 class="mb-sm-0">معلموا دورات السنة النبوية</h4>
+                <h4 class="mb-sm-0"> <span style="font-weight: 100">الدورات ></span>  معلموا دورات السنة النبوية</h4>
 
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">

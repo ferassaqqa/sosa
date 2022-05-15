@@ -33,16 +33,23 @@ class Course extends Model
         $deleteCourse = (hasPermissionHelper('حذف بيانات الدورات العلمية')) ?
             '<button type="button" class="btn btn-danger" title="حذف بيانات الدورة" data-url="'.route('courses.destroy',$this->id).'" data-alert="'.$alert.'" onclick="deleteCourse(this)"><i class="mdi mdi-trash-can"></i></button>&nbsp' : '';
        $courseDetails = '<button type="button" class="btn btn-info" title="تفاصيل الدورة" data-url="'.route('courses.details',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')"><i class="mdi mdi-account-details"></i></button>';
-      
+
        return [
             'id'=>self::$counter,
             'teacher_name'=>$this->name,
             'book'=>$this->book_name,
-            'area_name'=>$this->area_name,
-            'place'=>$this->place_name,
-            'area_supervisor'=>$this->area_supervisor_name,
-            'father_area_name'=>$this->area_father_name,
-            'sub_area_supervisor'=>$this->sub_area_supervisor_name,
+            'place'=>$this->area_father_name.' - '.$this->area_name.' <br> '.$this->place_name,
+
+            // 'area_name'=>$this->area_name,
+            // 'father_area_name'=>$this->area_father_name,
+
+            // 'area_supervisor'=>$this->area_supervisor_name,
+            // 'sub_area_supervisor'=>$this->sub_area_supervisor_name,
+
+            'supervisor' =>'الميداني: '.$this->sub_area_supervisor_name.'<br>'
+                          .'العام: '.$this->area_supervisor_name,
+
+
             'studentCount'=>$this->studentsForPermissions->count(),
             'status'=>$this->status != 'منتهية' ?
                 ($this->status != 'بانتظار اعتماد الدرجات' ? $this->status_select :
@@ -179,7 +186,7 @@ class Course extends Model
 //            case 'منتهية' : {$selected3 = 'selected';}break;
             case 'معلقة' : {$selected4 = 'selected';$style='background-color:orange;';}break;
         }
-        $select = '<select onchange="changeCourseStatus('.$this->id.',this)" class="form-control course_status_select" style="'.$style.'"> 
+        $select = '<select onchange="changeCourseStatus('.$this->id.',this)" class="form-control course_status_select" style="'.$style.'">
                         <option class="course_status_option" '.$selected1.' value="انتظار الموافقة">انتظار الموافقة</option>
                         <option class="course_status_option" '.$selected2.' value="قائمة">قائمة</option>
                         <!--<option '.$selected3.' value="منتهية">منتهية</option>-->
@@ -268,12 +275,12 @@ class Course extends Model
 
             </form>
         </div>
-        
+
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary waves-effect" onclick="getEligibleCourses()">رجوع</button>
             <button type="submit" form="form" class="btn btn-primary waves-effect waves-light">حفظ</button>
         </div>
-        
+
             <script>
         $("#form").submit(function(event){
             $("input").removeClass("is-invalid");
@@ -326,7 +333,7 @@ class Course extends Model
     }
 
     public function scopePlaceArea($query,$place_id){
-          
+
         if($place_id) {
                 return $query->where('place_id',$place_id);
             }else{
@@ -335,7 +342,7 @@ class Course extends Model
     }
 
     public function scopeSupervisorSearch($query,$general_supervisor, $place_supervisor){
-          
+
         return $query->where('id', 'like', "%" . $general_supervisor . "%")
         ->orWhere('start_date', 'like', "%" . $place_supervisor . "%");
 
@@ -386,6 +393,17 @@ class Course extends Model
             return $query;
         }
     }
+
+    // public function scopeFieldSupervisor($query,$sub_area_id)
+    // {
+    //     if ($sub_area_id) {
+    //         return $query->where('teacher_id',$sub_area_id);
+    //     }else{
+    //         return $query;
+    //     }
+    // }
+
+
     public function scopeBook($query,$book_id)
     {
         if ($book_id) {

@@ -31,7 +31,7 @@
 <div class="row">
     <div class="col-12">
         <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-            <h4 class="mb-sm-0">قسم الدورات العلمية</h4>
+            <h4 class="mb-sm-0"><span style="font-weight: 100">الدورات ></span> قسم الدورات العلمية  </h4>
 
             <div class="page-title-right">
                 <ol class="breadcrumb m-0">
@@ -78,9 +78,11 @@
                     @endif
                 </div>
                 <div class="row mb-3">
+
+
                     @if(hasPermissionHelper('فلترة الدورات العلمية'))
                         <div class="col-md-2">
-                            <select class="form-control" onchange="getSubAreas(this)" id="areas_select">
+                            <select class="form-control select2" onchange="getSubAreas(this)" id="areas_select">
                                 <option value="0">اختر المنطقة الكبرى</option>
                                 @foreach($areas as $area)
                                     <option value="{{ $area->id }}">{{ $area->name }}</option>
@@ -88,17 +90,17 @@
                             </select>
                         </div>
                         <div class="col-md-2">
-                            <select class="form-control" id="sub_areas_select" onchange="getSubAreaTeachers(this)">
+                            <select class="form-control select2" id="sub_areas_select" onchange="getSubAreaTeachers(this)">
                                 <option value="0">اختر المنطقة المحلية</option>
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <select class="form-control" id="teachers_select" onchange="updateDateTable(this)">
+                            <select class="form-control select2" id="teachers_select" onchange="updateDateTable(this)">
                                 <option value="0">اختر المعلم</option>
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <select class="form-control" id="books_select" onchange="updateDateTable(this)">
+                            <select class="form-control select2" id="books_select" onchange="updateDateTable(this)">
                                 <option value="0">اختر الكتاب</option>
                                 @foreach($books as $book)
                                     <option value="{{ $book->id }}">{{ $book->name }}</option>
@@ -110,22 +112,28 @@
                         </div>
                     @endif
                 </div>
+
+
                 <div class="row mb-3">
                          <div class="col-md-3">
-                            <select class="form-control" id="place_area" onchange="updateDateTable(this)">
+                            <select class="form-control select2" id="place_area" onchange="updateDateTable(this)">
                                 <option value="0">اختر مكان الدورة</option>
                             </select>
                         </div>
-                        <!-- <div class="col-md-3">
-                            <select class="form-control" id="area_supervisor_select" onchange="updateDateTable(this)">
-                                <option value="0">اختر المشرف العام</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <select class="form-control" id="sub_area_supervisor_select" onchange="updateDateTable(this)">
+
+                        {{-- <div class="col-md-3">
+                            <select class="form-control select2" id="sub_area_supervisor_select" onchange="updateDateTable(this)">
                                 <option value="0">اختر المشرف الميداني</option>
                             </select>
-                        </div> -->
+                        </div>
+
+
+                     <div class="col-md-3">
+                            <select class="form-control select2" id="area_supervisor_select" onchange="updateDateTable(this)">
+                                <option value="0">اختر المشرف العام</option>
+                            </select>
+                        </div> --}}
+
                 </div>
                 <div class="">
                     <table class="table table-centered table-nowrap mb-0" id="dataTable" style="width: 100%;">
@@ -137,13 +145,17 @@
                                 <th scope="col" >الكتاب</th>
                                 <th scope="col" >اسم المعلم رباعياّ</th>
                                 <th scope="col">عدد الطلاب</th>
-                                <th scope="col">مكان الدورة</th>    
+                                <th scope="col">مكان الدورة</th>
 
-                                <th scope="col" >المشرف العام</th>
-                                <th scope="col" >المشرف الميداني</th>
-                                <th scope="col">الكبرى</th>
-                                <th scope="col">المحلية</th>
-                               
+                                <th scope="col" >المشرف</th>
+
+                                {{-- <th scope="col" >المشرف الميداني</th>
+                                <th scope="col" >المشرف العام</th> --}}
+
+
+                                {{-- <th scope="col">الكبرى</th>
+                                <th scope="col">المحلية</th> --}}
+
                                 <th scope="col">حالة الدورة</th>
                                 @if(hasPermissionHelper('تعديل بيانات الدورات العلمية') || hasPermissionHelper('حذف بيانات الدورات العلمية') || hasPermissionHelper('اضافة طالب جديد - دورات علمية') || hasPermissionHelper('طلاب الدورات'))
                                     <th scope="col">أدوات</th>
@@ -169,6 +181,11 @@
 @section('script')
 
     <script>
+        $('.select2').select2({
+                dir: "rtl",
+                dropdownAutoWidth: true,
+        });
+
         var course_id = 0;
         function addExcelCourseStudents(course) {
             $('#excelStudentsImport').click();
@@ -244,11 +261,15 @@
         }
         var table = '';
         $(document).ready(function(){
+
+
+
+
             table = $('#dataTable').removeAttr('width').DataTable( {
                 "processing": true,
                 "serverSide": true,
+                "bFilter": false,
                 responsive: true,
-
                 autoWidth:false,
                 // "scrollX":true,
                 "drawCallback":function(){
@@ -278,11 +299,11 @@
                 },
 
                 "columnDefs": [
-                    {className: "white_space",targets:[1,2,5,6]},
-                    {className: "align_td_right",targets:1},
+                    {className: "white_space",targets:[1,2,3,4]},
+                    // {className: "align_td_right",targets:1},
                     // {"max-width": "5%"},
                     @if(hasPermissionHelper('تعديل بيانات الدورات العلمية') || hasPermissionHelper('حذف بيانات الدورات العلمية'))
-                    {"sortable": false, "targets": [9]}
+                    {"sortable": false, "targets": [4]}
                     @endif
                 ],
                 "aoColumns": [
@@ -291,12 +312,13 @@
                     { "mData": "teacher_name"},
                     { "mData": "studentCount" },
                     { "mData": "place" },
-                                                                                      
-                    { "mData": "area_supervisor" },
-                    { "mData": "sub_area_supervisor" },
+                    { "mData": "supervisor" },
 
-                    { "mData": "father_area_name" },
-                    { "mData": "area_name" }, 
+                    // { "mData": "sub_area_supervisor" },
+                    // { "mData": "area_supervisor" },
+                    // { "mData": "father_area_name" },
+                    // { "mData": "area_name" },
+
                     { "mData": "status" },
                     @if(hasPermissionHelper('تعديل بيانات الدورات العلمية') || hasPermissionHelper('حذف بيانات الدورات العلمية') || hasPermissionHelper('اضافة طالب جديد - دورات علمية') || hasPermissionHelper('طلاب الدورات'))
                         { "mData": "tools" }
@@ -430,7 +452,6 @@
         @if(hasPermissionHelper('فلترة الدورات العلمية'))
 
 
-   
 
 
             function getSubAreas(obj) {
@@ -454,7 +475,7 @@
                     $.get('/getSubAreaTeachers/'+obj.value, function (data) {
                         $('#teachers_select').empty().html(data[0]);
                         $('#place_area').empty().html(data[1]);
-                    });             
+                    });
                     updateDateTable();
                 }else{
                     $('#teachers_select').empty().html('<option value="0">اختر المعلم</option>');
@@ -463,7 +484,7 @@
                 }
             }
 
-          
+
 
             function updateDateTable(){
                 table.ajax.url(

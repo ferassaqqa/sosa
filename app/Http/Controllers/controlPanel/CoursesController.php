@@ -17,6 +17,8 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\DB;
+
 class CoursesController extends Controller
 {
     public function __construct()
@@ -30,7 +32,7 @@ class CoursesController extends Controller
      */
     public function details(Course $course)
     {
-//        dd($course->CreatedBy);
+
         return view('control_panel.courses.basic.details',compact('course'));
     }
     public function getSubAreaTeachers($area_id)
@@ -55,7 +57,6 @@ class CoursesController extends Controller
         return $result;
     }
 
-  
     public function index()
     {
         checkPermissionHelper('الدورات العلمية');
@@ -64,9 +65,8 @@ class CoursesController extends Controller
 
         // $places = Place::whereNull('area_id')->get();
 
-        
 
-        $statuses = '<select id="filterCoursesByStatus" onchange="updateDateTable()" class="form-control"> 
+        $statuses = '<select id="filterCoursesByStatus" onchange="updateDateTable()" class="form-control">
                         <option value="0">الكل</option>
                         <option value="انتظار الموافقة">انتظار الموافقة</option>
                         <option value="قائمة">قائمة</option>

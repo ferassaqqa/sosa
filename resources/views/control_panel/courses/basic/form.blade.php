@@ -1,6 +1,23 @@
 @csrf
+
+
+<style>
+
+.col-form-label{
+    text-align: right;
+    font-size: 18px;
+}
+.modal-content{
+    border: unset;
+}
+
+.modal-body,.modal-footer{
+        padding: 20px 100px 20px 20px;
+}
+</style>
+
 <div class="mb-3 row">
-    <label for="start_date" class="col-md-2 col-form-label" style="text-align: center;font-size: 18px;">بداية الدورة</label>
+    <label for="start_date" class="col-md-2 col-form-label" >بداية الدورة:</label>
     <div class="col-md-9">
         <div class="input-group" id="datepicker1">
             <input type="text" class="form-control" placeholder="تاريخ بداية الدورة"
@@ -14,7 +31,7 @@
 
 
 <div class="mb-3 row">
-    <label for="included_in_plan" class="col-md-2 col-form-label" style="text-align: center;font-size: 18px;">المنطقة الكبرى:</label>
+    <label for="area_id" class="col-md-2 col-form-label">المنطقة الكبرى:</label>
     <div class="col-md-3">
         <select class="form-control" name="area_id">
             <option value="">-- تحديد --</option>
@@ -24,7 +41,7 @@
         </select>
     </div>
 
-    <label for="included_in_plan" class="col-md-2 col-form-label" style="text-align: center;font-size: 18px;">المحلية:</label>
+    <label for="sub_area_id" class="col-md-2 col-form-label">المحلية:</label>
     <div class="col-md-4">
         <select class="form-control" name="sub_area_id" id="sub_area_id">
             @if(isset($sub_areas))
@@ -37,9 +54,9 @@
 </div>
 
 <div class="mb-3 row">
-    <label for="included_in_plan" class="col-md-2 col-form-label" style="text-align: center;font-size: 18px;">المسجد:</label>
+    <label for="place_id" class="col-md-2 col-form-label ">المسجد:</label>
     <div class="col-md-9">
-        <select class="form-control" name="place_id" id="place_id">
+        <select class="form-control select2" name="place_id" id="place_id">
             @if(isset($places))
                 @foreach($places as $key => $place)
                     <option value="{{ $place->id }}" @if($place->id == $course->place_id) selected @endif>{{ $place->name }}</option>
@@ -58,9 +75,9 @@
 </div>
 
 <div class="mb-3 row">
-    <label for="teacher_id" class="col-md-2 col-form-label" style="text-align: center;font-size: 18px;">المعلم:</label>
+    <label for="teacher_id" class="col-md-2 col-form-label" >المعلم:</label>
     <div class="col-md-9">
-        <select class="form-control" name="teacher_id" id="teacher_id">
+        <select class="form-control select2" name="teacher_id" id="teacher_id">
             <option value="">-- تحديد --</option>
             @if(isset($teachers)) {!! $teachers !!} @endif
         </select>
@@ -68,7 +85,7 @@
 </div>
 
 <div class="mb-3 row">
-    <label for="book_id" class="col-md-2 col-form-label" style="text-align: center;font-size: 18px;">الكتاب:</label>
+    <label for="book_id" class="col-md-2 col-form-label" >الكتاب:</label>
     <div class="col-md-9" id="book_select">
         <select class="form-control" name="book_id" id="book_id">
             <option value="">-- تحديد --</option>
@@ -78,14 +95,14 @@
 </div>
 
 <div class="mb-3 row">
-    <label for="student_category" class="col-md-2 col-form-label" style="text-align: center;font-size: 18px;">فئة الطلاب:</label>
+    <label for="student_category" class="col-md-2 col-form-label">فئة الطلاب:</label>
     <div class="col-md-9" id="student_category" style="text-align: center;padding: 8px 0;">
         {!! $course->book_students_category_string !!}
     </div>
 </div>
 
 <div class="mb-3 row">
-    <label for="student_category" class="col-md-2 col-form-label" style="text-align: center;font-size: 18px;">عدد الساعات:</label>
+    <label for="student_category" class="col-md-2 col-form-label" >عدد الساعات:</label>
     <div class="col-md-9" id="hours_count" style="text-align: center;padding: 8px 0;">
         {!! $course->book_students_hours_count !!}
         {{--<input type="number" min="0" step="1" name="hours" class="form-control" value="{{ old('hours',$course->hours) }}" style="direction: rtl;">--}}
@@ -112,13 +129,14 @@
 <script>
 
     $(function () {
-        $("#place_id").select2({
-            dir: "rtl",
+
+        $('.select2').select2({
+                dir: "rtl",
+                dropdownAutoWidth: true,
         });
-        $("#teacher_id").select2({
-            dir: "rtl",
-        });
+
     });
+
 
     $('select[name="area_id"]').on('change', function() {
         // console.log($(this).val(),$(this)[0][$(this)[0].selectedIndex]);
@@ -179,7 +197,7 @@
 
             }
         }
-        
+
     }
 
 </script>

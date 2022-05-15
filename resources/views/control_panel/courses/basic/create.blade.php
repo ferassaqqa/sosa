@@ -1,5 +1,4 @@
-
-<div class="modal-header" style="background-color: #00937c !important;">
+<div class="modal-header " style="background-color: #00937c !important;">
     <h5 class="modal-title" id="myLargeModalLabel" style="color: #fff !important;width: 100%;text-align-last: center;">
         اضافة دورة علمية جديدة ({{$course_number}})
     </h5>
@@ -12,9 +11,10 @@
 </div>
 
 <div class="modal-footer">
-    <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">إلغاء</button>
-    <button type="submit" form="form" class="btn btn-primary waves-effect waves-light">حفظ</button>
+    <button type="button" class="btn btn-secondary waves-effect btn-lg" data-bs-dismiss="modal">إلغاء</button>
+    <button type="submit" form="form" class="btn btn-primary waves-effect waves-light btn-lg">حفظ</button>
 </div>
+
 
     <script src="{{asset('control_panel/assets/js/pages/form-advanced.init.js')}}"></script>
 
