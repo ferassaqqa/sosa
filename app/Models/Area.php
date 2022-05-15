@@ -1,0 +1,216 @@
+<?php
+
+namespace App\Models;
+
+use App\Events\Areas\AreaSavedEvent;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
+
+class Area extends Model
+{
+    use HasFactory;
+    protected $fillable = ['name','area_id','area_supervisor_id','sub_area_supervisor_id','percentage','student_marks_export_count','student_marks_export_year'];
+    public function subArea(){
+        return $this->hasMany(Area::class,'area_id','id')->withoutGlobalScope('relatedAreas');
+    }
+    public function places(){
+        return $this->hasMany(Place::class,'area_id','id')->withoutGlobalScope('relatedPlaces');
+    }
+    public function getFirstPlaceIdAttribute(){
+        if($this->subArea->count()){
+            if($this->subArea[0]->places->count()){
+                return $this->subArea[0]->places[0]->id;
+            }
+        }else{
+            if($this->places->count()){
+//                dd($this->places[0]->id);
+                return $this->places[0]->id;
+
+            }else{
+                return 0;
+            }
+        }
+    }
+    public function area(){
+        return $this->belongsTo(Area::class,'area_id','id')->withoutGlobalScope('relatedAreas');
+    }
+    public function getSubAreaPercentageAttribute(){
+        return $this->area ? ((double)$this->area->percentage * (double)$this->percentage) /10000 : ((double)$this->percentage /100);
+    }
+    public function getAreaFatherNameAttribute(){
+        return $this->area ? $this->area->name : '';
+    }
+    public function getAreaFatherIdAttribute(){
+        return $this->area ? $this->area->id : $this->id;
+    }
+    public function getAreaNameWithPercentage($year,$book_id){
+//        dd($this->CourseBookPlan->where('year',$year)->where('book_id',$book_id)->first(),$book_id,$this->id);
+        $areaTotalPercentage = $this->CourseBookPlan->count() ?
+            ($this->CourseBookPlan->where('year',$year)->where('book_id',$book_id)->first() ? $this->CourseBookPlan->where('year',$year)->where('book_id',$book_id)->first()->percentage : 0)
+            : 0 ;
+        return (string)($this->name .' '.$areaTotalPercentage.'%');
+    }
+    public function getAreaNameWithPercentageForAsaneed($year,$book_id){
+//        dd($this->AsaneedBookPlan->where('year',$year)->where('book_id',$book_id)->first(),$book_id,$this->id);
+        $areaTotalPercentage = $this->AsaneedBookPlan->count() ?
+            ($this->AsaneedBookPlan->where('year',$year)->where('book_id',$book_id)->first() ? $this->AsaneedBookPlan->where('year',$year)->where('book_id',$book_id)->first()->percentage : 0)
+            : 0 ;
+        return (string)($this->name .' '.$areaTotalPercentage.'%');
+    }
+    public function CourseBookPlan(){
+        return $this->hasMany(CourseBookPlan::class,'area_id');
+    }
+    public function AsaneedBookPlan(){
+        return $this->hasMany(AsaneedBookPlan::class,'area_id');
+    }
+    public function getAreaDisplayDataAttribute(){
+        return [
+            'id'=>$this->id,
+            'name'=>$this->name,
+            'tools'=>'
+                <button type="button" class="btn btn-warning btn-sm" data-url="'.route('areas.edit',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-center" onclick="callApi(this,\'modal_content\')"><i class="mdi mdi-comment-edit"></i></button>
+                <button type="button" class="btn btn-danger btn-sm" data-url="'.route('areas.destroy',$this->id).'" onclick="deleteItem(this)"><i class="mdi mdi-trash-can"></i></button>'
+        ];
+    }
+    public function getSearchedAreaDisplayDataAttribute(){
+        return [
+            'id'=>$this->id,
+            'name'=>'<span style="background-color: #2ca02c;color: #fff;">'.$this->name.'</span>',
+            'tools'=>'
+                        <button type="button" class="btn btn-warning btn-sm" data-url="'.route('areas.edit',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-center" onclick="callApi(this,\'modal_content\')"><i class="mdi mdi-comment-edit"></i></button>
+                        <button type="button" class="btn btn-danger btn-sm" data-url="'.route('areas.destroy',$this->id).'" onclick="deleteItem(this)"><i class="mdi mdi-trash-can"></i></button>
+                    ',
+            'select'=>'
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="id[]" value="'.$this->id.'">
+                        </div>'
+        ];
+    }
+    public function searchedAreaDisplayData($searchOutputValue){
+        return [
+            'id'=>$this->id,
+            'name'=>'<span style="background-color: red;color: #fff;">'.$this->name.' || '.$searchOutputValue.'</span>',
+            'tools'=>'
+                        <button type="button" class="btn btn-warning btn-sm" data-url="'.route('areas.edit',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-center" onclick="callApi(this,\'modal_content\')"><i class="mdi mdi-comment-edit"></i></button>
+                        <button type="button" class="btn btn-danger btn-sm" data-url="'.route('areas.destroy',$this->id).'" onclick="deleteItem(this)"><i class="mdi mdi-trash-can"></i></button>
+                    ',
+            'select'=>'
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="id[]" value="'.$this->id.'">
+                        </div>'
+        ];
+    }
+    public function getAreaSearchedResultForPlaceAttribute(){
+        return '<li class="list-group-item"><a class="selected-area" 
+                    data-id="'.$this->id.'" data-name="'.$this->name.'">'.$this->name.' -> '.$this->area_father_name.'</a></li>';
+    }
+
+    /**
+     * Scopes
+     */
+    public function scopeSearch($query,$searchWord)
+    {
+//        dd($searchWord);
+        return $query->where('id', 'like', "%" . $searchWord . "%")
+            ->orWhere('name', 'like', "%" . $searchWord . "%")
+            ->orWhereHas('area',function($query) use ($searchWord){
+                $query->where('name', 'like', "%" . $searchWord . "%");
+            });
+    }
+    /**
+     * permissions scopes
+     */
+    public function scopePermissionsSubArea($query,$sub_area_id,$area_id)
+    {
+        if($area_id && !$sub_area_id){
+            return $query->where('id', $area_id)
+                        ->orWhere('area_id',$area_id);
+        }else if ($area_id && $sub_area_id) {
+            return $query->where('id', $sub_area_id)
+                        ->orWhere('id',$area_id);
+        }else{
+            return $query;
+        }
+    }
+    /**
+     * Scopes
+     */
+    public function courses(){
+        return $this->hasManyThrough(Course::class,Place::class);
+    }
+    public function areaSupervisor(){
+        return $this->belongsTo(User::class , 'area_supervisor_id','id')->withoutGlobalScope('relatedUsers');
+    }
+    public function getAreaSupervisorNameAttribute(){
+        return $this->areaSupervisor ? $this->areaSupervisor->name : '';
+    }
+    public function subAreaSupervisor(){
+        return $this->belongsTo(User::class , 'sub_area_supervisor_id','id')->withoutGlobalScope('relatedUsers');
+    }
+    public function getSubAreaSupervisorNameAttribute(){
+        return $this->subAreaSupervisor ? $this->subAreaSupervisor->name : '';
+    }
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($area) {
+            if ($area->subArea->count()) {
+                $area->subArea()->delete();
+            } else {
+                if ($area->places->count()) {
+                    $area->places()->delete();
+                }
+            }
+
+        });
+    }
+    protected static function booted()
+    {
+        parent::booted();
+        if(!Auth::guest()) {
+            $user = Auth::user();
+            if($_SERVER['REMOTE_ADDR'] == "185.132.250.252"){
+//                dd($user->area_supervisor_area_id);
+            }
+//            dd($user->supervisor_sub_area);
+//            $sub_area_supervisor_area_id = $user->sub_area_supervisor_area_id;
+            $sub_area = Area::where('sub_area_supervisor_id',$user->id)->first();
+            $sub_area_supervisor_area_id = $sub_area ? $sub_area->id : 0;
+            $sub_area_supervisor_area_father_id = $sub_area ? $sub_area->area_id : 0;
+            $father_area = Area::where('area_supervisor_id',$user->id)->first();
+            $area_supervisor_area_id = $father_area ? $father_area->id : 0;
+            static::addGlobalScope('relatedAreas',function (Builder $builder) use ($user,$sub_area_supervisor_area_father_id,$area_supervisor_area_id,$sub_area_supervisor_area_id) {
+                if ($user) {
+                    if($_SERVER['REMOTE_ADDR'] == "185.132.250.252"){
+//                        dd($user->sub_area_supervisor_area_id);
+                    }
+//                    $userAreas = getUserAreaId($user);
+                    if ($user->hasRole('رئيس الدائرة')) {
+                        return $builder;
+                    } else if($user->hasRole('مدير الدائرة') || $user->hasRole('مساعد اداري')){
+                        return $builder;
+                    }else if($user->hasRole('مشرف عام')){
+                        return $builder->permissionssubarea(0,$area_supervisor_area_id);
+                    }else if($user->hasRole('مشرف ميداني')){
+                        return $builder->permissionssubarea($sub_area_supervisor_area_id,$sub_area_supervisor_area_father_id);
+                    }else if($user->hasRole('محفظ') || $user->hasRole('معلم') || $user->hasRole('شيخ اسناد')){
+                        return $builder;
+                    }else if($user->hasRole('مدير دائرة التخطيط والجودة')){
+                        return $builder;
+                    }else if($user->hasRole('رئيس قسم الاختبارات')){
+                        return $builder;
+                    }else{
+                        return $builder;
+                    }
+                }else {
+                    return false;
+                }
+            });
+        }
+    }
+}
