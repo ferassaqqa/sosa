@@ -28,11 +28,11 @@ class Course extends Model
         $viewStudents = (hasPermissionHelper('طلاب الدورات')) ?
             '<button type="button" class="btn btn-success" title="عرض الطلاب" data-url="'.route('courseStudents.ShowCourseStudents',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')"><i class="mdi mdi-account-multiple"></i></button>&nbsp' : '';
         $updateCourse = (hasPermissionHelper('تعديل بيانات الدورات العلمية')) ?
-            '<button type="button" class="btn btn-warning" title="تعديل بيانات الدورة" data-url="'.route('courses.edit',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')"><i class="mdi mdi-comment-edit"></i></button>&nbsp' : '';
+            '<button type="button" class="btn btn-warning" title="تعديل بيانات الدورة" data-url="'.route('courses.edit',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-x2" onclick="callApi(this,\'user_modal_content_new\')"><i class="mdi mdi-comment-edit"></i></button>&nbsp' : '';
         $alert = "هل أنت متأكد من حذف دورة ".$this->book_name." للمعلم ".$this->teacher_name;
         $deleteCourse = (hasPermissionHelper('حذف بيانات الدورات العلمية')) ?
             '<button type="button" class="btn btn-danger" title="حذف بيانات الدورة" data-url="'.route('courses.destroy',$this->id).'" data-alert="'.$alert.'" onclick="deleteCourse(this)"><i class="mdi mdi-trash-can"></i></button>&nbsp' : '';
-       $courseDetails = '<button type="button" class="btn btn-info" title="تفاصيل الدورة" data-url="'.route('courses.details',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')"><i class="mdi mdi-account-details"></i></button>';
+       $courseDetails = '<button type="button" class="btn btn-info" title="تفاصيل الدورة" data-url="'.route('courses.details',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-x2" onclick="callApi(this,\'user_modal_content_new\')"><i class="mdi mdi-account-details"></i></button>';
 
        return [
             'id'=>self::$counter,
@@ -166,10 +166,10 @@ class Course extends Model
             $this->book->name : '';
     }
     public function getBookStudentsCategoryStringAttribute(){
-        return $this->book ? '<span style="color: #2ca02c;">'.$this->book->student_category_string.'</span>' : '';
+        return $this->book ? '<span style="color: #2ca02c; font-zize:18px;">'.$this->book->student_category_string.'</span>' : '';
     }
     public function getBookStudentsHoursCountAttribute(){
-        return $this->book ? '<span style="color: red;">'.$this->book->hours_count.'</span>' : '';
+        return $this->book ? '<span style="color: red;  font-zize:18px;">'.$this->book->hours_count.'</span>' : '';
     }
     public function getStudentCategoriesAttribute(){
         return $this->book ? $this->book->student_category_array : array();

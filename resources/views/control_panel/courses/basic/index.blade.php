@@ -69,8 +69,8 @@
                 <div class="row mb-3">
                     @if(hasPermissionHelper('اضافة دورة علمية'))
                         <div class="col-md-3">
-                            <button type="button" class="btn btn-success call-user-modal" data-url="{{route('courses.create')}}" style="background-color:#00937C;width: 305px;"
-                                    data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" >
+                            <button type="button" onclick="callApi(this,'user_modal_content_new')" class="btn btn-success " data-url="{{route('courses.create')}}" style="background-color:#00937C;width: 305px;"
+                                    data-bs-toggle="modal" data-bs-target=".bs-example-modal-x2" >
                                 <i class="mdi mdi-plus"></i>
                                 اضافة دورة علمية
                             </button>

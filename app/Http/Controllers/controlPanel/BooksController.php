@@ -95,7 +95,7 @@ class BooksController extends Controller
         ];
     }
     public function getBookStudentCategory(Book $book){
-        return ['<span style="color: red;">'.$book->hours_count.'</span>','<span style="color: #2ca02c;">'.$book->student_category_string.'</span>'];
+        return ['<span style="color: red;  font-size:18px;">'.$book->hours_count.'</span>','<span style="color: #2ca02c; font-size:18px;">'.$book->student_category_string.'</span>'];
     }
     /**
      * Show the form for creating a new resource.

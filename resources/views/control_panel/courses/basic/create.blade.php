@@ -16,7 +16,7 @@
 </div>
 
 
-    <script src="{{asset('control_panel/assets/js/pages/form-advanced.init.js')}}"></script>
+    {{-- <script src="{{asset('control_panel/assets/js/pages/form-advanced.init.js')}}"></script> --}}
 
     <script>
         $('#form').submit(function(event){

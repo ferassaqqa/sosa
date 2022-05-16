@@ -115,6 +115,10 @@
             max-width: 1650px;
         }
 
+        .modal-x2 {
+            max-width: 1000px;
+        }
+
         /* Absolute Center Spinner */
         .student_excel_import_loading {
             position: fixed;
@@ -968,6 +972,18 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div>
+<div class="bs-modal modal fade bs-example-modal-x2" role="dialog" aria-labelledby="myExtraLargeModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-x2  modal-dialog-scrollable">
+        <div class="modal-content" id="user_modal_content_new">
+
+            <div class="spinner-border text-success" role="status" style="margin:25px auto;">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 <div class="bs-modal modal fade bs-example-modal-xl" role="dialog" aria-labelledby="myExtraLargeModalLabel"
      aria-hidden="true">
     <div class="modal-dialog modal-xl  modal-dialog-scrollable">
