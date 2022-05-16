@@ -3,22 +3,26 @@
 
 <style>
 
-    .col-form-label{
+    /* .col-form-label{
         text-align: right;
         font-size: 18px;
-    }
+    } */
     .modal-content{
         border: unset;
     }
-    
+
+    .modal-body{
+            padding: 25px;
+    }
+/*     
     .modal-body,.modal-footer{
-            padding: 20px 100px 20px 20px;
+            padding: 20px;
     }
 
     .col-md-9{
-        text-align: center;
+        text-align: right;
         font-size: 18px;
-    }
+    } */
     </style>
 
 
@@ -33,73 +37,48 @@
 </div>
 <div class="modal-body">
 
+    <div class='row'>
 
-<div class="mb-3 row">
-    <label for="book_id" class="col-md-3 col-form-label" >الكتاب:</label>
-    <div class="col-md-9" id="book_select">
-        {!! $course->book_name !!}       
-    </div>
-</div>
+      <table border="0" width="100%" class="ui compact selectable striped celled table data-table nomargin" dir="rtl" style="margin-top: 0px;" data-time="">
+          <tbody>
+              <tr>
+                  <td class="dark-th normal-bg" style="background-color: rgba(0,0,50,.02);">الكتاب</td>      
+                  <td class="white-bg print-white" style="background-color: #fff;">{!! $course->book_name !!}</td>
+                  <td class="dark-th normal-bg" style="background-color: rgba(0,0,50,.02);">المعلم</td>
+                  <td class="white-bg print-white" style="background-color: #fff;">{!! $course->teacher_name !!}</td>
+              </tr>
+              <tr>
+                  <td class="dark-th normal-bg" style="background-color: rgba(0,0,50,.02);">عدد الطلاب</td>
+                  <td class="white-bg print-white" style="background-color: #fff;">{{ $course->studentsForPermissions->count() }}</td>
+                  <td class="dark-th normal-bg" style="background-color: rgba(0,0,50,.02);">تاريخ بداية الدورة</td>
+                  <td class="white-bg print-white" style="background-color: #fff;">{{ $course->start_date }}</td>
+              </tr>
 
-<div class="mb-3 row">
-    <label for="teacher_id" class="col-md-3 col-form-label" >المعلم:</label>
-    <div class="col-md-9">
-        {!! $course->teacher_name !!}              
-    </div>
-</div>
-<div class="mb-3 row">
-    <label for="place_id" class="col-md-3 col-form-label ">عدد الطلاب:</label>
-    <div class="col-md-9">
-        <p> {{ $course->studentsForPermissions->count() }} </p>
-    </div>
-</div>
-<div class="mb-3 row">
-    <label for="start_date" class="col-md-3 col-form-label" > تاريخ بداية الدورة :</label>
-    <div class="col-md-9">
-        {{ $course->start_date }}
-    </div>
-</div>
+              <tr>
+                <td class="dark-th normal-bg" style="background-color: rgba(0,0,50,.02);">إضافة الدورة بواسطة</td>
+                <td class="white-bg print-white" style="background-color: #fff;">{{ $course->created_at_user ? $course->created_at_user->name : '' }}</td>
+                <td class="dark-th normal-bg" style="background-color: rgba(0,0,50,.02);">تاريخ الاضافة</td>
+                <td class="white-bg print-white" style="background-color: #fff;">{{ $course->created_at_user ? \Carbon\Carbon::parse($course->created_at_user->created_at)->format('Y-m-d') : '' }}</td>
+            </tr>
 
+              <tr>
+                  <td class="dark-th normal-bg" style="background-color: rgba(0,0,50,.02);">العنوان</td>
+                  <td class="white-bg print-white" colspan="3" style="background-color: #fff;">{!! $course->area_father_name !!} - {!! $course->area_name !!} - {!! $course->place_name !!}</td>
+              </tr>
 
+              <tr>
+                <td class="dark-th normal-bg" style="background-color: rgba(0,0,50,.02);">فئة الطلاب</td>
+                <td class="white-bg print-white" colspan="3" style="background-color: #fff;">{!! $course->book_students_category_string !!}</td>
+            </tr>
 
-<div class="mb-3 row">
-    <label for="place_id" class="col-md-3 col-form-label ">العنوان:</label>
-    <div class="col-md-9">
-        {!! $course->area_father_name !!} - {!! $course->area_name !!} - {!! $course->place_name !!}           
-       
-    </div>
-
-</div>
-
-
-
-<div class="mb-3 row">
-    <label for="place_id" class="col-md-3 col-form-label ">إضافة الدورة بواسطة:</label>
-    <div class="col-md-9">
-        <p>{{ $course->created_at_user ? $course->created_at_user->name : '' }}</p>
-    </div>
-</div>
-
-<div class="mb-3 row">
-    <label for="place_id" class="col-md-3 col-form-label ">تاريخ الاضافة:</label>
-    <div class="col-md-9">
-        <p>{{ $course->created_at_user ? \Carbon\Carbon::parse($course->created_at_user->created_at)->format('Y-m-d') : '' }}</p>
-    </div>
-</div>
-
-<div class="mb-3 row">
-    <label for="student_category" class="col-md-3 col-form-label">فئة الطلاب:</label>
-    <div class="col-md-9" id="student_category" style="text-align: center;padding: 8px 0;">
-        {!! $course->book_students_category_string !!}
-    </div>
-</div>
-
-<div class="mb-3 row">
-    <label for="student_category" class="col-md-3 col-form-label" >عدد الساعات:</label>
-    <div class="col-md-9" id="hours_count" style="text-align: center;padding: 8px 0;">
-        {!! $course->book_students_hours_count !!}
-    </div>
-</div>
+            <tr>
+                <td class="dark-th normal-bg" style="background-color: rgba(0,0,50,.02);">عدد الساعات</td>
+                <td class="white-bg print-white" colspan="3" style="background-color: #fff;">{!! $course->book_students_hours_count !!}</td>
+            </tr>
+          </tbody>
+      </table>
+         
+      
 
 
 
