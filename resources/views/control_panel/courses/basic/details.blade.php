@@ -3,10 +3,7 @@
 
 <style>
 
-    /* .col-form-label{
-        text-align: right;
-        font-size: 18px;
-    } */
+
     .modal-content{
         border: unset;
     }
@@ -14,15 +11,8 @@
     .modal-body{
             padding: 25px;
     }
-/*     
-    .modal-body,.modal-footer{
-            padding: 20px;
-    }
 
-    .col-md-9{
-        text-align: right;
-        font-size: 18px;
-    } */
+
     </style>
 
 
