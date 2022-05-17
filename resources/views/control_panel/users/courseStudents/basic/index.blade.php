@@ -9,6 +9,21 @@
 @endsection
 @section('content')
 
+
+<style>
+        .static .table_header{
+            color: white; background-color: #00937C; font-weight:600;
+        }
+
+        .static td{
+            border: 1px solid;
+        }
+        .static .value{
+            font-weight:600;
+        }
+</style>
+
+
 <!-- start page title -->
 <div class="row">
     <div class="col-12">
@@ -31,22 +46,61 @@
         <div class="card">
             <div class="card-body">
                 <div class="row mb-3">
-                    <table class="table table-centered table_bordered">
-                        <thead>
-                        <tr>
-                            <th>عدد الطلاب الكلي</th>
-                            {{--<th>عدد الطلاب المجازين</th>--}}
-                            {{--<th>عدد الطلاب الغير مجازين</th>--}}
-                        </tr>
-                        </thead>
+
+
+
+
+                    <table border="1" width="100%" class="table table-centered table_bordered static" dir="rtl"  >
                         <tbody>
-                        <tr>
-                            <td>{{ $students_count }}</td>
-{{--                            <td>{{ $passed_students_count }}</td>--}}
-{{--                            <td>{{ $failed_students_count }}</td>--}}
+                            <tr class="table_header">
+                                <td colspan="3">عدد الطلاب الكلي <div>({{ $students_count }})</div></td>
+                                <td colspan="6">إجمالي عدد الطلاب الناجحين <div>({{ $total }})</div></td>
+                                <td colspan="1">إجمالي عدد الشهادات <div>(1250)</div></td>
+                            </tr>
+
+                            <tr >
+                                    <td>عدد الطلاب الناجحين</td>
+                                    <td>عدد الطلاب الراسبين</td>
+                                    <td>عدد الطلاب قيد الانتظار</td>
+
+
+                                     <td>ممتاز <div>(100.09)</div></td>
+                                     <td>جيد جدا مرتفع <div>(89.85)</div></td>
+                                     <td>جيد جدا <div>(84.80)</div></td>
+                                     <td>جيد مرتفع <div>(79.75)</div></td>
+                                     <td>جيد <div>(74.07)</div></td>
+                                     <td>مقبول <div>(69.06)</div></td>
+
+                                     <td>عدد الدورات</td>
+                            </tr>
+
+                            <tr class="value">
+                                <td>{{ $passed_students_count }}</td>
+                                <td>{{ $failed_students_count }}</td>
+                                <td>{{ $awaiting_students_count }}</td>
+
+
+                                <td>{{$students_100}}</td>
+                                <td>{{$students_89}}</td>
+                                <td>{{$students_84}}</td>
+                                <td>{{$students_79}}</td>
+                                <td>{{$students_74}}</td>
+                                <td>{{$students_69}}</td>
+
+                                <td>{{$training_count}}</td>
+
+
                         </tr>
+
                         </tbody>
                     </table>
+
+
+
+
+
+
+
                 </div>
                 @if(hasPermissionHelper('فلترة طلاب الدورات'))
                     <div class="row mb-3">
