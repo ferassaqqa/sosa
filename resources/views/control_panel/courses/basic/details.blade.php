@@ -32,7 +32,7 @@
       <table border="0" width="100%" class="ui compact selectable striped celled table data-table nomargin" dir="rtl" style="margin-top: 0px;" data-time="">
           <tbody>
               <tr>
-                  <td class="dark-th normal-bg" style="background-color: rgba(0,0,50,.02);">الكتاب</td>      
+                  <td class="dark-th normal-bg" style="background-color: rgba(0,0,50,.02);">الكتاب</td>
                   <td class="white-bg print-white" style="background-color: #fff;">{!! $course->book_name !!}</td>
                   <td class="dark-th normal-bg" style="background-color: rgba(0,0,50,.02);">المعلم</td>
                   <td class="white-bg print-white" style="background-color: #fff;">{!! $course->teacher_name !!}</td>
@@ -48,7 +48,7 @@
                 <td class="dark-th normal-bg" style="background-color: rgba(0,0,50,.02);">إضافة الدورة بواسطة</td>
                 <td class="white-bg print-white" style="background-color: #fff;">{{ $course->created_at_user ? $course->created_at_user->name : '' }}</td>
                 <td class="dark-th normal-bg" style="background-color: rgba(0,0,50,.02);">تاريخ الاضافة</td>
-                <td class="white-bg print-white" style="background-color: #fff;">{{ $course->created_at_user ? \Carbon\Carbon::parse($course->created_at_user->created_at)->format('Y-m-d') : '' }}</td>
+                <td class="white-bg print-white" style="background-color: #fff;">{{ $course->created_at_user ? \Carbon\Carbon::parse($course->created_at)->format('Y-m-d') : '' }}</td>
             </tr>
 
               <tr>
@@ -67,8 +67,8 @@
             </tr>
           </tbody>
       </table>
-         
-      
+
+
 
 
 
