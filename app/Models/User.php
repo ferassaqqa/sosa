@@ -767,7 +767,8 @@ class User extends Authenticatable
                     $query->where('status',5);
                 });
             })
-            ->where('mark','>=','60');//->withoutGlobalScope('relatedCourseStudents');
+            // ->where('mark','>=','60');//->withoutGlobalScope('relatedCourseStudents');
+            ->whereBetween('mark', [60, 101]);
     }
     public function failedStudentCourses(){
         return $this->hasMany(CourseStudent::class)
@@ -776,7 +777,9 @@ class User extends Authenticatable
                     $query->where('status',5);
                 });
             })
-            ->where('mark','<','60');
+            // ->where('mark','<','60');
+
+            ->whereBetween('mark', [1, 59]);
     }
     public function getStudentAgeAttribute(){
         return (int)Carbon::now()->format('Y') - (int)Carbon::parse($this->dob)->format('Y');

@@ -48,7 +48,7 @@
                 <td class="dark-th normal-bg" style="background-color: rgba(0,0,50,.02);">إضافة الدورة بواسطة</td>
                 <td class="white-bg print-white" style="background-color: #fff;">{{ $course->created_at_user ? $course->created_at_user->name : '' }}</td>
                 <td class="dark-th normal-bg" style="background-color: rgba(0,0,50,.02);">تاريخ الاضافة</td>
-                <td class="white-bg print-white" style="background-color: #fff;">{{ $course->created_at_user ? \Carbon\Carbon::parse($course->created_at)->format('Y-m-d') : '' }}</td>
+                <td class="white-bg print-white" style="background-color: #fff;">{{ $course->created_at ? \Carbon\Carbon::parse($course->created_at)->format('Y-m-d') : '' }}</td>
             </tr>
 
               <tr>

@@ -36,36 +36,10 @@ class courseStudentsController extends Controller
 //        checkPermissionHelper('طلاب الدورات');
         $moallems = User::whereIn('id',Course::select('teacher_id')->get())->get();
 
-$awaiting_students_count = 0;
-// $passed_students_count = CourseStudent::with('course')->where('mark' , '>=' , 60)->distinct('user_id')->count();
-// $failed_students_count = CourseStudent::with('course')->where('mark' , '<' , 60)->whereNotNull('mark')->distinct('user_id')->count();
+        $training_course_count = Course::all()->count();
 
-        $training_count = Course::all()->count();
+        return view('control_panel.users.courseStudents.basic.index',compact('moallems','training_course_count'));
 
-       $students_count = User::department(4)->count();
-    //    $passed_students_count = User::department(4)->whereHas('passedStudentCourses')->count();
-//        dd($passed_students_count);
-    //    $failed_students_count = User::department(4)->whereHas('failedStudentCourses')->count();
-    // $awaiting_students_count = CourseStudent::has('course')->whereNull('mark')->distinct('user_id')->count();
-    // $awaiting_students_count = CourseStudent::with('course')->whereNull('mark')->distinct('user_id')->count();
-    $passed_students_count = CourseStudent::with('course')->whereBetween('mark', [60, 101])->distinct('user_id')->count();
-    $failed_students_count = CourseStudent::with('course')->whereBetween('mark', [1, 59])->distinct('user_id')->count();
-
-    $students_100 = CourseStudent::with('course')->whereBetween('mark', [90, 101])->distinct('user_id')->count();
-    $students_89  = CourseStudent::with('course')->whereBetween('mark', [85, 89])->distinct('user_id')->count();
-    $students_84  = CourseStudent::with('course')->whereBetween('mark', [80, 84])->distinct('user_id')->count();
-    $students_79  = CourseStudent::with('course')->whereBetween('mark', [75, 79])->distinct('user_id')->count();
-    $students_74  = CourseStudent::with('course')->whereBetween('mark', [70, 74])->distinct('user_id')->count();
-    $students_69  = CourseStudent::with('course')->whereBetween('mark', [60, 69])->distinct('user_id')->count();
-
-    $total = $students_100 + $students_89 + $students_84 + $students_79 + $students_74 + $students_69;
-
-
-    $compact = compact('total','students_100','students_89','students_84','students_79','students_74','students_69'
-        ,'moallems','training_count','awaiting_students_count','students_count','passed_students_count','failed_students_count');
-
-        // return view('control_panel.users.courseStudents.basic.index',compact('moallems','students_count'));
-        return view('control_panel.users.courseStudents.basic.index',$compact);
 
     }
     public function getData(Request $request)
@@ -84,6 +58,8 @@ $awaiting_students_count = 0;
         $length = (int)$request->length;
         $order = $request->order[0]["column"];
         $direction = $request->order[0]["dir"];
+
+        
         $search = trim($request->search["value"]);
         $teacher_id = (int)$request->teacher_id ? (int)$request->teacher_id : 0;
         $book_id = (int)$request->book_id ? (int)$request->book_id : 0;
@@ -110,28 +86,74 @@ $awaiting_students_count = 0;
                 ->department(4)
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                 ->get();
-//            dd($count,$users);
+
         }
         User::$counter = $start;
         foreach ($users as $index => $item){
             $item->setDepartmentValue(4);
             array_push($value , $item->user_display_data);
         }
-//        dd($value);
+
+
+       
+
+        $passed_students_count = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_id)
+                                    ->whereBetween('mark', [60, 101])->count();
+
+        $failed_students_count = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_id)
+                                    ->whereBetween('mark', [1, 59])->count();
+
+        // $awaiting_students_count = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_id)
+        //                             ->whereNull('mark')->count();
+
+        // $awaiting_students_count = $count - ($passed_students_count + $failed_students_count);
+        $awaiting_students_count = 0;
+        $teacher_course_count = 0;
+
+     
+
+        $students_100 = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_id)
+                                    ->whereBetween('mark', [90, 101])->count();
+                                    
+        $students_89 = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_id)
+                                    ->whereBetween('mark', [85, 89])->count();
+        
+        $students_84 = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_id)
+                                    ->whereBetween('mark', [80, 84])->count();
+
+        $students_79 = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_id)
+                                    ->whereBetween('mark', [75, 79])->count();
+
+        $students_74 = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_id)
+                                    ->whereBetween('mark', [70, 74])->count();
+
+        $students_69 = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_id)
+                                    ->whereBetween('mark', [60, 69])->count();
+    
+        $students_count_success = $students_100 + $students_89 + $students_84 + $students_79 + $students_74 + $students_69;
+
         return [
             "draw" => $draw,
             "recordsTotal" => $count,
             "recordsFiltered" => $count,
             "data" => (array)$value,
             "order" => $columns[$order]["db"],
-            // 'statistics' => '
-            //         <td>'.$moallems_count.'</td>
-            //         <td>'.$course_students_count.'</td>
-            //         <td>'.\App\Models\CourseStudent::whereHas('course')->where('mark' , '>=' , 60)->subarea($sub_area_id,$area_id)->count().'</td>
-            //         <td>'.\App\Models\CourseStudent::whereHas('course')->where('mark' , '<' , 60)->subarea($sub_area_id,$area_id)->count().'</td>
-            //         <td>'.$count.'</td>'
+
+            "students_count" => '('.$count.')',
+            "students_count_success" => '('.$students_count_success.')',
+            "students_count_certificate" => '(0)',
+            "passed_students_count" => $passed_students_count,
+            "failed_students_count" => $failed_students_count,
+            "awaiting_students_count" => $awaiting_students_count,
+            "students_100" => $students_100,
+            "students_89" => $students_89,
+            "students_84" => $students_84,
+            "students_79" => $students_79,
+            "students_74" => $students_74,
+            "students_69" => $students_69,
+            "training_course_count" => $teacher_course_count,         
         ];
-//        return $users;
+
     }
 
     /**

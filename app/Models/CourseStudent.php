@@ -152,6 +152,59 @@ class CourseStudent extends Model
         });
 
     }
+
+    public function scopeCourseBookOrTeacher($query,$teacher_id,$book_id,$place_id)
+    {
+
+        if(!$teacher_id && !$book_id && !$place_id){
+            //return $query;
+        }else {
+            if ($teacher_id && !$book_id && !$place_id) {
+
+               $query = 
+                    $query->from('course_students')
+                        ->select('course_students.user_id','mark')
+                        ->whereIn('course_students.course_id', function ($query)use($teacher_id){
+                            $query->from('courses')
+                            ->select('courses.id')
+                            ->where('courses.teacher_id', $teacher_id);
+                        });
+               
+
+            } else if ($teacher_id && $book_id && !$place_id){
+                $query = 
+                    $query->from('course_students')
+                        ->select('course_students.user_id','mark')
+                        ->whereIn('course_students.course_id', function ($query)use($teacher_id,$book_id){
+                            $query->from('courses')
+                                ->select('courses.id')
+                                ->where('courses.teacher_id', $teacher_id)
+                                ->where('courses.book_id', $book_id);
+                        });
+                
+
+            } else if ($teacher_id && $book_id && $place_id){
+
+                $query =  
+                    $query->from('course_students')
+                        ->select('course_students.user_id','mark')
+                        ->whereIn('course_students.course_id', function ($query)use($teacher_id,$book_id,$place_id){
+                            $query->from('courses')
+                                ->select('courses.id')
+                                ->where('courses.teacher_id', $teacher_id)
+                                ->where('courses.place_id', $place_id)
+                                ->where('courses.book_id', $book_id);
+                        });
+                
+
+            }
+        }
+
+
+        return $query;
+        
+    }
+
     public function scopePermissionsSubArea($query,$sub_area_id,$area_id)
     {
 //        dd($sub_area_id,$area_id);
