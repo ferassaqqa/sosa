@@ -168,7 +168,16 @@ class User extends Authenticatable
                     : 0,
                 'courses' => $this->studentCourses->count() && hasPermissionHelper('جميع الدورات')?
                     '<a href="#!" data-url="' . route('users.getCourses',$this->id) . '" onclick="callApi(this,\'user_modal_content\')" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl">'.$this->studentCourses->count().'</a>'
-                    : 0
+                    : 0,
+                'area_father_name' => $this->area_father_name,
+                'area_name' => $this->area_name,
+                // 'area_supervisor'=>areaSupervisor($this->area_father_id_for_permissions),
+                // 'sub_area_supervisor'=>subAreaSupervisor($this->area_id_for_permissions),
+
+                'supervisor' =>'الميداني: '.areaSupervisor($this->area_father_id_for_permissions).'<br>'
+                .'العام: '.subAreaSupervisor($this->area_id_for_permissions),
+
+
             ];
         }else {
             $tools = $this->getTools($this->department ? $this->department : 0);

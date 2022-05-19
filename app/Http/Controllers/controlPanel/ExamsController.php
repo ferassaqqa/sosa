@@ -405,7 +405,7 @@ class ExamsController extends Controller
 //        dd(Carbon::now()->format('Y-m-d'));
         $areas = Area::whereNull('area_id')->get();
         $exams = Exam::where('status', '>=', 2)->where('status', '<=', 4)->where('date', '<', Carbon::now()->format('Y-m-d'))->get();
-//        dd($exams[0]->examable->book_name);
+
         return view('control_panel.exams.getExamsWaitingApproveMarks', compact('exams', 'areas'));
     }
     public function getExamsWaitingApproveMarksData(Request $request){

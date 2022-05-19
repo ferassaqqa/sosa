@@ -56,14 +56,14 @@
 
 
 
-                        <table  width="100%" class="table table-centered table_bordered static" dir="rtl">
+                        <table width="100%" class="table table-centered table_bordered static" dir="rtl">
                             <tbody>
                                 <tr class="table_header">
                                     <td colspan="3">عدد الطلاب الكلي <div id="students_count"></div>
                                     </td>
                                     <td colspan="6">إجمالي عدد الطلاب الناجحين <div id="students_count_success"></div>
                                     </td>
-                                    <td colspan="1">إجمالي عدد الشهادات <div  id="students_count_certificate">(-)</div>
+                                    <td colspan="1">إجمالي عدد الشهادات <div id="students_count_certificate">(-)</div>
                                     </td>
                                 </tr>
 
@@ -118,10 +118,26 @@
 
                     </div>
                     @if (hasPermissionHelper('فلترة طلاب الدورات'))
-                        <div class="row mb-3">
+                        <div class="row mb-3" >
+
+                            <div class="col-md-2">
+                                <select class="form-control " onchange="getSubAreas(this)" id="areas_select">
+                                    <option value="0">اختر المنطقة الكبرى</option>
+                                    @foreach($areas as $area)
+                                        <option value="{{ $area->id }}">{{ $area->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-control " id="sub_areas_select" onchange="getSubAreaTeachers(this)">
+                                    <option value="0">اختر المنطقة المحلية</option>
+                                </select>
+                            </div>
+
+
                             <div class="col-md-3">
-                                <select class="form-control" onchange="getTeacherCourseBooks(this)" id="teachers_select"
-                                    style="width: 88%;">
+                                <select class="form-control select2" id="teachers_select" onchange="getTeacherCourseBooks(this)" id="teachers_select"
+                                    >
                                     <option value="0">اختر المعلم</option>
                                     @if (isset($moallems))
                                         @foreach ($moallems as $moallem)
@@ -131,20 +147,24 @@
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <select class="form-control" onchange="getBookCoursePlaces(this)" id="books_select">
+                                <select class="form-control " onchange="getBookCoursePlaces(this)" id="books_select">
+                                    <option value="0">اختر كتاب الدورة</option>
                                 </select>
                             </div>
-                            <div class="col-md-3">
-                                <select class="form-control" onchange="updateDateTable(this)" id="places_select">
+                            <div class="col-md-2">
+                                <select class="form-control " id="places_select" onchange="updateDateTable(this)">
+                                    <option value="0">اختر مكان الدورة</option>
                                 </select>
                             </div>
+
                         </div>
+
                     @endif
                     <div class="">
                         <table class="table table-centered table-nowrap mb-0" id="dataTable">
                             <thead>
                                 <tr>
-                                    <th scope="col" style="width: 50px;">
+                                    <th scope="col">
                                         #
                                     </th>
                                     <th scope="col">اسم الطالب رباعياّ</th>
@@ -158,6 +178,10 @@
                                     @if (hasPermissionHelper('جميع الدورات'))
                                         <th scope="col">جميع الدورات</th>
                                     @endif
+
+                                    <th scope="col">الكبرى</th>
+                                    <th scope="col">المحلية</th>
+                                    <th scope="col" >المشرف</th>
                                     {{-- <th scope="col">أدوات</th> --}}
                                     {{-- <th scope="col"> --}}
                                     {{-- <div class="form-check mb-2"> --}}
@@ -182,27 +206,40 @@
 
 @section('script')
     <script>
+
+$('.select2').select2({
+                dir: "rtl",
+                dropdownAutoWidth: true,
+        });
+
+
         var table = '';
         $(document).ready(function() {
             table = $('#dataTable').DataTable({
                 "processing": true,
                 "serverSide": true,
 
-                "drawCallback":function(){
+                "drawCallback": function() {
                     $('#students_count').empty().html(table.data().context[0].json['students_count']);
-                    $('#students_count_success').empty().html(table.data().context[0].json['students_count_success']);
-                    $('#students_count_certificate').empty().html(table.data().context[0].json['students_count_certificate']);
-                    $('#passed_students_count').empty().html(table.data().context[0].json['passed_students_count']);
-                    $('#failed_students_count').empty().html(table.data().context[0].json['failed_students_count']);
-                    $('#awaiting_students_count').empty().html(table.data().context[0].json['awaiting_students_count']);
+                    $('#students_count_success').empty().html(table.data().context[0].json[
+                        'students_count_success']);
+                    $('#students_count_certificate').empty().html(table.data().context[0].json[
+                        'students_count_certificate']);
+                    $('#passed_students_count').empty().html(table.data().context[0].json[
+                        'passed_students_count']);
+                    $('#failed_students_count').empty().html(table.data().context[0].json[
+                        'failed_students_count']);
+                    $('#awaiting_students_count').empty().html(table.data().context[0].json[
+                        'awaiting_students_count']);
                     $('#students_100').empty().html(table.data().context[0].json['students_100']);
                     $('#students_89').empty().html(table.data().context[0].json['students_89']);
                     $('#students_84').empty().html(table.data().context[0].json['students_84']);
                     $('#students_79').empty().html(table.data().context[0].json['students_79']);
                     $('#students_74').empty().html(table.data().context[0].json['students_74']);
                     $('#students_69').empty().html(table.data().context[0].json['students_69']);
-                    $('#training_course_count').empty().html(table.data().context[0].json['training_course_count']);
-                } ,
+                    $('#training_course_count').empty().html(table.data().context[0].json[
+                        'training_course_count']);
+                },
 
                 "ajax": "{{ route('courseStudents.getData') }}",
                 language: {
@@ -252,9 +289,11 @@
                     @if (hasPermissionHelper('جميع الدورات'))
                         {
                             "mData": "courses"
-                        }
+                        },
                     @endif
-                    // { "mData": "select" }
+                    { "mData": "area_father_name" },
+                    { "mData": "area_name" },
+                    { "mData": "supervisor" }
                 ]
             });
         });
@@ -264,6 +303,7 @@
                     updateDateTable();
                     $('#places_select').empty();
                     $('#books_select').empty().html(data);
+
                 });
             }
 
@@ -271,14 +311,48 @@
                 $.get('/getBookCoursePlaces/' + obj.value + '/' + $('#teachers_select').val(), function(data) {
                     updateDateTable();
                     $('#places_select').empty().html(data);
+
                 });
             }
 
             function updateDateTable() {
                 table.ajax.url(
                     "/getCourseStudentsData?teacher_id=" + $('#teachers_select').val() + '&book_id=' + $(
-                        '#books_select').val() + '&place_id=' + $('#places_select').val()
+                        '#books_select').val() + '&place_id=' + $('#places_select').val()+"&sub_area_id="+$('#sub_areas_select').val()+'&area_id='+$('#areas_select').val()
                 ).load();
+            }
+
+            function getSubAreas(obj) {
+
+                $('#teachers_select').empty().html('<option value="0">اختر المعلم</option>');
+            
+                $('#books_select').empty().html('<option value="0">اختر كتاب الدورة</option>');
+
+                if (obj.value != 0) {
+                    $.get('/getSubAreas/' + obj.value, function(data) {
+                        $('#sub_areas_select').empty().html(data);
+                    });
+                    updateDateTable();
+                } else {
+                    $('#sub_areas_select').empty().html('<option value="0">اختر المنطقة المحلية</option>');
+                    updateDateTable();
+                }
+            }
+
+            function getSubAreaTeachers(obj) {
+                if (obj.value != 0) {
+                    $.get('/getSubAreaTeachers/' + obj.value, function(data) {
+                        $('#teachers_select').empty().html(data[0]);
+                        $('#place_area').empty().html(data[1]);
+                    });
+                    updateDateTable();
+                } else {
+
+                    $('#books_select').empty().html('<option value="0">اختر كتاب الدورة</option>');
+                    $('#teachers_select').empty().html('<option value="0">اختر المعلم</option>');
+
+                    updateDateTable();
+                }
             }
         @endif
     </script>

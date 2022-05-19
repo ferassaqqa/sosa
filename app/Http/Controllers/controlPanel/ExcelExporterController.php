@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\controlPanel;
 
 use App\Exports\courseStudentsExport;
+use App\Exports\StudentCoursesExport;
 use App\Exports\CourseStudentsFaultsExport;
 use App\Exports\courseStudentsMarksExport;
 use App\Exports\exportMoallemsAsExcelSheet;
@@ -16,6 +17,7 @@ use App\Imports\CourseStudentsMarkImport;
 use App\Imports\RoleImport;
 use App\Models\Course;
 use App\Models\Exam;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Maatwebsite\Excel\Excel;
@@ -88,6 +90,17 @@ class ExcelExporterController extends Controller
             new exportMoallemsAsExcelSheet($sub_area_id,$area_id,$search)
             , 'public/قائمة المعلمين.xlsx');
         return response()->json(['file_link' => asset('storage/قائمة المعلمين.xlsx')]);
+    }
+
+
+    public function exportStudentCoursesAsExcelSheet(Excel $excel,Request $request){
+
+        $user_id = (isset($request->user_id)&&!empty($request->user_id)) ? $request->user_id : '';
+        $user = User::find($user_id);
+        $excel->store(
+            new StudentCoursesExport($user)
+            , 'public/قائمة دورات الطالب ' . $user->name . '.xlsx');
+        return response()->json(['file_link' => asset('storage/قائمة دورات الطالب ' . $user->name . '.xlsx')]);
     }
 
 }

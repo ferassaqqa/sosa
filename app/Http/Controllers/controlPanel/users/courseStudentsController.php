@@ -35,10 +35,12 @@ class courseStudentsController extends Controller
     {
 //        checkPermissionHelper('طلاب الدورات');
         $moallems = User::whereIn('id',Course::select('teacher_id')->get())->get();
+        $areas = Area::whereNull('area_id')->get();
+
 
         $training_course_count = Course::all()->count();
 
-        return view('control_panel.users.courseStudents.basic.index',compact('moallems','training_course_count'));
+        return view('control_panel.users.courseStudents.basic.index',compact('moallems','training_course_count','areas'));
 
 
     }
@@ -59,11 +61,15 @@ class courseStudentsController extends Controller
         $order = $request->order[0]["column"];
         $direction = $request->order[0]["dir"];
 
-        
+
         $search = trim($request->search["value"]);
         $teacher_id = (int)$request->teacher_id ? (int)$request->teacher_id : 0;
         $book_id = (int)$request->book_id ? (int)$request->book_id : 0;
         $place_id = (int)$request->place_id ? (int)$request->place_id : 0;
+
+        $sub_area_id = (int)$request->sub_area_id ? (int)$request->sub_area_id : 0;
+        $area_id = (int)$request->area_id ? (int)$request->area_id : 0;
+
 
 
         $value = array();
@@ -71,18 +77,22 @@ class courseStudentsController extends Controller
         if(!empty($search)){
             $count = User::coursebookorteacher($teacher_id,$book_id,$place_id)
                 ->search($search)
+                ->subarea($sub_area_id,$area_id)
                 ->department(4)
                 ->count();
             $users = User::coursebookorteacher($teacher_id,$book_id,$place_id)
                 ->search($search)
+                ->subarea($sub_area_id,$area_id)
                 ->department(4)
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                 ->get();
         } else {
             $count = User::coursebookorteacher($teacher_id,$book_id,$place_id)
                 ->department(4)
+                ->subarea($sub_area_id,$area_id)
                 ->count();
             $users = User::coursebookorteacher($teacher_id,$book_id,$place_id)
+                ->subarea($sub_area_id,$area_id)
                 ->department(4)
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                 ->get();
@@ -95,12 +105,14 @@ class courseStudentsController extends Controller
         }
 
 
-       
+
 
         $passed_students_count = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_id)
+                                    ->subarea($sub_area_id,$area_id)
                                     ->whereBetween('mark', [60, 101])->distinct('user_id')->count();
 
         $failed_students_count = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_id)
+                                    ->subarea($sub_area_id,$area_id)
                                     ->whereBetween('mark', [1, 59])->distinct('user_id')->count();
 
         // $awaiting_students_count = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_id)
@@ -110,26 +122,32 @@ class courseStudentsController extends Controller
         $awaiting_students_count = 0;
         $teacher_course_count = 0;
 
-     
+
 
         $students_100 = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_id)
+                                    ->subarea($sub_area_id,$area_id)
                                     ->whereBetween('mark', [90, 101])->count();
-                                    
+
         $students_89 = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_id)
+                                    ->subarea($sub_area_id,$area_id)
                                     ->whereBetween('mark', [85, 89])->count();
-        
+
         $students_84 = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_id)
+                                    ->subarea($sub_area_id,$area_id)
                                     ->whereBetween('mark', [80, 84])->count();
 
         $students_79 = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_id)
+                                    ->subarea($sub_area_id,$area_id)
                                     ->whereBetween('mark', [75, 79])->count();
 
         $students_74 = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_id)
+                                    ->subarea($sub_area_id,$area_id)
                                     ->whereBetween('mark', [70, 74])->count();
 
         $students_69 = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_id)
+                                    ->subarea($sub_area_id,$area_id)
                                     ->whereBetween('mark', [60, 69])->count();
-    
+
         $students_count_success = $students_100 + $students_89 + $students_84 + $students_79 + $students_74 + $students_69;
 
         return [
@@ -151,7 +169,7 @@ class courseStudentsController extends Controller
             "students_79" => $students_79,
             "students_74" => $students_74,
             "students_69" => $students_69,
-            "training_course_count" => $teacher_course_count,         
+            "training_course_count" => $teacher_course_count,
         ];
 
     }

@@ -104,6 +104,11 @@ class Course extends Model
     public function getPlaceFullNameAttribute(){
         return $this->place ? $this->place->place_full_name : '';
     }
+
+    public function getSupervisorAttribute(){
+        return 'الميداني: '.$this->sub_area_supervisor_name.'<br>'.'العام: '.$this->area_supervisor_name;
+    }
+
     public function placeForPermissions(){
         return $this->belongsTo(Place::class,'place_id','id')->withoutGlobalScope('relatedPlaces');
     }
@@ -155,7 +160,7 @@ class Course extends Model
         return $this->belongsToMany(User::class,CourseStudent::class)->wherePivot('mark','>=','60')->withPivot('id','user_id','course_id','mark')->withoutGlobalScope('relatedStudents');
     }
     public function failedStudentCourses(){
-        return $this->belongsToMany(User::class,CourseStudent::class)->wherePivot('mark','<','60')->withPivot('id','user_id','course_id','mark');
+        return $this->belongsToMany(User::class,CourseStudent::class)->whereNotNull('mark')->wherePivot('mark','<','60')->withPivot('id','user_id','course_id','mark');
     }
     public function book(){
         return $this->belongsTo(Book::class);
