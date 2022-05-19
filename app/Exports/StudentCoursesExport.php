@@ -16,18 +16,14 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 class StudentCoursesExport implements FromCollection,WithHeadings,WithStyles,ShouldAutoSize,WithEvents
 {
     use RegistersEventListeners;
-    // public $sub_area_id;
-    // public $area_id;
-    // public $search;
+
 
     public $user;
 
     public $users_count;
     public function __construct($user)
     {
-        // $this->search = !empty($search) ? $search : '';
-        // $this->sub_area_id = !empty($sub_area_id) ? $sub_area_id : '';
-        // $this->area_id = !empty($area_id) ? $area_id : '';
+
 
         $this->user = $user;
 
@@ -46,7 +42,7 @@ class StudentCoursesExport implements FromCollection,WithHeadings,WithStyles,Sho
 
 
 
-        // $this->users_count = $users->count();
+
         foreach($courses as $key => $course){
             $collection[$key] = [
                 ($key+1),
