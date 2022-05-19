@@ -98,10 +98,10 @@ class courseStudentsController extends Controller
        
 
         $passed_students_count = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_id)
-                                    ->whereBetween('mark', [60, 101])->count();
+                                    ->whereBetween('mark', [60, 101])->distinct('user_id')->count();
 
         $failed_students_count = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_id)
-                                    ->whereBetween('mark', [1, 59])->count();
+                                    ->whereBetween('mark', [1, 59])->distinct('user_id')->count();
 
         // $awaiting_students_count = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_id)
         //                             ->whereNull('mark')->count();
