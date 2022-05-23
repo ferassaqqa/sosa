@@ -79,7 +79,6 @@ class courseStudentsController extends Controller
             $count = CourseStudent::whereHas('course')
                 ->coursebookorteacher($teacher_id,$book_id,$place_id)
                 ->subarea($sub_area_id,$area_id)
-                ->search($search)
                 ->count();
 
             $users = User::coursebookorteacher($teacher_id,$book_id,$place_id)

@@ -268,7 +268,7 @@
             table = $('#dataTable').removeAttr('width').DataTable( {
                 "processing": true,
                 "serverSide": true,
-                "bFilter": false,
+                // "bFilter": false,
                 responsive: true,
                 autoWidth:false,
                 // "scrollX":true,

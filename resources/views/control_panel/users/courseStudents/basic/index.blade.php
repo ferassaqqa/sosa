@@ -44,8 +44,11 @@
 
         div.dataTables_filter,
         div.dataTables_length {
-            /* display: inline-block; */
             margin-left: 1em;
+        }
+
+        div.dataTables_wrapper div.dataTables_processing {
+            top: 2%;
         }
 
     </style>
@@ -169,14 +172,14 @@
                             <div class="col-md-4">
                                 <div class="form-group" style="padding-bottom: 20px;">
                                     <select class="form-control select2" id="teachers_select"
-                                    onchange="getTeacherCourseBooks(this)" id="teachers_select">
-                                    <option value="0">اختر المعلم</option>
-                                    @if (isset($moallems))
-                                        @foreach ($moallems as $moallem)
-                                            <option value="{{ $moallem->id }}">{{ $moallem->name }}</option>
-                                        @endforeach
-                                    @endif
-                                </select>
+                                        onchange="getTeacherCourseBooks(this)" id="teachers_select">
+                                        <option value="0">اختر المعلم</option>
+                                        @if (isset($moallems))
+                                            @foreach ($moallems as $moallem)
+                                                <option value="{{ $moallem->id }}">{{ $moallem->name }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
                                 </div>
 
                                 <div class="form-group">
@@ -289,7 +292,7 @@
                 language: {
                     search: "",
                     searchPlaceholder: "بحث",
-                    processing: "جاري معالجة البيانات",
+                    processing: "<span style='background-color: #0a9e87;color: #fff;padding: 25px;'>انتظر من فضلك ، جار جلب البيانات ...</span>",
                     lengthMenu: " _MENU_ ",
                     info: "من _START_ الى _END_ من أصل _TOTAL_ صفحة",
                     infoEmpty: "لا يوجد بيانات",
