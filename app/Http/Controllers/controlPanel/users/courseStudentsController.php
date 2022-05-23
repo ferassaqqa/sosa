@@ -75,11 +75,13 @@ class courseStudentsController extends Controller
         $value = array();
 
         if(!empty($search)){
-            $count = User::coursebookorteacher($teacher_id,$book_id,$place_id)
-                ->search($search)
+
+            $count = CourseStudent::whereHas('course')
+                ->coursebookorteacher($teacher_id,$book_id,$place_id)
                 ->subarea($sub_area_id,$area_id)
-                ->department(4)
+                ->search($search)
                 ->count();
+
             $users = User::coursebookorteacher($teacher_id,$book_id,$place_id)
                 ->search($search)
                 ->subarea($sub_area_id,$area_id)
@@ -87,11 +89,14 @@ class courseStudentsController extends Controller
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                 ->get();
         } else {
-            $count = User::coursebookorteacher($teacher_id,$book_id,$place_id)
-                ->department(4)
-                ->subarea($sub_area_id,$area_id)
-                ->count();
-            $users = User::coursebookorteacher($teacher_id,$book_id,$place_id)
+
+        $count = CourseStudent::whereHas('course')
+                            ->coursebookorteacher($teacher_id,$book_id,$place_id)
+                            ->subarea($sub_area_id,$area_id)
+                            ->count();
+
+
+        $users = User::coursebookorteacher($teacher_id,$book_id,$place_id)
                 ->subarea($sub_area_id,$area_id)
                 ->department(4)
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
@@ -107,44 +112,65 @@ class courseStudentsController extends Controller
 
 
 
-        $passed_students_count = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_id)
+        $passed_students_count = CourseStudent::whereHas('course')
+                                    ->coursebookorteacher($teacher_id,$book_id,$place_id)
                                     ->subarea($sub_area_id,$area_id)
-                                    ->whereBetween('mark', [60, 101])->distinct('user_id')->count();
+                                    ->whereBetween('mark', [60, 101])
+                                    ->count();
 
-        $failed_students_count = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_id)
+
+
+        $failed_students_count = CourseStudent::whereHas('course')
+                                    ->coursebookorteacher($teacher_id,$book_id,$place_id)
                                     ->subarea($sub_area_id,$area_id)
-                                    ->whereBetween('mark', [1, 59])->distinct('user_id')->count();
-
-        // $awaiting_students_count = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_id)
-        //                             ->whereNull('mark')->count();
-
-        // $awaiting_students_count = $count - ($passed_students_count + $failed_students_count);
-        $awaiting_students_count = 0;
-        $teacher_course_count = 0;
+                                    ->whereBetween('mark', [1, 59])
+                                    ->count();
 
 
 
-        $students_100 = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_id)
+        $awaiting_students_count = $count - ($passed_students_count + $failed_students_count);
+
+        $teacher_course_count =  Course::subarea($sub_area_id,$area_id)
+                                        ->teacher($teacher_id)
+                                        ->book($book_id)
+                                        ->placearea($place_id)
+                                        ->count();
+
+
+        $certificates_count = CourseStudent::whereHas('course')
+                                            ->coursebookorteacher($teacher_id,$book_id,$place_id)
+                                            ->subarea($sub_area_id,$area_id)
+                                            ->course('منتهية')
+                                            ->count();
+
+
+        $students_100 = CourseStudent::whereHas('course')
+                                    ->coursebookorteacher($teacher_id,$book_id,$place_id)
                                     ->subarea($sub_area_id,$area_id)
                                     ->whereBetween('mark', [90, 101])->count();
 
-        $students_89 = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_id)
+        $students_89 = CourseStudent::whereHas('course')
+                                    ->coursebookorteacher($teacher_id,$book_id,$place_id)
                                     ->subarea($sub_area_id,$area_id)
                                     ->whereBetween('mark', [85, 89])->count();
 
-        $students_84 = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_id)
+        $students_84 = CourseStudent::whereHas('course')
+                                    ->coursebookorteacher($teacher_id,$book_id,$place_id)
                                     ->subarea($sub_area_id,$area_id)
                                     ->whereBetween('mark', [80, 84])->count();
 
-        $students_79 = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_id)
+        $students_79 = CourseStudent::whereHas('course')
+                                    ->coursebookorteacher($teacher_id,$book_id,$place_id)
                                     ->subarea($sub_area_id,$area_id)
                                     ->whereBetween('mark', [75, 79])->count();
 
-        $students_74 = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_id)
+        $students_74 = CourseStudent::whereHas('course')
+                                    ->coursebookorteacher($teacher_id,$book_id,$place_id)
                                     ->subarea($sub_area_id,$area_id)
                                     ->whereBetween('mark', [70, 74])->count();
 
-        $students_69 = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_id)
+        $students_69 = CourseStudent::whereHas('course')
+                                    ->coursebookorteacher($teacher_id,$book_id,$place_id)
                                     ->subarea($sub_area_id,$area_id)
                                     ->whereBetween('mark', [60, 69])->count();
 
@@ -159,7 +185,7 @@ class courseStudentsController extends Controller
 
             "students_count" => '('.$count.')',
             "students_count_success" => '('.$students_count_success.')',
-            "students_count_certificate" => '(0)',
+            "students_count_certificate" => '('.$certificates_count.')',
             "passed_students_count" => $passed_students_count,
             "failed_students_count" => $failed_students_count,
             "awaiting_students_count" => $awaiting_students_count,

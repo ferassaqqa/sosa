@@ -161,7 +161,7 @@ class CourseStudent extends Model
         }else {
             if ($teacher_id && !$book_id && !$place_id) {
 
-               $query = 
+               $query =
                     $query->from('course_students')
                         ->select('course_students.user_id','mark')
                         ->whereIn('course_students.course_id', function ($query)use($teacher_id){
@@ -169,10 +169,10 @@ class CourseStudent extends Model
                             ->select('courses.id')
                             ->where('courses.teacher_id', $teacher_id);
                         });
-               
+
 
             } else if ($teacher_id && $book_id && !$place_id){
-                $query = 
+                $query =
                     $query->from('course_students')
                         ->select('course_students.user_id','mark')
                         ->whereIn('course_students.course_id', function ($query)use($teacher_id,$book_id){
@@ -181,11 +181,11 @@ class CourseStudent extends Model
                                 ->where('courses.teacher_id', $teacher_id)
                                 ->where('courses.book_id', $book_id);
                         });
-                
+
 
             } else if ($teacher_id && $book_id && $place_id){
 
-                $query =  
+                $query =
                     $query->from('course_students')
                         ->select('course_students.user_id','mark')
                         ->whereIn('course_students.course_id', function ($query)use($teacher_id,$book_id,$place_id){
@@ -195,14 +195,14 @@ class CourseStudent extends Model
                                 ->where('courses.place_id', $place_id)
                                 ->where('courses.book_id', $book_id);
                         });
-                
+
 
             }
         }
 
 
         return $query;
-        
+
     }
 
     public function scopePermissionsSubArea($query,$sub_area_id,$area_id)

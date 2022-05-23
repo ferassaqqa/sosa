@@ -15,6 +15,7 @@
             color: white;
             background-color: #00937C;
             font-weight: 600;
+            font-size: 16px;
         }
 
         .static td {
@@ -24,10 +25,18 @@
         .static .value {
             font-weight: 600;
             border: 1px solid #f8f9fa;
-
+            font-size: 16px;
         }
 
+        .white_space{
+            white-space: break-spaces !important;
+        }
+
+
+
     </style>
+
+
 
 
     <!-- start page title -->
@@ -117,6 +126,8 @@
 
 
                     </div>
+
+                    <br>
                     @if (hasPermissionHelper('فلترة طلاب الدورات'))
                         <div class="row mb-3" >
 
@@ -182,7 +193,7 @@
                                     <th scope="col">الكبرى</th>
                                     <th scope="col">المحلية</th>
                                     <th scope="col" >المشرف</th>
-                                    {{-- <th scope="col">أدوات</th> --}}
+                                    <th scope="col">أدوات</th>
                                     {{-- <th scope="col"> --}}
                                     {{-- <div class="form-check mb-2"> --}}
                                     {{-- <input class="form-check-input check-all" type="checkbox"> --}}
@@ -218,6 +229,9 @@ $('.select2').select2({
             table = $('#dataTable').DataTable({
                 "processing": true,
                 "serverSide": true,
+                autoWidth:false,
+                responsive: true,
+
 
                 "drawCallback": function() {
                     $('#students_count').empty().html(table.data().context[0].json['students_count']);
@@ -263,6 +277,7 @@ $('.select2').select2({
                     }
                 },
                 "columnDefs": [
+                    {className: "white_space",targets:[3,4,5]},
                     @if (hasPermissionHelper('الدورات المجاز فيها') || hasPermissionHelper('الدورات الغير مجاز فيها') || hasPermissionHelper('جميع الدورات'))
                         // { "sortable": false, "targets": [2,3,4] },
                     @endif
@@ -293,7 +308,10 @@ $('.select2').select2({
                     @endif
                     { "mData": "area_father_name" },
                     { "mData": "area_name" },
-                    { "mData": "supervisor" }
+                    { "mData": "supervisor" },
+
+                    { "mData": "tools" },
+
                 ]
             });
         });
@@ -325,7 +343,7 @@ $('.select2').select2({
             function getSubAreas(obj) {
 
                 $('#teachers_select').empty().html('<option value="0">اختر المعلم</option>');
-            
+
                 $('#books_select').empty().html('<option value="0">اختر كتاب الدورة</option>');
 
                 if (obj.value != 0) {

@@ -6,11 +6,7 @@
     @php $courses = isset($passed) ? $user->passedStudentCourses : ( isset($failed) ? $user->failedStudentCourses : $user->studentCourses) @endphp
     <table class="table table-responsive">
         <thead>
-            {{-- <th>المعلم</th>
-            <th>الكتاب</th>
-            <th>المكان</th>
-            <th>العلامة</th>
-            <th>تاريخ البداية</th> --}}
+
 
             <th>اسم الدورة</th>
             <th>اسم المعلم</th>
@@ -44,10 +40,10 @@
                     <td>{{ $course->book->hours_count}}</td>
 
                     <td>{{ $course->exam ? ($course->exam->status == 5 ? ($course->pivot->mark ? $course->pivot->mark : 'لم يتم رصد الدرجات') : 'انتظار اعتماد الدرجات' ): 'لم يختبر بعد' }}</td>
-                    <td>{!! $course->exam->status == 5 ? ($course->pivot->mark ? markEstimation($course->pivot->mark) : '-'):'-'  !!}</td>
+                    <td>{!! $course->exam->status == 5 ? ($course->pivot->mark ? markEstimationText($course->pivot->mark) : '-'):'-'  !!}</td>
 
-                    <td>{{ $course->exam->status == 5 ? 'تم الاستلام' : 'لم يتم الاستلام'}}</td>
-                    <td>{{ $course->exam->status == 5 ? 'طباعة شهادة' : '-' }}</td>
+                    <td>{{ $course->status == 'منتهية' ? 'تم الاستلام' : 'لم يتم الاستلام'}}</td>
+                    <td>{{ $course->status == 'منتهية' ? 'طباعة شهادة' : '-' }}</td>
 
 
                 </tr>
@@ -81,10 +77,6 @@
 <script>
 
         function exportStudentCoursesAsExcelSheet(){
-            // var areas_select = $('#areas_select').val();
-            // var sub_areas_select = $('#sub_areas_select').val();
-            // var search = $('input[type="search"]').val();
-            // var filters = '?area_id='+areas_select+'&sub_area_id='+sub_areas_select+'&search='+search;
 
             var filters = '?user_id='+{{$user->id}}
             $.get('exportStudentCoursesAsExcelSheet/'+filters,function(response){

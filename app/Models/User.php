@@ -155,6 +155,15 @@ class User extends Authenticatable
     public function getUserDisplayDataAttribute(){
         self::$counter++;
         if($this->department == 4){
+
+
+
+
+
+    $allCoursesBtn = $this->studentCourses->count() && hasPermissionHelper('جميع الدورات')?'<button type="button" class="btn btn-info"  title="جميع الدورات" data-url="' . route('users.getCourses',$this->id) . '" onclick="callApi(this,\'user_modal_content\')" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl"><i class="mdi mdi-account-details"></i></button>':'<button disabled type="button" class="btn btn-default"><i class="mdi mdi-account-details"></i></button>';
+    // $passedStudentsCourseBtn = $this->passedStudentCourses->count() && hasPermissionHelper('الدورات المجاز فيها')?'<button type="button" class="btn btn-success" title="الدورات المجاز فيها" data-url="' . route('users.getPassedCourses',$this->id) . '" onclick="callApi(this,\'user_modal_content\')" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl"><i class="mdi mdi-account-details"></i></button>':'<button disabled type="button" class="btn btn-default"><i class="mdi mdi-account-details"></i></button>';
+    // $failedStudentCourses = $this->failedStudentCourses->count() && hasPermissionHelper('الدورات الغير مجاز فيها')?'<button type="button" class="btn btn-danger" title="الدورات الغير مجاز فيها" data-url="' . route('users.getFailedCourses',$this->id) . '" onclick="callApi(this,\'user_modal_content\')" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl"><i class="mdi mdi-account-details"></i></button>':'<button disabled type="button" class="btn btn-default"><i class="mdi mdi-account-details"></i></button>';
+    $tools = '<div class="container m-3">'.$allCoursesBtn  .'</div>';
             return [
                 'id' => self::$counter,
                 'name' => $this->name,
@@ -166,17 +175,21 @@ class User extends Authenticatable
                 'failedCourses' => $this->failedStudentCourses->count() && hasPermissionHelper('الدورات الغير مجاز فيها')?
                     '<a href="#!" data-url="' . route('users.getFailedCourses',$this->id) . '" onclick="callApi(this,\'user_modal_content\')" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl">'.$this->failedStudentCourses->count().'</a>'
                     : 0,
-                'courses' => $this->studentCourses->count() && hasPermissionHelper('جميع الدورات')?
-                    '<a href="#!" data-url="' . route('users.getCourses',$this->id) . '" onclick="callApi(this,\'user_modal_content\')" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl">'.$this->studentCourses->count().'</a>'
-                    : 0,
+                // 'courses' => $this->studentCourses->count() && hasPermissionHelper('جميع الدورات')?
+                //     '<a href="#!" data-url="' . route('users.getCourses',$this->id) . '" onclick="callApi(this,\'user_modal_content\')" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl">'.$this->studentCourses->count().'</a>'
+                //     : 0,
+
+                'courses' => $this->studentCourses->count() && hasPermissionHelper('جميع الدورات')?$this->studentCourses->count(): 0,
+
                 'area_father_name' => $this->area_father_name,
                 'area_name' => $this->area_name,
                 // 'area_supervisor'=>areaSupervisor($this->area_father_id_for_permissions),
                 // 'sub_area_supervisor'=>subAreaSupervisor($this->area_id_for_permissions),
 
-                'supervisor' =>'الميداني: '.areaSupervisor($this->area_father_id_for_permissions).'<br>'
-                .'العام: '.subAreaSupervisor($this->area_id_for_permissions),
+                'supervisor' =>'الميداني: '.subAreaSupervisor($this->area_id_for_permissions).'<br>'
+                .'العام: '.areaSupervisor($this->area_father_id_for_permissions),
 
+                'tools' => $tools
 
             ];
         }else {

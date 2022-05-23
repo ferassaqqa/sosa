@@ -369,6 +369,25 @@ function markEstimation($mark)
     }
 }
 
+function markEstimationText($mark)
+{
+    if (60 <= $mark && $mark < 70) {
+        return 'ضعيف';
+    } elseif (70 <= $mark && $mark < 75) {
+        return 'جيد';
+    } elseif (75 <= $mark && $mark < 80) {
+        return 'جيد مرتفع';
+    } elseif (80 <= $mark && $mark < 85) {
+        return 'جيد جدا';
+    } elseif (85 <= $mark && $mark < 90) {
+        return 'جيد جدا مرتفع';
+    } elseif (90 <= $mark && $mark <= 100) {
+        return 'ممتاز';
+    } else {
+        return 'لا يجاز';
+    }
+}
+
 function checkAreaTotalPercentage($area_id,$percent){
     $areas = \App\Models\Area::whereNull('area_id')->where('id','!=',$area_id)->get();
     $total = $percent;
