@@ -25,14 +25,28 @@
         .static .value {
             font-weight: 600;
             border: 1px solid #f8f9fa;
-            font-size: 16px;
+            font-size: 18px;
         }
 
-        .white_space{
+        .white_space {
             white-space: break-spaces !important;
         }
 
+        div.dataTables_wrapper div.dataTables_filter input {
+            width: 100%;
+        }
 
+
+        .dataTables_wrapper .dataTables_filter {
+            float: left;
+        }
+
+
+        div.dataTables_filter,
+        div.dataTables_length {
+            /* display: inline-block; */
+            margin-left: 1em;
+        }
 
     </style>
 
@@ -57,14 +71,12 @@
     </div>
     <!-- end page title -->
     <div class="row">
+
+
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-body">
                     <div class="row mb-3">
-
-
-
-
                         <table width="100%" class="table table-centered table_bordered static" dir="rtl">
                             <tbody>
                                 <tr class="table_header">
@@ -120,35 +132,44 @@
                         </table>
 
 
-
-
-
-
-
                     </div>
+                </div>
+            </div>
+        </div>
 
-                    <br>
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+
+
+
+
                     @if (hasPermissionHelper('فلترة طلاب الدورات'))
-                        <div class="row mb-3" >
+                        <div class="row mb-3">
 
-                            <div class="col-md-2">
-                                <select class="form-control " onchange="getSubAreas(this)" id="areas_select">
-                                    <option value="0">اختر المنطقة الكبرى</option>
-                                    @foreach($areas as $area)
-                                        <option value="{{ $area->id }}">{{ $area->name }}</option>
-                                    @endforeach
-                                </select>
+                            <div class="col-md-4">
+                                <div class="form-group" style="padding-bottom: 20px;">
+                                    <select class="form-control " onchange="getSubAreas(this)" id="areas_select">
+                                        <option value="0">اختر المنطقة الكبرى</option>
+                                        @foreach ($areas as $area)
+                                            <option value="{{ $area->id }}">{{ $area->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <select class="form-control " id="sub_areas_select"
+                                        onchange="getSubAreaTeachers(this)">
+                                        <option value="0">اختر المنطقة المحلية</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="col-md-2">
-                                <select class="form-control " id="sub_areas_select" onchange="getSubAreaTeachers(this)">
-                                    <option value="0">اختر المنطقة المحلية</option>
-                                </select>
-                            </div>
 
 
-                            <div class="col-md-3">
-                                <select class="form-control select2" id="teachers_select" onchange="getTeacherCourseBooks(this)" id="teachers_select"
-                                    >
+                            <div class="col-md-4">
+                                <div class="form-group" style="padding-bottom: 20px;">
+                                    <select class="form-control select2" id="teachers_select"
+                                    onchange="getTeacherCourseBooks(this)" id="teachers_select">
                                     <option value="0">اختر المعلم</option>
                                     @if (isset($moallems))
                                         @foreach ($moallems as $moallem)
@@ -156,17 +177,27 @@
                                         @endforeach
                                     @endif
                                 </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <select class="form-control " onchange="getBookCoursePlaces(this)" id="books_select">
+                                        <option value="0">اختر كتاب الدورة</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="col-md-3">
-                                <select class="form-control " onchange="getBookCoursePlaces(this)" id="books_select">
-                                    <option value="0">اختر كتاب الدورة</option>
-                                </select>
+
+
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <select class="form-control " id="places_select" onchange="updateDateTable(this)">
+                                        <option value="0">اختر مكان الدورة</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="col-md-2">
-                                <select class="form-control " id="places_select" onchange="updateDateTable(this)">
-                                    <option value="0">اختر مكان الدورة</option>
-                                </select>
-                            </div>
+
+
+
 
                         </div>
 
@@ -192,7 +223,7 @@
 
                                     <th scope="col">الكبرى</th>
                                     <th scope="col">المحلية</th>
-                                    <th scope="col" >المشرف</th>
+                                    <th scope="col">المشرف</th>
                                     <th scope="col">أدوات</th>
                                     {{-- <th scope="col"> --}}
                                     {{-- <div class="form-check mb-2"> --}}
@@ -217,10 +248,9 @@
 
 @section('script')
     <script>
-
-$('.select2').select2({
-                dir: "rtl",
-                dropdownAutoWidth: true,
+        $('.select2').select2({
+            dir: "rtl",
+            dropdownAutoWidth: true,
         });
 
 
@@ -229,7 +259,7 @@ $('.select2').select2({
             table = $('#dataTable').DataTable({
                 "processing": true,
                 "serverSide": true,
-                autoWidth:false,
+                autoWidth: false,
                 responsive: true,
 
 
@@ -257,9 +287,10 @@ $('.select2').select2({
 
                 "ajax": "{{ route('courseStudents.getData') }}",
                 language: {
-                    search: "بحث",
+                    search: "",
+                    searchPlaceholder: "بحث",
                     processing: "جاري معالجة البيانات",
-                    lengthMenu: "عدد _MENU_ الصفوف",
+                    lengthMenu: " _MENU_ ",
                     info: "من _START_ الى _END_ من أصل _TOTAL_ صفحة",
                     infoEmpty: "لا يوجد بيانات",
                     loadingRecords: "يتم تحميل البيانات",
@@ -276,8 +307,10 @@ $('.select2').select2({
                         sortDescending: ": ترتيب تنازلي"
                     }
                 },
-                "columnDefs": [
-                    {className: "white_space",targets:[3,4,5]},
+                "columnDefs": [{
+                        className: "white_space",
+                        targets: [3, 4, 5]
+                    },
                     @if (hasPermissionHelper('الدورات المجاز فيها') || hasPermissionHelper('الدورات الغير مجاز فيها') || hasPermissionHelper('جميع الدورات'))
                         // { "sortable": false, "targets": [2,3,4] },
                     @endif
@@ -305,12 +338,19 @@ $('.select2').select2({
                         {
                             "mData": "courses"
                         },
-                    @endif
-                    { "mData": "area_father_name" },
-                    { "mData": "area_name" },
-                    { "mData": "supervisor" },
+                    @endif {
+                        "mData": "area_father_name"
+                    },
+                    {
+                        "mData": "area_name"
+                    },
+                    {
+                        "mData": "supervisor"
+                    },
 
-                    { "mData": "tools" },
+                    {
+                        "mData": "tools"
+                    },
 
                 ]
             });
@@ -336,7 +376,8 @@ $('.select2').select2({
             function updateDateTable() {
                 table.ajax.url(
                     "/getCourseStudentsData?teacher_id=" + $('#teachers_select').val() + '&book_id=' + $(
-                        '#books_select').val() + '&place_id=' + $('#places_select').val()+"&sub_area_id="+$('#sub_areas_select').val()+'&area_id='+$('#areas_select').val()
+                        '#books_select').val() + '&place_id=' + $('#places_select').val() + "&sub_area_id=" + $(
+                        '#sub_areas_select').val() + '&area_id=' + $('#areas_select').val()
                 ).load();
             }
 
