@@ -60,15 +60,15 @@
         تصدير excel
     </button>
 
-    <button class="btn btn-primary  btn-lg" onclick="" style="width:207px;">
+    <a target="_blank" class="btn btn-primary  btn-lg" href="{{ url('/exportStudentCoursesAsPDF') }}?user_id={{$user->id}}" style="width:207px;">
         <i class="mdi mdi-file-pdf"></i>
         تصدير pdf
-    </button>
+    </a>
 
-    <button class="btn btn-primary btn-lg" onclick="" style="width:207px;">
+    <a target="_blank"  href="{{ url('/exportStudentCoursesAsPDF') }}?user_id={{$user->id}}" class="btn btn-primary btn-lg" onclick="" style="width:207px;">
         <i class="mdi mdi-print"></i>
         طباعة
-    </button>
+    </a>
 
 </div>
 
@@ -79,13 +79,13 @@
         function exportStudentCoursesAsExcelSheet(){
 
             var filters = '?user_id='+{{$user->id}}
-            $.get('exportStudentCoursesAsExcelSheet/'+filters,function(response){
-                if(response.file_link) {
-                    window.open(
-                        response.file_link, "_blank");
-                }
-            });
-        }
+                $.get('exportStudentCoursesAsExcelSheet/'+filters,function(response){
+                    if(response.file_link) {
+                        window.open(
+                            response.file_link, "_blank");
+                    }
+                });
+    }
 
 
 </script>

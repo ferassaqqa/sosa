@@ -19,13 +19,17 @@
         }
 
         .static td {
-            border: 1px solid #f8f9fa;
+            border: 1px solid #bbbdbe !important;
+        }
+
+        .static tr {
+            background-color: #f3f3f4;
         }
 
         .static .value {
             font-weight: 600;
-            border: 1px solid #f8f9fa;
             font-size: 18px;
+            border: 1px solid #bbbdbe;
         }
 
         .white_space {
@@ -36,11 +40,9 @@
             width: 100%;
         }
 
-
         .dataTables_wrapper .dataTables_filter {
             float: left;
         }
-
 
         div.dataTables_filter,
         div.dataTables_length {
@@ -83,11 +85,11 @@
                         <table width="100%" class="table table-centered table_bordered static" dir="rtl">
                             <tbody>
                                 <tr class="table_header">
-                                    <td colspan="3">عدد الطلاب الكلي <div id="students_count"></div>
+                                    <td colspan="3">عدد الطلاب الكلي <span id="students_count"></span>
                                     </td>
-                                    <td colspan="6">إجمالي عدد الطلاب الناجحين <div id="students_count_success"></div>
+                                    <td colspan="6">إجمالي عدد الطلاب الناجحين <span id="students_count_success"></span>
                                     </td>
-                                    <td colspan="1">إجمالي عدد الشهادات <div id="students_count_certificate">(-)</div>
+                                    <td colspan="1">إجمالي عدد الشهادات <span id="students_count_certificate">(-)</span>
                                     </td>
                                 </tr>
 

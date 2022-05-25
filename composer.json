@@ -6,6 +6,8 @@
     "license": "MIT",
     "require": {
         "php": "^7.3|^8.0",
+        "barryvdh/laravel-dompdf": "^1.0",
+        "dompdf/dompdf": "v1.2.1-dev",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "laravel/framework": "^8.65",
@@ -64,6 +66,23 @@
         "preferred-install": "dist",
         "sort-packages": true
     },
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "dompdf/dompdf",
+                "version": "v1.2.1-dev",
+                "source": {
+                    "url": "https://github.com/anasomushjo/dompdf",
+                    "type": "git",
+                    "reference": "master"
+                },
+                "autoload": {
+                    "classmap": [""]
+                }
+            }
+        }
+    ],
     "minimum-stability": "dev",
     "prefer-stable": true
 }

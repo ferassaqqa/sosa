@@ -389,6 +389,8 @@ Route::get('getBookCoursePlaces/{book_id}/{teacher_id}', [\App\Http\Controllers\
 Route::get('courseStudents/create/{id_num}/{course}', [\App\Http\Controllers\controlPanel\users\courseStudentsController::class,'create'])->name('courseStudents.create');
 Route::delete('courseStudents/destroy/{user}/{course}', [\App\Http\Controllers\controlPanel\users\courseStudentsController::class,'destroy'])->name('courseStudents.destroy');
 Route::get('exportStudentCoursesAsExcelSheet', [\App\Http\Controllers\controlPanel\ExcelExporterController::class,'exportStudentCoursesAsExcelSheet'])->name('moallem.exportMoallemsAsExcelSheet');
+Route::get('exportStudentCoursesAsPDF', [\App\Http\Controllers\controlPanel\users\courseStudentsController::class,'exportStudentCoursesAsPDF'])->name('courseStudents.exportStudentCoursesAsPDF');
+
 
 /**
  *  End courseStudents Operations

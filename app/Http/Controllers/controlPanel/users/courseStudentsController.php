@@ -19,6 +19,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use function PHPSTORM_META\type;
+use PDF;
 
 class courseStudentsController extends Controller
 {
@@ -31,6 +32,23 @@ class courseStudentsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function exportStudentCoursesAsPDF(Request $request) {
+
+        $user_id = (isset($request->user_id)&&!empty($request->user_id)) ? $request->user_id : '';
+        $user = User::find($user_id);
+
+        $courses = isset($passed) ? $user->passedStudentCourses : ( isset($failed) ? $user->failedStudentCourses : $user->studentCourses);
+        $pdf = PDF::loadView('control_panel.users.courseStudents.basic.studentCoursesPdf', compact('courses','user'));
+        $pdf->setPaper('A4', 'landscape');
+        $pdf->getDomPDF()->set_option("enable_php", true);
+
+        return $pdf->stream();
+
+        // download PDF file with download method
+        // return $pdf->download('pdf_file.pdf');
+      }
+
+
     public function index()
     {
 //        checkPermissionHelper('طلاب الدورات');
