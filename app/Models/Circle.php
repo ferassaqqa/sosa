@@ -22,6 +22,10 @@ class Circle extends Model
             'start_date'            =>$this->start_date,
             'place_name'            =>$this->place_name,
             'teacher_name'          =>$this->teacher_name,
+            'area_father_name'      => $this->place ? $this->place->area_father_name : 0,
+            'area_name'             => $this->place ? $this->place->area_name : 0,
+            'id_num'                => $this->teacher ? $this->teacher->id_num : '',
+            'contract_type'           => $this->teacher ? $this->teacher->userExtraData->contract_type : '',
             'supervisor_name'       =>subAreaSupervisor($this->area_id_for_permissions),
             'area_supervisor_name'  =>areaSupervisor($this->area_father_id_for_permissions),
             'StatusSelect'          =>$this->status_select,
@@ -117,7 +121,7 @@ class Circle extends Model
 //            case 'منتهية' : {$selected3 = 'selected';}break;
             case 'معلقة' : {$selected4 = 'selected';}break;
         }
-        $select = '<select onchange="changeCircleStatus('.$this->id.',this.value)" class="form-control"> 
+        $select = '<select onchange="changeCircleStatus('.$this->id.',this.value)" class="form-control">
                         <option '.$selected1.' value="انتظار الموافقة">انتظار الموافقة</option>
                         <option '.$selected2.' value="قائمة">قائمة</option>
                         <!--<option '.$selected3.' value="منتهية">منتهية</option>-->

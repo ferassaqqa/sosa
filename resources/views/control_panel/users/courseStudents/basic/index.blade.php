@@ -53,6 +53,10 @@
             top: 2%;
         }
 
+        .dataTables_wrapper{
+            margin-top: -50px;
+        }
+
     </style>
 
 
