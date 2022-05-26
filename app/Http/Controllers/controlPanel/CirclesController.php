@@ -94,9 +94,33 @@ class CirclesController extends Controller
 
 
 
-        $total_circlestudents_count = 0;
-        $total_circlestudents_makfool = 0;
-        $total_circlestudents_volunteer = 0;
+        $total_circlestudents_count =   User::department(3)->count();
+        $total_circlestudents_makfool = User::query()
+                                                ->department(3)
+                                                // ->leftJoin('circles', 'users.id', '=', 'circles.teacher_id')
+
+                                                ->rightJoin('user_extra_data', function($join){
+                                                    $join->on('user_extra_data.user_id', '=', 'users.teacher_id');
+                                                    $join->where('user_extra_data.contract_type' , '=', 'مكفول');
+                                                })
+
+
+                                                // ->rightJoin('user_extra_data', 'user_extra_data.user_id', '=', 'users.teacher_id')
+                                                // ->where('user_extra_data.contract_type' , '=', 'مكفول')
+                                                // ->groupBy('circles.id')
+                                                ->select('users.*')->subarea($sub_area_id,$area_id)
+                                                ->get()->count();
+
+        $total_circlestudents_volunteer =  User::query()
+                                                ->department(3)
+                                                ->rightJoin('user_extra_data', function($join){
+                                                    $join->on('user_extra_data.user_id', '=', 'users.teacher_id');
+                                                    $join->where('user_extra_data.contract_type' , '=', 'متطوع');
+                                                })
+                                                // ->where('user_extra_data.contract_type' , '=', 'متطوع')
+                                                // ->groupBy('circles.id')
+                                                ->select('users.*')->subarea($sub_area_id,$area_id)
+                                                ->get()->count();
 
 
 
@@ -134,7 +158,6 @@ class CirclesController extends Controller
             'circle_volunteer' => '('.$circle_volunteer.')',
 
             'total_circlestudents_count'  => '('.$total_circlestudents_count.')',
-
             'total_circlestudents_makfool' => $total_circlestudents_makfool,
             'total_circlestudents_volunteer' => $total_circlestudents_volunteer,
 
