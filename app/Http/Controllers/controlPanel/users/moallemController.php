@@ -379,7 +379,7 @@ class moallemController extends Controller
         return $user->teachers_roles_select;
     }
     public function updateUserRoles(User $user,$roles){
-        return $roles;
+        //return $roles;
         checkPermissionHelper('نسخ بيانات المعلم لمحفظ او شيخ أسانيد');
         $user->syncRoles(json_decode($roles));
         return response()->json(['msg' => 'تم تعديل الصلاحيات', 'title' => 'تعديل', 'type' => 'success']);

@@ -62,26 +62,12 @@
             {{--<button type="button" class="btn btn-primary waves-effect" onclick="getExamsWaitingApproveMarks()" style="width: 100%;">رجوع</button>--}}
         </div>
         <div class="col-md-3">
-            @if($exam->status > 3)
-                تم اعتماد رئيس قسم الاختبارات
-            @else
-                <button type="button" class="btn btn-success waves-effect" onclick="examsDeptManagerApprovement('{{ $exam->id }}',this)" style="width: 100%;">@if($exam->status == 3) تراجع اعتماد رئيس قسم الاختبارات @elseif($exam->status == 2) اعتماد رئيس قسم الاختبارات @endif</button>
-            @endif
         </div>
         <div class="col-md-3">
-            @if($exam->status >= 3)
-                @if($exam->status > 4)
-                    تم اعتماد مدير دائرة التخطيط والجودة
-                @else
-                    <button type="button" class="btn btn-info waves-effect" onclick="qualityDeptManagerApprovement('{{ $exam->id }}',this)" style="width: 100%;">@if($exam->status == 4) تراجع اعتماد مدير دائرة التخطيط والجودة @elseif($exam->status == 3) اعتماد مدير دائرة التخطيط والجودة @endif</button>
-                @endif
-            @else
-                 <span style="margin-top: 5px;">بانتظار اعتماد رئيس قسم الاختبارات</span>
-            @endif
         </div>
         <div class="col-md-3">
-            @if($exam->status >= 4)
-                <button type="button" class="btn btn-danger waves-effect" onclick="sunnaManagerApprovement('{{ $exam->id }}',this)" style="width: 100%;">@if($exam->status == 5) تراجع اعتماد مدير الدائرة @elseif($exam->status == 4) اعتماد مدير الدائرة @endif</button>
+            @if($exam->status >= 2)
+                <button type="button" class="btn btn-danger waves-effect" onclick="sunnaManagerApprovement('{{ $exam->id }}',this)" style="width: 100%;">@if($exam->status == 5) تراجع اعتماد مدير الدائرة @elseif($exam->status >= 2 and $exam->status <= 4) اعتماد مدير الدائرة @endif</button>
             @else
                 بانتظار اعتماد مدير دائرة التخطيط والجودة
             @endif

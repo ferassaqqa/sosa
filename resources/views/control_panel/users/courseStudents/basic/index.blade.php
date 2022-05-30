@@ -40,9 +40,6 @@
             width: 100%;
         }
 
-        .dataTables_wrapper .dataTables_filter {
-            float: left;
-        }
 
         div.dataTables_filter,
         div.dataTables_length {
@@ -50,11 +47,7 @@
         }
 
         div.dataTables_wrapper div.dataTables_processing {
-            top: 2%;
-        }
-
-        .dataTables_wrapper{
-            margin-top: -50px;
+            top: 5%;
         }
 
     </style>
@@ -220,6 +213,13 @@
                                     </th>
                                     <th scope="col">اسم الطالب رباعياّ</th>
                                     <th scope="col">رقم الهوية</th>
+
+
+                                    <th scope="col">الكبرى</th>
+                                    <th scope="col">المحلية</th>
+                                    <th scope="col">المشرف الميداني</th>
+                                    <th scope="col">المشرف العام</th>
+
                                     @if (hasPermissionHelper('الدورات المجاز فيها'))
                                         <th scope="col">الدورات المجاز فيها</th>
                                     @endif
@@ -230,9 +230,7 @@
                                         <th scope="col">جميع الدورات</th>
                                     @endif
 
-                                    <th scope="col">الكبرى</th>
-                                    <th scope="col">المحلية</th>
-                                    <th scope="col">المشرف</th>
+
                                     <th scope="col">أدوات</th>
                                     {{-- <th scope="col"> --}}
                                     {{-- <div class="form-check mb-2"> --}}
@@ -299,7 +297,7 @@
                     search: "",
                     searchPlaceholder: "بحث",
                     processing: "<span style='background-color: #0a9e87;color: #fff;padding: 25px;'>انتظر من فضلك ، جار جلب البيانات ...</span>",
-                    lengthMenu: " _MENU_ ",
+                    lengthMenu: "عدد _MENU_ الصفوف",
                     info: "من _START_ الى _END_ من أصل _TOTAL_ صفحة",
                     infoEmpty: "لا يوجد بيانات",
                     loadingRecords: "يتم تحميل البيانات",
@@ -318,7 +316,7 @@
                 },
                 "columnDefs": [{
                         className: "white_space",
-                        targets: [3, 4, 5]
+                        targets: [7,8,9]
                     },
                     @if (hasPermissionHelper('الدورات المجاز فيها') || hasPermissionHelper('الدورات الغير مجاز فيها') || hasPermissionHelper('جميع الدورات'))
                         // { "sortable": false, "targets": [2,3,4] },
@@ -333,6 +331,20 @@
                     {
                         "mData": "id_num"
                     },
+
+                    {
+                        "mData": "area_father_name"
+                    },
+                    {
+                        "mData": "area_name"
+                    },
+                    {
+                        "mData": "sub_area_supervisor"
+                    },
+                    {
+                        "mData": "area_supervisor"
+                    },
+
                     @if (hasPermissionHelper('الدورات المجاز فيها'))
                         {
                             "mData": "passedCourses"
@@ -347,15 +359,8 @@
                         {
                             "mData": "courses"
                         },
-                    @endif {
-                        "mData": "area_father_name"
-                    },
-                    {
-                        "mData": "area_name"
-                    },
-                    {
-                        "mData": "supervisor"
-                    },
+                    @endif
+
 
                     {
                         "mData": "tools"

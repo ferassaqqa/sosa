@@ -199,7 +199,9 @@ class CoursesController extends Controller
     public function store(newCourseRequest $request)
     {
         checkPermissionHelper('اضافة دورة علمية');
-        Course::create($request->all());
+       $course = Course::create($request->all());
+
+        $course->exam()->create($request->all());
         return response()->json(['msg'=>'تم اضافة دورة جديدة','title'=>'اضافة','type'=>'success']);
     }
 

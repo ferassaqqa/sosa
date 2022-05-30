@@ -680,7 +680,7 @@ class ExamsController extends Controller
     }
     public function sunnaManagerApprovement(Exam $exam){
 //        dd($exam);
-        if ($exam->status == 4) {
+        if ($exam->status == 4 || $exam->status == 2 || $exam->status == 3) {
             $exam->update(['status' => 5]);
             if($exam->course) {
                 $exam->course->update(['status' => 'منتهية']);

@@ -64,6 +64,8 @@ class CirclesController extends Controller
                                 ->select('users.id')->subarea($sub_area_id,$area_id)
                                 ->get()->count();
 
+
+
         $mohafez_volunteer =  Circle::query()
                                 ->rightJoin('users', 'users.id', '=', 'circles.teacher_id')
                                 ->rightJoin('user_extra_data', 'user_extra_data.user_id', '=', 'circles.teacher_id')
@@ -94,20 +96,13 @@ class CirclesController extends Controller
 
 
 
-        $total_circlestudents_count =   User::department(3)->count();
+        $total_circlestudents_count =   User::department(3)->subarea($sub_area_id,$area_id)->count();
         $total_circlestudents_makfool = User::query()
                                                 ->department(3)
-                                                // ->leftJoin('circles', 'users.id', '=', 'circles.teacher_id')
-
                                                 ->rightJoin('user_extra_data', function($join){
                                                     $join->on('user_extra_data.user_id', '=', 'users.teacher_id');
                                                     $join->where('user_extra_data.contract_type' , '=', 'مكفول');
                                                 })
-
-
-                                                // ->rightJoin('user_extra_data', 'user_extra_data.user_id', '=', 'users.teacher_id')
-                                                // ->where('user_extra_data.contract_type' , '=', 'مكفول')
-                                                // ->groupBy('circles.id')
                                                 ->select('users.*')->subarea($sub_area_id,$area_id)
                                                 ->get()->count();
 
@@ -117,8 +112,6 @@ class CirclesController extends Controller
                                                     $join->on('user_extra_data.user_id', '=', 'users.teacher_id');
                                                     $join->where('user_extra_data.contract_type' , '=', 'متطوع');
                                                 })
-                                                // ->where('user_extra_data.contract_type' , '=', 'متطوع')
-                                                // ->groupBy('circles.id')
                                                 ->select('users.*')->subarea($sub_area_id,$area_id)
                                                 ->get()->count();
 

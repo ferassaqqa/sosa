@@ -183,11 +183,11 @@ class User extends Authenticatable
 
                 'area_father_name' => $this->area_father_name,
                 'area_name' => $this->area_name,
-                // 'area_supervisor'=>areaSupervisor($this->area_father_id_for_permissions),
-                // 'sub_area_supervisor'=>subAreaSupervisor($this->area_id_for_permissions),
+                'area_supervisor'=>areaSupervisor($this->area_father_id_for_permissions),
+                'sub_area_supervisor'=>subAreaSupervisor($this->area_id_for_permissions),
 
-                'supervisor' =>'الميداني: '.subAreaSupervisor($this->area_id_for_permissions).'<br>'
-                .'العام: '.areaSupervisor($this->area_father_id_for_permissions),
+                // 'supervisor' =>'الميداني: '.subAreaSupervisor($this->area_id_for_permissions).'<br>'
+                // .'العام: '.areaSupervisor($this->area_father_id_for_permissions),
 
                 'tools' => $tools
 
