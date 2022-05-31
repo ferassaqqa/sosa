@@ -237,15 +237,15 @@ class ExamsController extends Controller
     public function getNextExamsAppointments(){
         checkPermissionHelper('مواعيد الاختبارات');
         $areas = Area::whereNull('area_id')->get();
-        $exams = Exam::where('status', 1)
-            ->where('examable_type', 'App\Models\Course')
-            ->whereHas('examable', function ($query) {
-                $query->where('status', 'قائمة');
-            })
-//            ->withoutGlobalScope('relatedExams')
-            ->get();
+//         $exams = Exam::where('status', 1)
+//             ->where('examable_type', 'App\Models\Course')
+//             ->whereHas('examable', function ($query) {
+//                 $query->where('status', 'قائمة');
+//             })
+// //            ->withoutGlobalScope('relatedExams')
+//             ->get();
 //        dd($exams);
-        return view('control_panel.exams.getNextExamsAppointments', compact('exams', 'areas'));
+        return view('control_panel.exams.getNextExamsAppointments', compact('areas'));
     }
     public function getNextExamsAppointmentsData(Request $request){
 
@@ -262,30 +262,55 @@ class ExamsController extends Controller
         $area_id = (int)$request->area_id ? (int)$request->area_id : 0;
         $moallem_id = (int)$request->moallem_id ? (int)$request->moallem_id : 0;
         $book_id = (int)$request->book_id ? (int)$request->book_id : 0;
+
+        $startDate = $request->start_date ? $request->start_date : '';
+        $endDate = $request->end_date ? $request->end_date : '';
+
+
+
         $value = array();
 
         if (!empty($search)) {
             $count = Exam::where('status', 1)
+                ->orWhere('status', 0)
                 ->area($area_id)
                 ->search($search)
+                ->fromDate($startDate)
+                ->toDate($endDate)
                 ->count();
 
             $exams = Exam::where('status', 1)
+                ->orWhere('status', 0)
                 ->area($area_id)
+                ->fromDate($startDate)
+                ->toDate($endDate)
+                ->orderBy('id', 'DESC')
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                 ->get();
         } else {
             $count = Exam::where('status', 1)
                 ->area($area_id)
+                ->fromDate($startDate)
+                ->toDate($endDate)
+                ->orWhere('status', 0)                
                 ->count();
             $exams = Exam::where('status', 1)
+                ->orWhere('status', 0)
+                ->fromDate($startDate)
+                ->toDate($endDate)
                 ->area($area_id)
+                ->orderBy('id', 'DESC')
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                 ->get();
         }
         Exam::$counter = $start;
         foreach ($exams as $index => $item) {
+            $approveButton = hasPermissionHelper('تأكيد طلبات الحجز') ? '<button class="btn btn-success" onclick="approveExamAppointment(this,'.$item->id .')"><i class="mdi mdi-table"></i></button>' : '';
+            $removeButton = hasPermissionHelper('حذف طلبات مواعيد الاختبارات') ? '<button class="btn btn-danger" onclick="deleteExamAppointment(this,'.$item->id .')"><i class="mdi mdi-close"></i></button>' : '';
+
             Exam::$counter++;
+
+           
             array_push(
                 $value,
                 [
@@ -298,8 +323,9 @@ class ExamsController extends Controller
                     'course_area_name'=>$item->course_area_name,
                     'place_name'=>$item->place_name,
                     'quality_supervisors_string'=>$item->quality_supervisors_string,
-                    'date'=>$item->date . ' || '. Carbon::parse($item->time)->isoFormat('h:mm a'),
-                    'tools'=>$item->tools_for_next_exam_row
+                    'date'=> $item->date? GetFormatedDate($item->date) . ' || '. Carbon::parse($item->time)->isoFormat('h:mm a'):'',
+                    'tools'=>$approveButton.'&nbsp'.$removeButton
+
                 ]
             );
         }
@@ -478,7 +504,7 @@ class ExamsController extends Controller
         $selected_quality_supervisors = $exam->quality_supervisors_array;
         return view('control_panel.exams.approveExamAppointment',compact('exam','qualitySupervisors','selected_quality_supervisors'));
     }
-    public function updateExamAppointmentApprove(Exam $exam,$appointment,$date,$quality_supervisor_id,$time){
+    public function updateExamAppointmentApprove(Exam $exam,$appointment,$date,$quality_supervisor_id,$time,$notes){
 //        return [$exam,$appointment,$date,$quality_supervisor_id,$time];
         $quality_supervisor_ids = explode(',',$quality_supervisor_id);
 //        $quality_supervisors = $exam->quality_supervisors_array;
@@ -490,6 +516,7 @@ class ExamsController extends Controller
             'status'=>1,
             'time'=>$time,
             'date'=>$date,
+            'notes'=>$notes,
             'appointment'=>$appointment ? $appointment : '',
             'quality_supervisor_id'=>$quality_supervisor_ids,
         ]);

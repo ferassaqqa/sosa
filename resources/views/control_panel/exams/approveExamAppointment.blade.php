@@ -2,6 +2,8 @@
     .pointer{
         cursor: pointer;
     }
+
+  #date{ z-index: 999999; }
 </style>
 <div class="modal-header">
     <h5 class="modal-title" id="myLargeModalLabel" style="color: #000 !important;"> تأكيد حجز اختبار دورة - {{ $exam->course_book_name }} - للمعلم - {{$exam->course_name}}</h5>
@@ -36,7 +38,8 @@
                 </td>
                 <td>الملاحظات</td>
                 <td colspan="3">
-                    {{ $exam->notes }}
+                    <input type="text" name="notes" id="notes" class="form-control" value="{{ $exam->notes }}">
+                    {{-- {{ $exam->notes }} --}}
                 </td>
             </tr>
         </tbody>
@@ -135,10 +138,12 @@
         var appointment = document.getElementById('appointment').value ? document.getElementById('appointment').value : 0;
         var date = document.getElementById('date').value ? document.getElementById('date').value : 0;
         var time = document.getElementById('time').value ? document.getElementById('time').value : 0;
+        var notes = document.getElementById('notes').value ? document.getElementById('notes').value : 0;
+
         $('input[name="supervisor_id[]"]:checked').each(function(){
             superVisors.push($(this).val());
         });
-        $.get('/updateExamAppointmentApprove/{{ $exam->id }}/'+appointment+'/'+date+'/'+superVisors+'/'+time,function(data){
+        $.get('/updateExamAppointmentApprove/{{ $exam->id }}/'+appointment+'/'+date+'/'+superVisors+'/'+time+'/'+notes,function(data){
             document.querySelector('button[data-bs-dismiss="modal"]').click();
             // setTimeout(function(){
             $('#dataTable1').DataTable().ajax.reload();

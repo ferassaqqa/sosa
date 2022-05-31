@@ -451,7 +451,7 @@ Route::post('newCourseExamAppointment/{course}', [\App\Http\Controllers\controlP
 Route::get('getPendingExamRequests', [\App\Http\Controllers\controlPanel\ExamsController::class,'getPendingExamRequests']);
 Route::get('getPendingExamRequestsData', [\App\Http\Controllers\controlPanel\ExamsController::class,'getPendingExamRequestsData'])->name('exams.getPendingExamRequestsData');
 Route::get('approveExamAppointment/{exam}', [\App\Http\Controllers\controlPanel\ExamsController::class,'approveExamAppointment']);
-Route::get('updateExamAppointmentApprove/{exam}/{appointment}/{date}/{quality_supervisor_id}/{time}', [\App\Http\Controllers\controlPanel\ExamsController::class,'updateExamAppointmentApprove']);
+Route::get('updateExamAppointmentApprove/{exam}/{appointment}/{date}/{quality_supervisor_id}/{time}/{notes}', [\App\Http\Controllers\controlPanel\ExamsController::class,'updateExamAppointmentApprove']);
 Route::get('deleteExamQualitySupervisor/{exam}/{quality_supervisor_id}', [\App\Http\Controllers\controlPanel\ExamsController::class,'deleteExamQualitySupervisor']);
 Route::get('getNextExamsAppointments', [\App\Http\Controllers\controlPanel\ExamsController::class,'getNextExamsAppointments']);
 Route::get('getNextExamsAppointmentsData', [\App\Http\Controllers\controlPanel\ExamsController::class,'getNextExamsAppointmentsData'])->name('exams.getNextExamsAppointmentsData');

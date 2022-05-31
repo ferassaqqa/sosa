@@ -23,6 +23,30 @@
                             </select>
                             @endif
                         </div>
+                        @if(hasPermissionHelper('فلترة مواعيد الاختبارات'))
+
+                        <div class="col-md-3">
+                            <div class="input-group" id="datepicker2">
+                                <input  autocomplete="off" onchange="changeExams(this)" type="text" class="form-control" placeholder="من تاريخ"
+                                       name="start_date" value="" id="start_date"
+                                       data-date-format="yyyy-mm-dd" data-date-container='#datepicker2' data-provide="datepicker"
+                                       data-date-autoclose="true">
+                                <span class="input-group-text"><i class="mdi mdi-calendar"></i></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="input-group" id="datepicker3">
+                                <input  autocomplete="off" onchange="changeExams(this)" type="text" class="form-control" placeholder="الى تاريخ"
+                                       name="end_date" value="" id="end_date"
+                                       data-date-format="yyyy-mm-dd" data-date-container='#datepicker3' data-provide="datepicker"
+                                       data-date-autoclose="true">
+                                <span class="input-group-text"><i class="mdi mdi-calendar"></i></span>
+                            </div>
+                        </div>
+
+                        @endif
+
                     </div>
                 </div>
             </div>
@@ -120,7 +144,8 @@
     });
     @if(hasPermissionHelper('فلترة مواعيد الاختبارات'))
     function changeExams() {
-        var filters = '?area_id='+$('#area_id').val()+'&sub_area_id='+$('#sub_area_id').val()+'&moallem_id='+$('#moallem_id').val()+'&book_id='+$('#book_id').val();//+'&start_date='+$('#start_date').val()+'&end_date='+$('#end_date').val();
+        console.log($('#start_date').val());
+        var filters = '?area_id='+$('#area_id').val()+'&sub_area_id='+$('#sub_area_id').val()+'&moallem_id='+$('#moallem_id').val()+'&book_id='+$('#book_id').val()+'&start_date='+$('#start_date').val()+'&end_date='+$('#end_date').val();
         table.ajax.url(
             "/getNextExamsAppointmentsData"+filters
         ).load();
@@ -140,5 +165,11 @@
         });
     }
     @endif
+
+    function examAppointment(course_id){
+        $.get('/getCourseExamAppointment/'+course_id,function (data) {
+            $('#modal_content').empty().html(data);
+        });
+    }
 </script>
 @endsection

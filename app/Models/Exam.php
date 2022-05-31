@@ -319,6 +319,22 @@ class Exam extends Model
             return $query;
         }
     }
+    public function scopeFromDate($query,$from_date){
+
+        // echo $from_date; exit;
+        if($from_date) {           
+                return $query->whereDate('date','>=',$from_date);        
+        }else{
+            return $query;
+        }
+    }
+    public function scopeToDate($query,$to_date){
+        if($to_date) {           
+                return $query->whereDate('date','<=',$to_date);        
+        }else{
+            return $query;
+        }
+    }
     public function scopeQualityIncluded($query,$user_id){
 //        dd($user_id);
 //        $supervisors = $this->quality_supervisors_array;
