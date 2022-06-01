@@ -37,6 +37,8 @@ class CoursesController extends Controller
     }
     public function getSubAreaTeachers($area_id)
     {
+
+
         $result = array();
         $moallems = User::department(2)->subarea($area_id,0)->get();
         $moallem_list = '<option value="0">اختر المعلم</option>';

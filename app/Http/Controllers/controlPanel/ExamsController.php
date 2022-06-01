@@ -237,6 +237,21 @@ class ExamsController extends Controller
     public function getNextExamsAppointments(){
         checkPermissionHelper('مواعيد الاختبارات');
         $areas = Area::whereNull('area_id')->get();
+
+        $moallems = User::department(2)->whereHas('teacherCourses',function($query){
+            $query->whereHas('exam',function($query){
+                $query->where('status', 0);
+                $query->orWhere('status', 1);
+            });
+        })->get();
+        $books = Book::department(2)->whereHas('courses',function($query){
+            $query->whereHas('exam',function($query){
+                $query->where('status', 0);
+                $query->orWhere('status', 1);
+            });
+        })->where('year',Carbon::now()->format('Y'))->get();
+
+
 //         $exams = Exam::where('status', 1)
 //             ->where('examable_type', 'App\Models\Course')
 //             ->whereHas('examable', function ($query) {
@@ -245,7 +260,7 @@ class ExamsController extends Controller
 // //            ->withoutGlobalScope('relatedExams')
 //             ->get();
 //        dd($exams);
-        return view('control_panel.exams.getNextExamsAppointments', compact('areas'));
+        return view('control_panel.exams.getNextExamsAppointments', compact('areas','books','moallems'));
     }
     public function getNextExamsAppointmentsData(Request $request){
 
@@ -266,6 +281,9 @@ class ExamsController extends Controller
         $startDate = $request->start_date ? $request->start_date : '';
         $endDate = $request->end_date ? $request->end_date : '';
 
+        $place_area = $request->place_area ? $request->place_area : 0;
+
+        // echo $sub_area_id; exit;
 
 
         $value = array();
@@ -273,44 +291,55 @@ class ExamsController extends Controller
         if (!empty($search)) {
             $count = Exam::where('status', 1)
                 ->orWhere('status', 0)
-                ->area($area_id)
+                ->subarea($sub_area_id, $area_id)
+                ->placearea($place_area)
                 ->search($search)
                 ->fromDate($startDate)
                 ->toDate($endDate)
+                ->moallem($moallem_id)
+                ->book($book_id)
                 ->count();
 
             $exams = Exam::where('status', 1)
                 ->orWhere('status', 0)
-                ->area($area_id)
+                ->subarea($sub_area_id, $area_id)
+                ->placearea($place_area)
                 ->fromDate($startDate)
                 ->toDate($endDate)
+                ->moallem($moallem_id)
+                ->book($book_id)
                 ->orderBy('id', 'DESC')
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                 ->get();
         } else {
             $count = Exam::where('status', 1)
-                ->area($area_id)
+                ->subarea($sub_area_id, $area_id)
                 ->fromDate($startDate)
+                ->placearea($place_area)
                 ->toDate($endDate)
-                ->orWhere('status', 0)                
+                ->orWhere('status', 0)
+                ->moallem($moallem_id)
+                ->book($book_id)
                 ->count();
             $exams = Exam::where('status', 1)
                 ->orWhere('status', 0)
                 ->fromDate($startDate)
+                ->placearea($place_area)
                 ->toDate($endDate)
-                ->area($area_id)
+                ->moallem($moallem_id)
+                ->book($book_id)
+                ->subarea($sub_area_id, $area_id)
                 ->orderBy('id', 'DESC')
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                 ->get();
         }
         Exam::$counter = $start;
+        Carbon::setLocale('ar');
         foreach ($exams as $index => $item) {
             $approveButton = hasPermissionHelper('تأكيد طلبات الحجز') ? '<button class="btn btn-success" onclick="approveExamAppointment(this,'.$item->id .')"><i class="mdi mdi-table"></i></button>' : '';
             $removeButton = hasPermissionHelper('حذف طلبات مواعيد الاختبارات') ? '<button class="btn btn-danger" onclick="deleteExamAppointment(this,'.$item->id .')"><i class="mdi mdi-close"></i></button>' : '';
 
             Exam::$counter++;
-
-           
             array_push(
                 $value,
                 [
@@ -319,11 +348,13 @@ class ExamsController extends Controller
                     'students_count'=>$item->students_count,
                     'course_name'=>$item->course_name,
                     'teacher_mobile'=>$item->teacher_mobile,
-                    'course_area_father_name'=>$item->course_area_father_name,
-                    'course_area_name'=>$item->course_area_name,
-                    'place_name'=>$item->place_name,
+                    // 'course_area_father_name'=>$item->course_area_father_name,
+                    // 'course_area_name'=>$item->course_area_name,
+                    'area' => $item->course_area_father_name.' - '.$item->course_area_name,
                     'quality_supervisors_string'=>$item->quality_supervisors_string,
-                    'date'=> $item->date? GetFormatedDate($item->date) . ' || '. Carbon::parse($item->time)->isoFormat('h:mm a'):'',
+                    'place_name'=>$item->place_name,
+
+                    'date'=> $item->date? GetFormatedDate($item->date) . ' الساعة '. Carbon::parse($item->time)->isoFormat('h:mm a'):'',
                     'tools'=>$approveButton.'&nbsp'.$removeButton
 
                 ]

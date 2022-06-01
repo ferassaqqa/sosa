@@ -21,7 +21,7 @@ class AsaneedCoursesController extends Controller
     public function index()
     {
         $areas = Area::whereNull('area_id')->get();
-        $statuses = '<select id="filterCoursesByStatus" onchange="updateDateTable()" class="form-control"> 
+        $statuses = '<select id="filterCoursesByStatus" onchange="updateDateTable()" class="form-control">
                         <option value="0">الكل</option>
                         <option value="انتظار الموافقة">انتظار الموافقة</option>
                         <option value="قائمة">قائمة</option>

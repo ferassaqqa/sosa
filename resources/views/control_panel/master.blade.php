@@ -493,21 +493,21 @@
                             <div class="dropdown-menu dropdown-menu-end">
                             @if(hasPermissionHelper('حجز موعد اختبار'))
                                 <!-- item-->
-                                    <a class="dropdown-item" onclick="selectExamType()" style="cursor: pointer;">
+                                    <a class="dropdown-item" onclick="selectExamType()" style="cursor: pointer; display: none;">
                                         حجز موعد اختبار
                                     </a>
                             @endif
                             @if(hasPermissionHelper('طلبات حجز مواعيد الاختبارات'))
                                 <!-- item-->
                                     <a class="dropdown-item" onclick="getPendingExamRequests()"
-                                       style="cursor: pointer;">
+                                       style="cursor: pointer;  display: none;">
                                         طلبات حجز مواعيد الاختبارات
                                     </a>
                                 @endif
                                 @if(hasPermissionHelper('مواعيد الاختبارات'))
                                     <a class="dropdown-item" onclick="getNextExamsAppointments()"
                                        style="cursor: pointer;">
-                                        مواعيد الاختبارات
+                                        طلبات حجز ومواعيد الاختبارات
                                     </a>
                                 @endif
                                 @if(hasPermissionHelper('ادخال الدرجات'))
