@@ -3,6 +3,12 @@
     .swal2-actions{
         z-index: 0 !important;
     }
+
+    .table_label {
+        color: #343a40;
+        /* font-weight: 600; */
+        background-color: #ced4da !important;
+    }
 </style>
 
 <div class="modal-header">
@@ -14,6 +20,47 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
+
+
+                <table border="1" width="100%" class="ui compact selectable striped celled table data-table nomargin" dir="rtl" style="margin-top: 0px;" data-time="">
+                    <tbody>
+                        <tr>
+                            <td class="dark-th normal-bg table_label">اسم المحفظ</td>
+                            <td class="white-bg print-white" style="background-color: #fff;">{{ $circle->teacher_name }}</td>
+
+                            <td class="dark-th normal-bg table_label">رقم الهوية</td>
+                            <td class="white-bg print-white" style="background-color: #fff;">{{ $teacher->id_num }}</td>
+
+                            <td class="dark-th normal-bg table_label">رقم الجوال</td>
+                            <td class="white-bg print-white" style="background-color: #fff;">{{ $circle->teacher_mobile }}</td>
+
+                            <td class="dark-th normal-bg table_label">نوع الحلقة</td>
+                            <td class="white-bg print-white" style="background-color: #fff;">{{ $circle->contract_type }}</td>
+                        </tr>
+
+                        <tr>
+
+                            <td class="dark-th normal-bg table_label">عدد الطلاب</td>
+                            <td class="white-bg print-white" style="background-color: #fff;">{{ $circle->teacher->students->count() }}</td>
+
+                            <td class="dark-th normal-bg table_label">المسجد</td>
+                            <td class="white-bg print-white" style="background-color: #fff;">{{ $circle->place_name }}</td>
+
+                            <td class="dark-th normal-bg table_label">المنطقة الكبرى والمحلية</td>
+                            <td class="white-bg print-white" style="background-color: #fff;">{{ $circle->place->area_father_name}} - {{ $circle->sub_area_name }}</td>
+
+                            <td class="dark-th normal-bg table_label">المشرف العام</td>
+                            <td class="white-bg print-white" style="background-color: #fff;">{{ areaSupervisor($circle->area_father_id) }}</td>
+                        </tr>
+
+
+                    </tbody>
+                </table>
+
+
+
+
+
                 {{--<h4 class="card-title mb-4" style="display: inline-block;"> </h4>--}}
                 <div class="dropdown d-inline-block user-dropdown mb-3">
                     <button class="btn btn-primary"  onclick="createCircleMonthlyReports()">

@@ -2,6 +2,15 @@
 
 @section('style')
     <link href="{{ asset('control_panel/assets/css/datatable.css') }}" rel="stylesheet" type="text/css" />
+
+    <style>
+        .dataTables_filter{
+            float: left !important;
+            margin-left: 45px;
+        }
+    </style>
+
+
 @endsection
 @section('title')
     <title>برنامج السنة | مواعيد الاختبارات</title>
@@ -31,7 +40,7 @@
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <select id="moallem_id" onchange="changeExams()" class="form-control select2">
+                                <select id="moallem_id"  class="form-control select2">
                                     <option value="0">المعلم</option>
                                     @foreach ($moallems as $key => $moallem)
                                         <option value="{{ $moallem->id }}">{{ $moallem->name }}</option>
@@ -39,7 +48,7 @@
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <select class="form-control select2" id="place_area" onchange="changeExams(this)">
+                                <select class="form-control select2" id="place_area" >
                                     <option value="0">اختر مكان الدورة</option>
                                 </select>
                             </div>
@@ -50,7 +59,7 @@
                         <div class=" row" style="margin-top: 15px; ">
 
                             <div class="col-md-3">
-                                <select id="book_id" onchange="changeExams()" class="form-control select2">
+                                <select id="book_id"  class="form-control select2">
                                     <option value="0">الكتاب</option>
                                     @foreach ($books as $key => $book)
                                         <option value="{{ $book->id }}">{{ $book->name }}</option>
@@ -59,7 +68,7 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="input-group" id="datepicker2">
-                                    <input autocomplete="off" onchange="changeExams(this)" type="text"
+                                    <input autocomplete="off"  type="text"
                                         class="form-control" placeholder="من تاريخ" name="start_date" value=""
                                         id="start_date" data-date-format="yyyy-mm-dd" data-date-container='#datepicker2'
                                         data-provide="datepicker" data-date-autoclose="true">
@@ -69,12 +78,19 @@
 
                             <div class="col-md-3">
                                 <div class="input-group" id="datepicker3">
-                                    <input autocomplete="off" onchange="changeExams(this)" type="text"
+                                    <input autocomplete="off"  type="text"
                                         class="form-control" placeholder="الى تاريخ" name="end_date" value=""
                                         id="end_date" data-date-format="yyyy-mm-dd" data-date-container='#datepicker3'
                                         data-provide="datepicker" data-date-autoclose="true">
                                     <span class="input-group-text"><i class="mdi mdi-calendar"></i></span>
                                 </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <button type="button" style="width:100%" onclick="changeExams()" class="btn btn-primary btn-block">
+                                    <i class="mdi mdi-magnify" aria-hidden="true"></i>
+                                    بحث
+                                </button>
                             </div>
                         </div>
                     @endif
@@ -121,6 +137,8 @@
     </div>
 @endsection
 
+
+
 {{-- <div class="modal-footer"> --}}
 {{-- <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">إلغاء</button> --}}
 {{-- <button type="submit" form="form" class="btn btn-primary waves-effect waves-light">حفظ</button> --}}
@@ -141,9 +159,10 @@
                 // "scrollX":true,
                 "ajax": "{{ route('exams.getNextExamsAppointmentsData') }}",
                 language: {
-                    search: "بحث",
+                    search: "",
+                    searchPlaceholder:'بحث سريع',
                     processing: "جاري معالجة البيانات",
-                    lengthMenu: "عدد _MENU_ الصفوف",
+                    lengthMenu: " _MENU_ ",
                     info: "من _START_ الى _END_ من أصل _TOTAL_ صفحة",
                     infoEmpty: "لا يوجد بيانات",
                     loadingRecords: "يتم تحميل البيانات",
@@ -287,10 +306,10 @@
                     $.get('/getSubAreas/' + obj.value, function(data) {
                         $('#pending_exams_sub_areas_select').empty().html(data);
                     });
-                    changeExams();
+                    // changeExams();
                 } else {
                     $('#pending_exams_sub_areas_select').empty().html('<option value="0">اختر المنطقة المحلية</option>');
-                    changeExams();
+                    // changeExams();
                 }
             }
 
@@ -301,11 +320,11 @@
                         $('#moallem_id').empty().html(data[0]);
                         $('#place_area').empty().html(data[1]);
                     });
-                    changeExams();
+                    // changeExams();
                 } else {
                     $('#moallem_id').empty().html('<option value="0">اختر المعلم</option>');
                     $('#place_area').empty().html('<option value="0">اختر مكان الدورة</option>');
-                    changeExams();
+                    // changeExams();
                 }
             }
 

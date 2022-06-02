@@ -15,7 +15,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class Circle extends Model
 {
     use HasFactory,LogsActivity;
-    protected $fillable = ['start_date','place_id','teacher_id','supervisor_id','notes','status'];
+    protected $fillable = ['start_date','place_id','teacher_id','supervisor_id','notes','status','contract_type'];
     public function getCircleDisplayDataAttribute(){
         return [
             'id'                    =>$this->id,
@@ -25,14 +25,14 @@ class Circle extends Model
             'area_father_name'      => $this->place ? $this->place->area_father_name : 0,
             'area_name'             => $this->place ? $this->place->area_name : 0,
             'id_num'                => $this->teacher ? $this->teacher->id_num : '',
-            'contract_type'           => $this->teacher ? $this->teacher->userExtraData->contract_type : '',
+            'contract_type'           => $this->contract_type ? $this->contract_type : '',
             'supervisor_name'       =>subAreaSupervisor($this->area_id_for_permissions),
             'area_supervisor_name'  =>areaSupervisor($this->area_father_id_for_permissions),
             'StatusSelect'          =>$this->status_select,
             'tools'                 =>'
                         <div class="mb-1"><button type="button" class="btn btn-info" title="التقارير الشهرية" data-url="'.route('circleMonthlyReports.getCircleMonthlyReports',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')"><i class="mdi mdi-file-plus"></i></button>
                         <button type="button" class="btn btn-primary" title="طلاب الحلقة" data-url="'.route('circles.students',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')"><i class="mdi mdi-account-multiple"></i></button></div>
-                        <div><button type="button" class="btn btn-warning" title="تعديل" data-url="'.route('circles.edit',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')"><i class="mdi mdi-comment-edit"></i></button>
+                        <div><button type="button" class="btn btn-warning" title="تعديل" data-url="'.route('circles.edit',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-x2" onclick="callApi(this,\'user_modal_content_new\')"><i class="mdi mdi-comment-edit"></i></button>
                         <button type="button" class="btn btn-danger" title="حذف" data-url="'.route('circles.destroy',$this->id).'" onclick="deleteItem(this)"><i class="mdi mdi-trash-can"></i></button></div>
                     '
         ];
@@ -246,6 +246,21 @@ class Circle extends Model
             });
         } else{
             return $query;
+        }
+    }
+
+    public function scopeDepartment($query,$department)
+    {
+        switch ($department){
+            case 0 : {return $query;}break;
+            case 1 : {return $query->role('محفظ');}break;
+            case 2 : {return $query->role('معلم');}break;
+            case 3 : {return $query->role('طالب تحفيظ');}break;
+            case 4 : {return $query->role('طالب دورات علمية');}break;
+            case 5 : {return $query->role('مشرف جودة');}break;
+            case 6 : {return $query->role('مشرف ميداني');}break;
+            case 7 : {return $query->role('شيخ اسناد');}break;
+            case 8 : {return $query->role('طالب دورات أسانيد وإجازات');}break;
         }
     }
 

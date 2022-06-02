@@ -58,8 +58,8 @@ class CirclesController extends Controller
 
         $mohafez_makfool =    Circle::query()
                                 ->rightJoin('users', 'users.id', '=', 'circles.teacher_id')
-                                ->rightJoin('user_extra_data', 'user_extra_data.user_id', '=', 'circles.teacher_id')
-                                ->where('user_extra_data.contract_type' , '=', 'مكفول')
+                                // ->rightJoin('user_extra_data', 'user_extra_data.user_id', '=', 'circles.teacher_id')
+                                ->where('circles.contract_type' , '=', 'مكفول')
                                 ->groupBy('users.id')
                                 ->select('users.id')->subarea($sub_area_id,$area_id)
                                 ->get()->count();
@@ -68,8 +68,8 @@ class CirclesController extends Controller
 
         $mohafez_volunteer =  Circle::query()
                                 ->rightJoin('users', 'users.id', '=', 'circles.teacher_id')
-                                ->rightJoin('user_extra_data', 'user_extra_data.user_id', '=', 'circles.teacher_id')
-                                ->where('user_extra_data.contract_type' , '=', 'متطوع')
+                                // ->rightJoin('user_extra_data', 'user_extra_data.user_id', '=', 'circles.teacher_id')
+                                ->where('circles.contract_type' , '=', 'متطوع')
                                 ->groupBy('users.id')
                                 ->select('users.id')->subarea($sub_area_id,$area_id)
                                 ->get()->count();
@@ -78,8 +78,8 @@ class CirclesController extends Controller
 
         $circle_volunteer = Circle::query()
                                 ->leftJoin('users', 'users.id', '=', 'circles.teacher_id')
-                                ->leftJoin('user_extra_data', 'user_extra_data.user_id', '=', 'circles.teacher_id')
-                                ->where('user_extra_data.contract_type' , '=', 'متطوع')
+                                // ->leftJoin('user_extra_data', 'user_extra_data.user_id', '=', 'circles.teacher_id')
+                                ->where('circles.contract_type' , '=', 'متطوع')
                                 ->groupBy('circles.id')
                                 ->select('users.id')->subarea($sub_area_id,$area_id)
                                 ->get()->count();
@@ -87,8 +87,8 @@ class CirclesController extends Controller
 
         $circle_makfool = Circle::query()
                                 ->leftJoin('users', 'users.id', '=', 'circles.teacher_id')
-                                ->leftJoin('user_extra_data', 'user_extra_data.user_id', '=', 'circles.teacher_id')
-                                ->where('user_extra_data.contract_type' , '=', 'مكفول')
+                                // ->leftJoin('user_extra_data', 'user_extra_data.user_id', '=', 'circles.teacher_id')
+                                ->where('circles.contract_type' , '=', 'مكفول')
                                 ->groupBy('circles.id')
                                 ->select('users.id')->subarea($sub_area_id,$area_id)
                                 ->get()->count();
@@ -97,23 +97,30 @@ class CirclesController extends Controller
 
 
         $total_circlestudents_count =   User::department(3)->subarea($sub_area_id,$area_id)->count();
-        $total_circlestudents_makfool = User::query()
-                                                ->department(3)
-                                                ->rightJoin('user_extra_data', function($join){
-                                                    $join->on('user_extra_data.user_id', '=', 'users.teacher_id');
-                                                    $join->where('user_extra_data.contract_type' , '=', 'مكفول');
-                                                })
-                                                ->select('users.*')->subarea($sub_area_id,$area_id)
-                                                ->get()->count();
+        $total_circlestudents_makfool = Circle::query()
+                                        ->rightJoin('users', 'users.id', '=', 'circles.teacher_id')
+                                        // ->rightJoin('user_extra_data', 'user_extra_data.user_id', '=', 'circles.teacher_id')
+                                        ->where('circles.contract_type' , '=', 'مكفول')
 
-        $total_circlestudents_volunteer =  User::query()
-                                                ->department(3)
-                                                ->rightJoin('user_extra_data', function($join){
-                                                    $join->on('user_extra_data.user_id', '=', 'users.teacher_id');
-                                                    $join->where('user_extra_data.contract_type' , '=', 'متطوع');
-                                                })
-                                                ->select('users.*')->subarea($sub_area_id,$area_id)
-                                                ->get()->count();
+                                        ->groupBy('users.id')
+                                        ->select('users.id')->subarea($sub_area_id,$area_id)
+                                        ->get()->count();
+
+        $total_circlestudents_volunteer = Circle::query()
+                                            ->rightJoin('users', 'users.id', '=', 'circles.teacher_id')
+                                            ->where('circles.contract_type' , '=', 'متطوع')
+                                            ->groupBy('users.id')
+                                            ->select('users.id')->subarea($sub_area_id,$area_id)
+                                            ->get()->count();
+
+        // Circle::query()
+        //                                     ->rightJoin('users', 'users.id', '=', 'circles.teacher_id')
+        //                                     // ->rightJoin('user_extra_data', 'user_extra_data.user_id', '=', 'circles.teacher_id')
+        //                                     ->where('circles.contract_type' , '=', 'متطوع')
+
+        //                                     ->groupBy('users.id')
+        //                                     ->select('users.id')->subarea($sub_area_id,$area_id)
+        //                                     ->get()->count();
 
 
 
@@ -124,12 +131,14 @@ class CirclesController extends Controller
                 ->count();
             $circles = Circle::search($search)
                 ->subarea($sub_area_id,$area_id)
-                ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
+                ->orderBy('id', 'DESC')
+                ->limit($length)->offset($start)
                 ->get();
         } else {
             $count = Circle::subarea($sub_area_id,$area_id)->count();
-            $circles = Circle::limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
+            $circles = Circle::limit($length)->offset($start)
                 ->subarea($sub_area_id,$area_id)
+                ->orderBy('id', 'DESC')
                 ->get();
         }
         foreach ($circles as $index => $item){
@@ -176,7 +185,7 @@ class CirclesController extends Controller
      */
     public function store(newCircleRequest $request)
     {
-        $circle = Circle::create($request->only('start_date','place_id','teacher_id','supervisor_id','notes'));
+        $circle = Circle::create($request->only('start_date','place_id','teacher_id','supervisor_id','notes','contract_type'));
         return response()->json(['msg'=>'تم اضافة حلقة جديدة','title'=>'اضافة','type'=>'success']);
     }
 
@@ -218,7 +227,7 @@ class CirclesController extends Controller
      */
     public function update(updateCircleRequest $request, Circle $circle)
     {
-        $circle->update($request->only('start_date','place_id','teacher_id','supervisor_id','notes'));
+        $circle->update($request->only('start_date','place_id','teacher_id','supervisor_id','notes','contract_type'));
         return response()->json(['msg'=>'تم تعديل بيانات الحلقة بنجاح','title'=>'تعديل','type'=>'success']);
     }
 

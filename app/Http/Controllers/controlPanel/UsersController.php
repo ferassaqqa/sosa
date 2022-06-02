@@ -359,6 +359,7 @@ class UsersController extends Controller
             $area = Area::where('area_supervisor_id', $user->id)->orWhere('sub_area_supervisor_id', $user->id)->first();
             if ($area) {
                 $area->update(['area_supervisor_id' => null, 'sub_area_supervisor_id' => null]);
+                $user->update(['place_id' => null]);
             }
 //            $user->delete();
         }else {

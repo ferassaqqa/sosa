@@ -124,9 +124,9 @@
                     {{-- <h4 class="card-title mb-4" style="display: inline-block;">حلقات التحفيظ</h4> --}}
                     <div class="row mb-3">
                         <div class="col-md-2">
-                            <button class="btn btn-primary" onclick="callApi(this,'user_modal_content')"
+                            <button class="btn btn-primary" onclick="callApi(this,'user_modal_content_new')"
                                 data-url="{{ route('circles.create') }}" data-bs-toggle="modal"
-                                data-bs-target=".bs-example-modal-xl" style="width: 207px;">
+                                data-bs-target=".bs-example-modal-x2" style="width: 207px;">
                                 <i class="mdi mdi-plus"></i>
                                 اضافة حلقة جديدة
                             </button>
