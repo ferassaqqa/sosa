@@ -65,6 +65,10 @@
 <input type="hidden" name="id" value="{{ $user->id }}">
 
 <script>
+$( document ).ready(function() {
+    $('#role_id').change();
+});
+
     $('select[name="area_id"]').on('change', function() {
         var area_id = $(this).val();
         $.get('/getSubAreas/'+area_id,function(data){
