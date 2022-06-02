@@ -50,7 +50,7 @@
             <tr id="area_tr">
             {!! $areas !!}
             <td class="center-align" id="sub_area_label" colspan="2" style="background-color: #f9fafb;display:none;">المنطقة المحلية:</td>
-            <td colspan="2" id="sub_area_select" style="display:{{}};">
+            <td colspan="2" id="sub_area_select" style="display:none;">
                 <select class="form-control" name="sub_area_id">
                     @if(isset($sub_areas))
                         {!! $sub_areas !!}
