@@ -49,10 +49,10 @@
         div.dataTables_wrapper div.dataTables_processing {
             top: 5%;
         }
-
         .dataTables_wrapper {
-            margin-top: -50px;
+            margin-top: -35px;
         }
+
 
     </style>
 
@@ -91,16 +91,28 @@
                                     </td>
                                 </tr>
 
+                                <tr>
+                                   <td>عدد المحفظين المكفولين</td>
+                                   <td>عدد المحفظين المتطوعين</td>
+
+                                   <td>عدد الحلقات المكفولة</td>
+                                   <td>عدد الحلقات المتطوعة </td>
+
+                                   <td>عدد الطلاب المكفولين</td>
+                                   <td>عدد الطلاب المتطوعين</td>
+
+                                </tr>
+
                                 <tr class="value">
 
-                                    <td>عدد المحفظين المكفولين <div id="mohafez_makfool"></div></td>
-                                    <td>عدد المحفظين المتطوعين <div id="mohafez_volunteer"></div></td>
+                                    <td id="mohafez_makfool"></td>
+                                    <td id="mohafez_volunteer"></td>
 
-                                    <td>عدد الحلقات المكفولة <div id="circle_makfool"></div></td>
-                                    <td>عدد الحلقات المتطوعة <div id="circle_volunteer"></div></td>
+                                    <td id="circle_makfool"></td>
+                                    <td id="circle_volunteer"></td>
 
-                                    <td>عدد الطلاب المكفولين <div id="total_circlestudents_makfool"></div></td>
-                                    <td>عدد الطلاب المتطوعين <div  id="total_circlestudents_volunteer"></div></td>
+                                    <td id="total_circlestudents_makfool"></td>
+                                    <td id="total_circlestudents_volunteer"></td>
 
 
                                 </tr>
@@ -116,22 +128,17 @@
             </div>
         </div>
 
-
-
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-body">
-                    {{-- <h4 class="card-title mb-4" style="display: inline-block;">حلقات التحفيظ</h4> --}}
+
+
+
                     <div class="row mb-3">
-                        <div class="col-md-2">
-                            <button class="btn btn-primary" onclick="callApi(this,'user_modal_content_new')"
-                                data-url="{{ route('circles.create') }}" data-bs-toggle="modal"
-                                data-bs-target=".bs-example-modal-x2" style="width: 207px;">
-                                <i class="mdi mdi-plus"></i>
-                                اضافة حلقة جديدة
-                            </button>
-                        </div>
-                        <div class="col-md-3">
+
+                        {{-- <div class="col-md-2"></div> --}}
+
+                        <div class="col-md-4">
                             <select class="form-control" onchange="getSubAreas(this)" id="areas_select">
                                 <option value="0">اختر المنطقة الكبرى</option>
                                 @foreach ($areas as $area)
@@ -139,11 +146,75 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-3">
-                            <select class="form-control" id="sub_areas_select" onchange="updateDateTable()">
+                        <div class="col-md-4">
+                            <select class="form-control" id="sub_areas_select"  onchange="getSubAreaTeachers(this)">
                                 <option value="0">اختر المنطقة المحلية</option>
                             </select>
                         </div>
+
+                        <div class="col-md-4">
+                            <select class="form-control" id="teachers_select"  >
+                                <option value="0">المعلم</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+
+
+
+                    <div class="row mb-3">
+
+                        {{-- <div class="col-md-2"></div> --}}
+
+                        <div class="col-md-4">
+                            <select class="form-control" id="circle_type_select" >
+                                <option value="">نوع الحلقة</option>
+
+                                <option value="مكفول">مكفول</option>
+                                <option value="متطوع">متطوع</option>
+
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-control" id="circle_status_select" >
+                                <option value="">حالة الحلقة</option>
+                                <option  value="انتظار الموافقة">انتظار الموافقة</option>
+                                <option  value="قائمة">قائمة</option>
+                                <option value="معلقة">معلقة</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="button" style="width:100%" onclick="updateDateTable()" class="btn btn-primary btn-block">
+                                <i class="mdi mdi-magnify" aria-hidden="true"></i>
+                                بحث
+                            </button>
+                        </div>
+                    </div>
+
+
+
+
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    {{-- <h4 class="card-title mb-4" style="display: inline-block;">حلقات التحفيظ</h4> --}}
+
+
+                    <div class="col-md-2">
+                        <button class="btn btn-primary  btn-block" onclick="callApi(this,'user_modal_content_new')"
+                            data-url="{{ route('circles.create') }}" data-bs-toggle="modal"
+                            data-bs-target=".bs-example-modal-x2" style="width: 207px;">
+                            <i class="mdi mdi-plus"></i>
+                            اضافة حلقة جديدة
+                        </button>
                     </div>
 
                     <div class="">
@@ -194,7 +265,7 @@
                 "ajax": "{{ route('circles.getData') }}",
                 language: {
                     search: "",
-                    searchPlaceholder: "بحث",
+                    searchPlaceholder: "بحث سريع",
                     processing: "<span style='background-color: #0a9e87;color: #fff;padding: 25px;'>انتظر من فضلك ، جار جلب البيانات ...</span>",
                     lengthMenu: " _MENU_ ",
                     info: "من _START_ الى _END_ من أصل _TOTAL_ صفحة",
@@ -302,21 +373,39 @@
             });
         });
 
+        function getSubAreaTeachers(obj) {
+                if(obj.value != 0) {
+                    $.get('/getSubAreaCircleTeachers/'+obj.value, function (data) {
+                        $('#teachers_select').empty().html(data[0]);
+                        // $('#place_area').empty().html(data[1]);
+                    });
+                    // updateDateTable();
+                }else{
+                    $('#teachers_select').empty().html('<option value="0">اختر المعلم</option>');
+                    // $('#place_area').empty().html('<option value="0">اختر مكان الدورة</option>');
+                    // updateDateTable();
+                }
+            }
+
         function getSubAreas(obj) {
             if (obj.value != 0) {
                 $.get('/getSubAreas/' + obj.value, function(data) {
                     $('#sub_areas_select').empty().html(data);
                 });
-                updateDateTable();
+                // updateDateTable();
             } else {
                 $('#sub_areas_select').empty().html('<option value="0">اختر المنطقة المحلية</option>');
-                updateDateTable();
+                // updateDateTable();
             }
         }
 
         function updateDateTable() {
             table.ajax.url(
-                "/getCirclesDate?sub_area_id=" + $('#sub_areas_select').val() + '&area_id=' + $('#areas_select').val()
+                "/getCirclesDate?sub_area_id=" + $('#sub_areas_select').val()
+                + '&area_id=' + $('#areas_select').val()
+                + '&teacher_id=' + $('#teachers_select').val()
+                + '&circle_type=' + $('#circle_type_select').val()
+                + '&circle_status=' + $('#circle_status_select').val()
             ).load();
         }
 

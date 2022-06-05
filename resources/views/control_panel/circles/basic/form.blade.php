@@ -72,27 +72,33 @@
     </div>
 </div>
 
-<div class="mb-3 row">
+{{-- <div class="mb-3 row">
     <label for="supervisor_id" class="col-md-3 col-form-label">نوع الحلقة:</label>
-    <div class="col-md-3">
-        <input class="form-check-input" type="radio" name="contract_type"
+    <div class="col-md-3" style="padding: 10px;">
+
+        <input class="form-check-input" type="checkbox" name="contract_type"
             @if (isset($circle->contract_type) && $circle->contract_type == 'مكفول') checked @endif id="exampleRadios61" value="مكفول">
-        <label class="form-check-label" for="exampleRadios61">
+        <label class="form-check-label" for="exampleRadios61" style="margin-left: 22px;">
             مكفول
         </label>
 
-        <input class="form-check-input" type="radio" name="contract_type"
+
+
+
+        <input class="form-check-input" type="checkbox" name="contract_type"
             @if (isset($circle->contract_type) && $circle->contract_type == 'متطوع') checked @endif id="exampleRadios62" value="متطوع">
         <label class="form-check-label" for="exampleRadios62">
             متطوع
         </label>
+
+
     </div>
-    {{-- <label for="included_in_plan" class="col-md-2 col-form-label">قيمة الكفالة:</label>
+    <label for="included_in_plan" class="col-md-2 col-form-label">قيمة الكفالة:</label>
     <div class="col-md-4">
         <input type="text" class="form-control" placeholder="قيمة الكفالة" name="contract_type_value"
         value="{{ old('contract_type_value', isset($circle->contract_type_value) ? $circle->contract_type_value : '') }}">
-    </div> --}}
-</div>
+    </div>
+</div> --}}
 
 <div class="mb-3 row">
     <label for="supervisor_id" class="col-md-3 col-form-label">ملاحظات:</label>
@@ -101,10 +107,19 @@
     </div>
 </div>
 
-
+<style>
+    .form-check-input[type="checkbox"] {
+        font-size: 20px;
+    }
+</style>
 
 
 <script>
+
+$('input[type="checkbox"]').on('change', function() {
+   $('input[type="checkbox"]').not(this).prop('checked', false);
+});
+
     $('select[name="area_id"]').on('change', function() {
         // console.log($(this).val(),$(this)[0][$(this)[0].selectedIndex]);
         var area_id = $(this).val();

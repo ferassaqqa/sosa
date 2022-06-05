@@ -139,71 +139,87 @@
             </div>
         </div>
 
+
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    @if (hasPermissionHelper('فلترة طلاب الدورات'))
+                    <div class="row mb-3">
+
+                        <div class="col-md-4">
+                            <div class="form-group" style="padding-bottom: 20px;">
+                                <select class="form-control " onchange="getSubAreas(this)" id="areas_select">
+                                    <option value="0">اختر المنطقة الكبرى</option>
+                                    @foreach ($areas as $area)
+                                        <option value="{{ $area->id }}">{{ $area->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <select class="form-control " id="sub_areas_select"
+                                    onchange="getSubAreaTeachers(this)">
+                                    <option value="0">اختر المنطقة المحلية</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+
+                        <div class="col-md-4">
+                            <div class="form-group" style="padding-bottom: 20px;">
+                                <select class="form-control select2" id="teachers_select"
+                                    onchange="getTeacherCourseBooks(this)" id="teachers_select">
+                                    <option value="0">اختر المعلم</option>
+                                    @if (isset($moallems))
+                                        @foreach ($moallems as $moallem)
+                                            <option value="{{ $moallem->id }}">{{ $moallem->name }}</option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <select class="form-control " onchange="getBookCoursePlaces(this)" id="books_select">
+                                    <option value="0">اختر كتاب الدورة</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <select class="form-control " id="places_select" >
+                                    <option value="0">اختر مكان الدورة</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <button type="button" style="width:100%" onclick="updateDateTable()" class="btn btn-primary btn-block">
+                                <i class="mdi mdi-magnify" aria-hidden="true"></i>
+                                بحث
+                            </button>
+                        </div>
+
+
+
+
+                    </div>
+
+                @endif
+                </div>
+            </div>
+        </div>
+
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-body">
 
-
-
-
-                    @if (hasPermissionHelper('فلترة طلاب الدورات'))
-                        <div class="row mb-3">
-
-                            <div class="col-md-4">
-                                <div class="form-group" style="padding-bottom: 20px;">
-                                    <select class="form-control " onchange="getSubAreas(this)" id="areas_select">
-                                        <option value="0">اختر المنطقة الكبرى</option>
-                                        @foreach ($areas as $area)
-                                            <option value="{{ $area->id }}">{{ $area->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <select class="form-control " id="sub_areas_select"
-                                        onchange="getSubAreaTeachers(this)">
-                                        <option value="0">اختر المنطقة المحلية</option>
-                                    </select>
-                                </div>
-                            </div>
-
-
-                            <div class="col-md-4">
-                                <div class="form-group" style="padding-bottom: 20px;">
-                                    <select class="form-control select2" id="teachers_select"
-                                        onchange="getTeacherCourseBooks(this)" id="teachers_select">
-                                        <option value="0">اختر المعلم</option>
-                                        @if (isset($moallems))
-                                            @foreach ($moallems as $moallem)
-                                                <option value="{{ $moallem->id }}">{{ $moallem->name }}</option>
-                                            @endforeach
-                                        @endif
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <select class="form-control " onchange="getBookCoursePlaces(this)" id="books_select">
-                                        <option value="0">اختر كتاب الدورة</option>
-                                    </select>
-                                </div>
-                            </div>
-
-
-
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <select class="form-control " id="places_select" onchange="updateDateTable(this)">
-                                        <option value="0">اختر مكان الدورة</option>
-                                    </select>
-                                </div>
-                            </div>
-
-
-
-
-                        </div>
-
-                    @endif
                     <div class="">
                         <table class="table table-centered table-nowrap mb-0" id="dataTable">
                             <thead>
@@ -295,7 +311,7 @@
                 "ajax": "{{ route('courseStudents.getData') }}",
                 language: {
                     search: "",
-                    searchPlaceholder: "بحث",
+                    searchPlaceholder: "بحث سريع",
                     processing: "<span style='background-color: #0a9e87;color: #fff;padding: 25px;'>انتظر من فضلك ، جار جلب البيانات ...</span>",
                     lengthMenu: "عدد _MENU_ الصفوف",
                     info: "من _START_ الى _END_ من أصل _TOTAL_ صفحة",
@@ -372,7 +388,7 @@
         @if (hasPermissionHelper('فلترة طلاب الدورات'))
             function getTeacherCourseBooks(obj) {
                 $.get('/getTeacherCourseBooks/' + obj.value, function(data) {
-                    updateDateTable();
+                    // updateDateTable();
                     $('#places_select').empty();
                     $('#books_select').empty().html(data);
 
@@ -381,7 +397,7 @@
 
             function getBookCoursePlaces(obj) {
                 $.get('/getBookCoursePlaces/' + obj.value + '/' + $('#teachers_select').val(), function(data) {
-                    updateDateTable();
+                    // updateDateTable();
                     $('#places_select').empty().html(data);
 
                 });
@@ -405,10 +421,10 @@
                     $.get('/getSubAreas/' + obj.value, function(data) {
                         $('#sub_areas_select').empty().html(data);
                     });
-                    updateDateTable();
+                    // updateDateTable();
                 } else {
                     $('#sub_areas_select').empty().html('<option value="0">اختر المنطقة المحلية</option>');
-                    updateDateTable();
+                    // updateDateTable();
                 }
             }
 
@@ -418,13 +434,13 @@
                         $('#teachers_select').empty().html(data[0]);
                         $('#place_area').empty().html(data[1]);
                     });
-                    updateDateTable();
+                    // updateDateTable();
                 } else {
 
                     $('#books_select').empty().html('<option value="0">اختر كتاب الدورة</option>');
                     $('#teachers_select').empty().html('<option value="0">اختر المعلم</option>');
 
-                    updateDateTable();
+                    // updateDateTable();
                 }
             }
         @endif

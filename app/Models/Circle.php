@@ -15,7 +15,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class Circle extends Model
 {
     use HasFactory,LogsActivity;
-    protected $fillable = ['start_date','place_id','teacher_id','supervisor_id','notes','status','contract_type'];
+    protected $fillable = ['start_date','place_id','teacher_id','supervisor_id','notes','status'];
     public function getCircleDisplayDataAttribute(){
         return [
             'id'                    =>$this->id,
@@ -25,7 +25,7 @@ class Circle extends Model
             'area_father_name'      => $this->place ? $this->place->area_father_name : 0,
             'area_name'             => $this->place ? $this->place->area_name : 0,
             'id_num'                => $this->teacher ? $this->teacher->id_num : '',
-            'contract_type'           => $this->contract_type ? $this->contract_type : '',
+            'contract_type'           => $this->teacher ? $this->teacher->userExtraData->contract_type : '',
             'supervisor_name'       =>subAreaSupervisor($this->area_id_for_permissions),
             'area_supervisor_name'  =>areaSupervisor($this->area_father_id_for_permissions),
             'StatusSelect'          =>$this->status_select,
@@ -189,6 +189,38 @@ class Circle extends Model
     /**
      * Scopes
      */
+
+    public function scopeCircleStatus($query,$circle_status){
+        if ($circle_status) {
+            $query->where('status', $circle_status);
+        }else{
+            return $query;
+        }
+    }
+
+    public function scopeTeacher($query,$teacher_id){
+        if ($teacher_id) {
+            return $query->whereHas('teacher', function ($query) use ($teacher_id) {
+                    $query->where('id', $teacher_id);
+            });
+
+        }else{
+            return $query;
+        }
+    }
+
+    public function scopeContractType($query,$contract_type){
+        if ($contract_type) {
+            return $query->whereHas('teacher', function ($query) use ($contract_type) {
+                $query->whereHas('UserExtraData', function ($query) use ($contract_type) {
+                    $query->where('contract_type', $contract_type);
+                });
+            });
+
+        }else{
+            return $query;
+        }
+    }
     public function scopeSearch($query,$searchWord)
     {
         return $query->where('id', 'like', "%" . $searchWord . "%")

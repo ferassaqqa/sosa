@@ -52,9 +52,9 @@
         {{-- @if (isset($create) || (isset($edit) && $edit)) --}}
         <tr id="area_tr">
             {!! $areas !!}
-            <td class="center-align" id="sub_area_label" colspan="2" style="background-color: #f9fafb; display: @if (!isset($edit)) none; @endif">
+            <td class="center-align" id="sub_area_label" colspan="2" style="background-color: #f9fafb; display: @if (isset($edit) and !$edit) none; @endif">
                 المنطقة المحلية:</td>
-            <td colspan="2" id="sub_area_select" style=" display: @if (!isset($edit)) none; @endif">
+            <td colspan="2" id="sub_area_select" style=" display: @if (isset($edit) and !$edit) none; @endif">
                 <select class="form-control sub_area_id" name="sub_area_id">
                     @if (isset($sub_areas))
                         {!! $sub_areas !!}
@@ -68,13 +68,13 @@
 
 <input type="hidden" name="id" value="{{ $user->id }}">
 
-{{-- <input type="hidden" name="user_subarea_id" value="@if (isset($user)){{ $user->place->area_id }} @endif"> --}}
-
-
-
 
 <script>
-
+@if (isset($edit) and !$edit)
+        $( document ).ready(function() {
+            $('#role_id').change();
+        });
+ @endif
 
     $('select[name="area_id"]').on('change', function() {
         var area_id = $(this).val();
@@ -87,6 +87,7 @@
     $('#role_id').on('change', function() {
         // console.log($('#form').action);
         var role_name = $(this).val();
+
         switch (role_name) {
             case 'مشرف عام': {
 
@@ -109,7 +110,7 @@
             if (area_id) {
                 $.get('/getSubAreas/' + area_id, function(data) {
                     $('select[name="sub_area_id"]').empty().html(data);
-                    $('.sub_area_id').val(@if (isset($edit)) $user->place->area_id @endif).change();
+                    $('.sub_area_id').val(@if (isset($edit) and $edit) $user->place->area_id @endif).change();
 
                 });
             }

@@ -260,7 +260,7 @@ class UsersController extends Controller
         if($user->hasRole('مشرف عام')){
             $father_area_id = $user->area_supervisor_area_id;
             $edit = true;
-        }elseif ($user->hasRole('مشرف ميداني') and !empty($user->place_id)){
+        }elseif ($user->hasRole('مشرف ميداني') && !is_null($user->place_id)){
             $area = Area::find($user->sub_area_supervisor_area_id);
             $father_area_id = $area ? $area->area_father_id : 0;
 //            dd($area_id);
@@ -269,7 +269,6 @@ class UsersController extends Controller
         }
 //        $create = true;
         $areas = $this->getAreasForGeneralSupervisor($father_area_id);
-//        dd($sub_areas);
         return view('control_panel.users.basic.update', compact('user','roles','edit','areas','sub_areas'));
     }
 
@@ -353,13 +352,13 @@ class UsersController extends Controller
      */
     public function destroy(User $user)
     {
-//        dd();
+    //    dd($user->roles[0]->name);
         $roles = ['مساعد اداري','مشرف عام','مشرف ميداني','مشرف جودة','مدير دائرة التخطيط والجودة','رئيس قسم الاختبارات'];
         if($user->user_roles->count() == 1 && in_array($user->roles[0]->name,$roles)){
             $area = Area::where('area_supervisor_id', $user->id)->orWhere('sub_area_supervisor_id', $user->id)->first();
             if ($area) {
                 $area->update(['area_supervisor_id' => null, 'sub_area_supervisor_id' => null]);
-                $user->update(['place_id' => null,'supervisor_area_id' => null]);
+                $user->update(['place_id' => null]);
             }
 //            $user->delete();
         }else {

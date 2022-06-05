@@ -265,7 +265,32 @@ function getBookPlanAreaIdTotalValue($book_id,$year,$area_id){
     }
 }
 
+function GetFormatedDate($time)
+{
+    $months = ["Jan" => "يناير", "Feb" => "فبراير", "Mar" => "مارس", "Apr" => "أبريل", "May" => "مايو", "Jun" => "يونيو", "Jul" => "يوليو", "Aug" => "أغسطس", "Sep" => "سبتمبر", "Oct" => "أكتوبر", "Nov" => "نوفمبر", "Dec" => "ديسمبر"];
+    $days = ["Sat" => "السبت", "Sun" => "الأحد", "Mon" => "الإثنين", "Tue" => "الثلاثاء", "Wed" => "الأربعاء", "Thu" => "الخميس", "Fri" => "الجمعة"];
+    $am_pm = ['AM' => 'صباحاً', 'PM' => 'مساءً'];
 
+
+
+       $__lang = 'ar';
+
+
+    if( $__lang == 'ar'){
+    $day = $days[date('D', strtotime($time))];
+    $month = $months[date('M', strtotime($time))];
+    }else{
+       $day = date('D', strtotime($time));
+       $month = date('M', strtotime($time));
+    }
+    $date = $day . ' ' . date('d', strtotime($time)) . ' ' . $month . ' ' . date('Y', strtotime($time));
+    $numbers_ar = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
+    $numbers_en = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    if( $__lang   == 'ar')
+    return str_replace($numbers_en, $numbers_ar, $date);
+  else
+  return str_replace($numbers_ar, $numbers_en, $date);
+}
 
 function getSubAreas($area_id){
     $areas_data = \App\Models\Area::where('area_id',$area_id)->get();
