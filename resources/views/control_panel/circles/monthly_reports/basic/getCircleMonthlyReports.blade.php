@@ -9,6 +9,9 @@
         /* font-weight: 600; */
         background-color: #ced4da !important;
     }
+
+    .dataTables_length , .dataTables_info , .dataTables_paginate  { display: none; }
+
 </style>
 
 <div class="modal-header">
@@ -35,7 +38,7 @@
                             <td class="white-bg print-white" style="background-color: #fff;">{{ $circle->teacher_mobile }}</td>
 
                             <td class="dark-th normal-bg table_label">نوع الحلقة</td>
-                            <td class="white-bg print-white" style="background-color: #fff;">{{ $circle->contract_type }}</td>
+                            <td class="white-bg print-white" style="background-color: #fff;">{{ $circle->teacher->userExtraData->contract_type }}</td>
                         </tr>
 
                         <tr>
@@ -63,10 +66,10 @@
 
                 {{--<h4 class="card-title mb-4" style="display: inline-block;"> </h4>--}}
                 <div class="dropdown d-inline-block user-dropdown mb-3">
-                    <button class="btn btn-primary"  onclick="createCircleMonthlyReports()">
+                    {{-- <button class="btn btn-primary"  onclick="createCircleMonthlyReports()">
                         <i class="mdi mdi-plus"></i>
                         اضافة
-                    </button>
+                    </button> --}}
                 </div>
                 <div class="">
                     <table class="table table-centered table-nowrap mb-0" id="dataTable1">
@@ -98,61 +101,18 @@
         var table1 = $('#dataTable1').DataTable( {
             "processing": true,
             "serverSide": true,
+            // "bPaginate": false,
+            "bFilter": false,
+            // "bInfo": false,
             "ajax": "{{ route('circleMonthlyReports.getCircleMonthlyReportsData',$circle->id) }}",
-            language: {
-                search: "بحث",
-                processing:     "جاري معالجة البيانات" ,
-                lengthMenu:    "عدد _MENU_ الصفوف",
-                info:           "من _START_ الى _END_ من أصل _TOTAL_ صفحة",
-                infoEmpty: "لا يوجد بيانات",
-                loadingRecords: "يتم تحميل البيانات",
-                zeroRecords:    "<p style='text-align: center'>لا يوجد بيانات</p>",
-                emptyTable:     "<p style='text-align: center'>لا يوجد بيانات</p>",
-                paginate: {
-                    first:      "الأول",
-                    previous:   "السابق",
-                    next:       "التالي",
-                    last:       "الأخير"
-                },
-                aria: {
-                    sortAscending:  ": ترتيب تصاعدي",
-                    sortDescending: ": ترتيب تنازلي"
-                }
-            },
-            "columnDefs": [
-                { "sortable": false, "targets": [2] }
-            ],
+
             "aoColumns": [
                 { "mData": "id" },
                 { "mData": "date" },
                 { "mData": "tools" }
             ]
         } );
-        table1.on( 'draw', function () {
-            var elements = $('.ellipsis').nextAll();
-            if(elements.length == 1){
-                var elements = $('.ellipsis').prevAll();
-                elements[1].before(elements[4]);
-                elements[3].after(elements[0]);
-                elements[2].after(elements[1]);
-                elements[2].before(elements[3]);
-            }else if(elements.length == 5){
-                elements[1].before(elements[4]);
-                elements[3].after(elements[0]);
-                elements[2].after(elements[1]);
-                elements[2].before(elements[3]);
-            }else{
-                // var paginate_buttons = $('.paginate_button');
-                // if(paginate_buttons.length > 3) {
-                //     paginate_buttons.css('cursor', 'pointer');
-                //     paginate_buttons[5].after(paginate_buttons[4]);
-                //     paginate_buttons[4].after(paginate_buttons[3]);
-                //     paginate_buttons[3].after(paginate_buttons[2]);
-                //     paginate_buttons[2].after(paginate_buttons[1]);
-                // }
 
-            }
-        } );
     });
     function createCircleMonthlyReports() {
         @if($teacher->current_circle)

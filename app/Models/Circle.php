@@ -15,7 +15,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class Circle extends Model
 {
     use HasFactory,LogsActivity;
-    protected $fillable = ['start_date','place_id','teacher_id','supervisor_id','notes','status'];
+    protected $fillable = ['start_date','place_id','teacher_id','supervisor_id','notes','status','is_delivered','is_approved'];
     public function getCircleDisplayDataAttribute(){
         return [
             'id'                    =>$this->id,

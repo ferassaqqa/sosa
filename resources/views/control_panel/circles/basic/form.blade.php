@@ -86,7 +86,7 @@
 
 
         <input class="form-check-input" type="checkbox" name="contract_type"
-            @if (isset($circle->contract_type) && $circle->contract_type == 'متطوع') checked @endif id="exampleRadios62" value="متطوع">
+            @if (isset($circle->) && $circle-> == 'متطوع') checked @endif id="exampleRadios62" value="متطوع">
         <label class="form-check-label" for="exampleRadios62">
             متطوع
         </label>
