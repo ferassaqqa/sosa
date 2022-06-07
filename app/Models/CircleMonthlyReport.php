@@ -21,7 +21,7 @@ class CircleMonthlyReport extends Model
              '<button type="button" class="btn btn-danger" data-url="'.route('circleMonthlyReports.deleteCircleMonthlyReport',$this->id).'" onclick="deleteCircleMonthlyReport(this)"><i class="mdi mdi-trash-can"></i></button>';
         return [
             'id'        =>$this->id,
-            'date'      =>'<a href="#!" data-url="'.route('circleMonthlyReports.show',$this->id).'" onclick="showReport(this)">'.$this->date.'</a>',
+            'date'      =>'<a href="#!" data-url="'.route('circleMonthlyReports.updateCircleMonthlyReports',$this->id).'" onclick="showReport(this)">'.$this->date.'</a>',
             'tools'     =>$tools
         ];
     }

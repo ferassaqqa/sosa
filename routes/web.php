@@ -370,6 +370,9 @@ Route::get('getTeacherMonthlyReports/{user}', [\App\Http\Controllers\controlPane
 Route::get('getTeacherMonthlyReportsData/{user}', [\App\Http\Controllers\controlPanel\CircleMonthlyReportsController::class,'getTeacherMonthlyReportsData'])->name('circleMonthlyReports.getTeacherMonthlyReportsData');
 Route::get('getCircleMonthlyReportsData/{circle}', [\App\Http\Controllers\controlPanel\CircleMonthlyReportsController::class,'getCircleMonthlyReportsData'])->name('circleMonthlyReports.getCircleMonthlyReportsData');
 Route::get('createCircleMonthlyReports/{circle}/{date}', [\App\Http\Controllers\controlPanel\CircleMonthlyReportsController::class,'createCircleMonthlyReports'])->name('circleMonthlyReports.createCircleMonthlyReports');
+Route::get('updateCircleMonthlyReports/{circleMonthlyReport}', [\App\Http\Controllers\controlPanel\CircleMonthlyReportsController::class,'updateCircleMonthlyReports'])->name('circleMonthlyReports.updateCircleMonthlyReports');
+Route::get('makeReportDelivered/{circleMonthlyReport}', [\App\Http\Controllers\controlPanel\CircleMonthlyReportsController::class,'makeReportDelivered'])->name('circleMonthlyReports.makeReportDelivered');
+
 Route::get('changeCurrentToValue/{value}/{report_student_id}', [\App\Http\Controllers\controlPanel\CircleMonthlyReportsController::class,'changeCurrentToValue'])->name('circleMonthlyReports.changeCurrentToValue');
 Route::get('showCircleMonthlyReport/{circleMonthlyReport}', [\App\Http\Controllers\controlPanel\CircleMonthlyReportsController::class,'showCircleMonthlyReport'])->name('circleMonthlyReports.show');
 Route::get('letEnterLateReports/{user}/{date}', [\App\Http\Controllers\controlPanel\CircleMonthlyReportsController::class,'letEnterLateReports'])->name('circleMonthlyReports.letEnterLateReports');

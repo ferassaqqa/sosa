@@ -79,10 +79,34 @@
                                     #
                                 </th>
                                 <th scope="col">التاريخ</th>
+                                <th scope="col">حالة التسليم</th>
+
+                                <th scope="col">حالة الاعتماد</th>
+
                                 <th scope="col">أدوات</th>
                             </tr>
                         </thead>
                         <tbody>
+
+                        @foreach ($circleMonthlyReports as $key => $report)
+                        <tr>
+                        <td>{{$key+1}}</td>
+                        <td> <a href="#!" data-url="{{ route('circleMonthlyReports.updateCircleMonthlyReports',$report->id) }}" onclick="showReport(this)"> {{  $report->date}} </a></td>
+                        <td>
+                            {!!  ($report->is_delivered)? '<i  style="color:green; font-size: 25px;" class="mdi mdi-check-bold "></i>' : '<i style="color:red" class="mdi mdi-block-helper "></i>' !!}
+                        </td>
+                        <td>
+                            {!! ($report->is_approved)?'<i  style="color:green;  font-size: 25px;" class="mdi mdi-check-all "></i>' : '<i style="color:red" class="mdi mdi-block-helper "></i>' !!}
+                        </td>
+
+
+                        <td>
+                            <button type="button" class="btn btn-danger" data-url="{{route('circleMonthlyReports.deleteCircleMonthlyReport',$report->id)}}" onclick="deleteCircleMonthlyReport(this)"><i class="mdi mdi-trash-can"></i></button>
+                            <button type="button" class="btn btn-primary" data-url="{{route('circleMonthlyReports.deleteCircleMonthlyReport',$report->id)}}" onclick="deleteCircleMonthlyReport(this)"><i class="mdi mdi-check-decagram"></i></button>
+
+                        </td>
+                        </tr>
+                        @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -98,20 +122,22 @@
 
 <script>
     $(document).ready(function() {
-        var table1 = $('#dataTable1').DataTable( {
-            "processing": true,
-            "serverSide": true,
-            // "bPaginate": false,
-            "bFilter": false,
-            // "bInfo": false,
-            "ajax": "{{ route('circleMonthlyReports.getCircleMonthlyReportsData',$circle->id) }}",
+        // var table1 = $('#dataTable1').DataTable( {
+        //     "processing": true,
+        //     "serverSide": true,
+        //     // "bPaginate": false,
+        //     "bFilter": false,
+        //     // "bInfo": false,
+        //     "ajax": "{{ route('circleMonthlyReports.getCircleMonthlyReportsData',$circle->id) }}",
 
-            "aoColumns": [
-                { "mData": "id" },
-                { "mData": "date" },
-                { "mData": "tools" }
-            ]
-        } );
+        //     "aoColumns": [
+        //         { "mData": "id" },
+        //         { "mData": "date" },
+        //         { "mData": "date" },
+        //         { "mData": "date" },
+        //         { "mData": "tools" }
+        //     ]
+        // } );
 
     });
     function createCircleMonthlyReports() {

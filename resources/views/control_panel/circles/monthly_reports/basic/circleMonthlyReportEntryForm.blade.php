@@ -67,10 +67,75 @@
 <div class="modal-footer">
 
     <button type="button" class="btn btn-secondary waves-effect" onclick="getCircleMonthlyReports()">رجوع</button>
-    {{--<button type="submit" form="form" class="btn btn-primary waves-effect waves-light">حفظ</button>--}}
+    <button type="button" class="btn btn-primary waves-effect waves-light make-report-delivered"  onclick="makeReportDelivered({{$circleMonthlyReport->id}})">حفظ</button>
 </div>
 
 <script>
+// $( document ).ready(function() {
+//     $('button').on('click', ".make-report-delivered", function() {
+
+
+
+
+
+// });
+// });
+
+
+
+
+
+    function makeReportDelivered($report_id){
+
+
+    Swal.fire(
+        {
+            title:"هل أنت متأكد من تسليم التقرير",
+            text:"لن تتمكن من تعديل البيانات لاحقاً",
+            icon:"warning",
+            showCancelButton:!0,
+            confirmButtonText:"نعم تسليم التقرير",
+            cancelButtonText:"إلغاء",
+            confirmButtonClass:"btn btn-success mt-2",
+            cancelButtonClass:"btn btn-danger ms-2 mt-2",
+            buttonsStyling:!1
+        })
+        .then(
+            function(t){
+                if(t.value) {
+                    if(typeof $report_id !='undefined') {
+
+                        $.get('makeReportDelivered/' + $report_id , function (data) {
+                            if(data.type == 'danger') {
+                                Swal.fire('خطأ !',data.msg,'error');
+                            }else {
+                                $(this).parent().parent().remove();
+                            }
+                        });
+                    }else{
+                        $(this).parent().parent().remove();
+                    }
+                    Swal.fire({title: "تم تسليم التقرير", text: "التقرير تم تسليمه", icon: "success"});
+                }else {
+                    Swal.fire({title: "لم يتم الحذف!", text: "البيانات لم تحذف.", icon: "error"});
+                }
+            }
+        );
+
+        // $('#user_modal_content')
+        //     .html(
+        //         '<div class="spinner-border text-success" role="status" style="margin:25px auto;">' +
+        //         '   <span class="sr-only">يرجى الانتظار ...</span>' +
+        //         '</div>'
+        //     );
+        // $.get('{{ route('circleMonthlyReports.getCircleMonthlyReports',$circle->id) }}',function(data){
+        //     // $('.bs-example-modal-xl').modal('show');
+        //     $('#user_modal_content').html(data);
+        //     $('#dataTable').DataTable().ajax.reload();
+        // });
+    }
+
+
     function getCircleMonthlyReports() {
         // $('.bs-example-modal-xl').modal('hide');
         $('#user_modal_content')
