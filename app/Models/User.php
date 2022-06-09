@@ -272,6 +272,12 @@ class User extends Authenticatable
         return [
             'id' => self::$counter,
             'name' => $this->name,
+            'id_num' => $this->id_num,
+            'mobile' => $this->userExtraData->mobile,
+            'contract_type' => $this->userExtraData->contract_type,
+            'supervisor_name'=>subAreaSupervisor($this->area_id_for_permissions),
+
+
             'studentCount' => $this->circleStudents->count(),
             'area_father_name' => $this->area_father_name,
             'circleReports' => $this->circles->count() ? '<a href="#!" title="التقارير الشهرية" data-url="'.route('circleMonthlyReports.getTeacherMonthlyReports',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')">'.$this->circleReports->count().'</a>': 'لا يوجد حلقات',

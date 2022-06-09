@@ -49,8 +49,7 @@ class CircleMonthlyReportsController extends Controller
                 ->get();
         } else {
             $count = CircleMonthlyReport::where('circle_id',$circle->id)->count();
-            $CircleMonthlyReport = CircleMonthlyReport::
-            limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
+            $CircleMonthlyReport = CircleMonthlyReport::limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                 ->where('circle_id',$circle->id)->get();
         }
         foreach ($CircleMonthlyReport as $index => $item){
@@ -211,14 +210,21 @@ class CircleMonthlyReportsController extends Controller
     }
 
     public function makeReportDelivered(CircleMonthlyReport $circleMonthlyReport){
-
-
-
-        CircleMonthlyReport::where('id', $circleMonthlyReport->id)->update(['is_delivered' => 1]);
-
+        CircleMonthlyReport::where('id', $circleMonthlyReport->id)->update([
+                'is_delivered' => 1,
+                'delivered_by' => Auth::user()->id,
+                'delivered_at' => Carbon::now()
+        ]);
         return response()->json(['title' => 'تسليم', 'type' => 'success','msg'=>'تم تسليم التقرير بنجاح']);
+    }
 
-
+    public function makeReportApproved(CircleMonthlyReport $circleMonthlyReport){
+        CircleMonthlyReport::where('id', $circleMonthlyReport->id)->update([
+                'is_approved' => 1,
+                'approved_by' => Auth::user()->id,
+                'approved_at' => Carbon::now()
+        ]);
+        return response()->json(['title' => 'إعتماد التقرير', 'type' => 'success','msg'=>'تم إعتماد التقرير بنجاح']);
     }
 
 

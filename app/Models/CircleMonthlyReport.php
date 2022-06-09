@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 class CircleMonthlyReport extends Model
 {
     use HasFactory;
-    protected $fillable = ['circle_id','date','status'];
+    protected $fillable = ['circle_id','date','status','delivered_by','approved_by'];
     /**
      * status = 1, report is entered in its date, no late.
      * status = 2, report is entered successfully but entry process was late.
@@ -27,6 +27,13 @@ class CircleMonthlyReport extends Model
     }
     public function circle(){
         return $this->belongsTo(Circle::class,'circle_id');
+    }
+    public function approved(){
+        return $this->belongsTo(User::class,'approved_by','id')->select(['name']);
+    }
+
+    public function delivered(){
+        return $this->belongsTo(User::class,'delivered_by','id')->select(['name']);
     }
     public function getStudentsAttribute(){
         return $this->circle ? $this->circle->students: [];

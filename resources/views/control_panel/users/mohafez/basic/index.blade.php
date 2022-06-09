@@ -9,6 +9,30 @@
 @endsection
 @section('content')
 
+<style>
+    
+    .static .table_header {
+            color: white;
+            background-color: #00937C;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .static td {
+            border: 1px solid #e8eaeb !important;
+        }
+
+        .static tr {
+            background-color: #f1f1f3;
+        }
+
+        .static .value {
+            font-weight: 600;
+            font-size: 16px;
+            border: 1px solid #dadcdd;
+        }
+</style>
+
 <!-- start page title -->
 <div class="row">
     <div class="col-12">
@@ -28,6 +52,59 @@
 <!-- end page title -->
 
 <div class="row">
+
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row mb-3">
+                    <table width="100%" class="table table-centered table_bordered static" dir="rtl">
+                        <tbody>
+                            <tr class="table_header">
+                                <td colspan="2">عدد المحفظين الكلي <span id="total_mohafez_count"></span>
+                                </td>
+                                <td colspan="2">عدد الحلقات الكلي <span id="total_circle_count"></span>
+                                </td>
+                                <td colspan="2">عدد الطلاب الكلي <span id="total_circlestudents_count"></span>
+                                </td>
+                            </tr>
+
+                            <tr>
+                               <td>عدد المحفظين المكفولين</td>
+                               <td>عدد المحفظين المتطوعين</td>
+
+                               <td>عدد الحلقات المكفولة</td>
+                               <td>عدد الحلقات المتطوعة </td>
+
+                               <td>عدد الطلاب المكفولين</td>
+                               <td>عدد الطلاب المتطوعين</td>
+
+                            </tr>
+
+                            <tr class="value">
+
+                                <td id="mohafez_makfool"></td>
+                                <td id="mohafez_volunteer"></td>
+
+                                <td id="circle_makfool"></td>
+                                <td id="circle_volunteer"></td>
+
+                                <td id="total_circlestudents_makfool"></td>
+                                <td id="total_circlestudents_volunteer"></td>
+
+
+                            </tr>
+
+
+
+                        </tbody>
+                    </table>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
@@ -61,8 +138,16 @@
                                     #
                                 </th>
                                 <th scope="col">إسم المحفظ رباعيًا</th>
+                                <th scope="col">رقم الهوية</th>
+                                <th scope="col">رقم الجوال</th>
+                                <th scope="col">نوع الحلقة</th>
+
+
+
                                 <th scope="col">عدد الطلاب</th>
                                 <th scope="col">المنطقة الكبرى</th>
+                                <th scope="col">المنطقة المحلية</th>
+
                                 <th scope="col">التقارير</th>
                                 <th scope="col">أدوات</th>
                                 {{--<th scope="col">--}}
@@ -122,12 +207,34 @@
                 "aoColumns": [
                     { "mData": "id" },
                     { "mData": "name" },
+                    { "mData": "id_num" },
+                    { "mData": "mobile" },
+                    { "mData": "contract_type" },
+
+
                     { "mData": "studentCount" },
                     { "mData": "area_father_name" },
+
+                    { "mData": "supervisor_name" },
+
+
                     { "mData": "circleReports" },
                     { "mData": "tools" }
                     // { "mData": "select" }
-                ]
+                ],
+                "drawCallback": function() {
+                    $('#total_mohafez_count').empty().html(table.data().context[0].json['total_mohafez_count']);
+                    $('#mohafez_makfool').empty().html(table.data().context[0].json['mohafez_makfool']);
+                    $('#mohafez_volunteer').empty().html(table.data().context[0].json['mohafez_volunteer']);
+
+                    $('#total_circle_count').empty().html(table.data().context[0].json['total_circle_count']);
+                    $('#circle_makfool').empty().html(table.data().context[0].json['circle_makfool']);
+                    $('#circle_volunteer').empty().html(table.data().context[0].json['circle_volunteer']);
+
+                    $('#total_circlestudents_count').empty().html(table.data().context[0].json['total_circlestudents_count']);
+                    $('#total_circlestudents_makfool').empty().html(table.data().context[0].json['total_circlestudents_makfool']);
+                    $('#total_circlestudents_volunteer').empty().html(table.data().context[0].json['total_circlestudents_volunteer']);
+                },
             } );
             table.on( 'draw', function () {
                 var elements = $('.ellipsis').nextAll();

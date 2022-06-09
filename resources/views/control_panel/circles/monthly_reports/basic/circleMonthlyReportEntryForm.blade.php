@@ -110,6 +110,7 @@
                                 Swal.fire('خطأ !',data.msg,'error');
                             }else {
                                 $(this).parent().parent().remove();
+                                getCircleMonthlyReports();
                             }
                         });
                     }else{

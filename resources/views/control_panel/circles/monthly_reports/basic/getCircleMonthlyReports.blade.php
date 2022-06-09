@@ -80,8 +80,10 @@
                                 </th>
                                 <th scope="col">التاريخ</th>
                                 <th scope="col">حالة التسليم</th>
-
+                                <th scope="col">التسليم بواسطة</th>
                                 <th scope="col">حالة الاعتماد</th>
+                                <th scope="col">معتمد بواسطة</th>
+
 
                                 <th scope="col">أدوات</th>
                             </tr>
@@ -89,20 +91,29 @@
                         <tbody>
 
                         @foreach ($circleMonthlyReports as $key => $report)
+
+                      
+
                         <tr>
                         <td>{{$key+1}}</td>
                         <td> <a href="#!" data-url="{{ route('circleMonthlyReports.updateCircleMonthlyReports',$report->id) }}" onclick="showReport(this)"> {{  $report->date}} </a></td>
                         <td>
-                            {!!  ($report->is_delivered)? '<i  style="color:green; font-size: 25px;" class="mdi mdi-check-bold "></i>' : '<i style="color:red" class="mdi mdi-block-helper "></i>' !!}
+                            {!!  ($report->is_delivered)? '<i  style="color:green; font-size: 25px;" class="mdi mdi-check-bold "></i>' : '<i style="color:red" class="mdi mdi-block-helper "></i>' !!} 
                         </td>
                         <td>
+                            {{ ($report->is_delivered)?$report->delivered->name.' '.$report->delivered_at:'' }}
+                        </td>
+                        <td>                           
                             {!! ($report->is_approved)?'<i  style="color:green;  font-size: 25px;" class="mdi mdi-check-all "></i>' : '<i style="color:red" class="mdi mdi-block-helper "></i>' !!}
+                        </td>
+                        <td>
+                            {{ ($report->is_approved)?$report->approved->name.' '.$report->approved_at:'' }}
                         </td>
 
 
                         <td>
                             <button type="button" class="btn btn-danger" data-url="{{route('circleMonthlyReports.deleteCircleMonthlyReport',$report->id)}}" onclick="deleteCircleMonthlyReport(this)"><i class="mdi mdi-trash-can"></i></button>
-                            <button type="button" class="btn btn-primary" data-url="{{route('circleMonthlyReports.deleteCircleMonthlyReport',$report->id)}}" onclick="deleteCircleMonthlyReport(this)"><i class="mdi mdi-check-decagram"></i></button>
+                            <button type="button" class="btn btn-primary" data-url="{{route('circleMonthlyReports.makeReportApproved',$report->id)}}" onclick="approveCircleMonthlyReport(this)"><i class="mdi mdi-check-decagram"></i></button>
 
                         </td>
                         </tr>
@@ -121,6 +132,61 @@
 <script src="{{asset('control_panel/assets/js/pages/form-advanced.init.js')}}"></script>
 
 <script>
+
+
+
+function approveCircleMonthlyReport  (obj){
+        var url = obj.getAttribute('data-url');
+        // console.log(url);
+        Swal.fire(
+            {
+                title:"هل انت متأكد",
+                text:"لن تتمكن من استرجاع البيانات لاحقا، سيتم إعتماد التقرير",
+                icon:"warning",
+                showCancelButton:!0,
+                confirmButtonText:"نعم إعتمد البيانات",
+                cancelButtonText:"إلغاء",
+                confirmButtonClass:"btn btn-success mt-2",
+                cancelButtonClass:"btn btn-danger ms-2 mt-2",
+                buttonsStyling:!1
+            })
+            .then(
+                function(t){
+                    if(t.value) {
+                        $.ajax({
+                            url: url,
+                            type: 'get',
+                            // data: {_method:'POST',_token:'{{csrf_token()}}'},
+                            success: function (result) {
+                                $.notify('&nbsp;&nbsp;&nbsp;&nbsp; <strong>'+ result.title +' </strong> | '+result.msg,
+                                    { allow_dismiss: true,type:result.type }
+                                );
+                                Swal.fire({title: "تم الإعتماد!", text: "تم إعتماد التقرير بنجاح.", icon: "success"});
+                                if(result.type == 'success') {
+                                    $('#user_modal_content')
+                                            .html(
+                                                '<div class="spinner-border text-success" role="status" style="margin:25px auto;">' +
+                                                '   <span class="sr-only">يرجى الانتظار ...</span>' +
+                                                '</div>'
+                                            );
+                                        $.get('{{ route('circleMonthlyReports.getCircleMonthlyReports',$circle->id) }}',function(data){
+                                            // $('.bs-example-modal-xl').modal('show');
+                                            $('#user_modal_content').html(data);
+                                            $('#dataTable').DataTable().ajax.reload();
+                                        });
+                                }
+                            }
+                        });
+                    }else {
+                        Swal.fire({title: "لم يتم الاعتماد!", text: "البيانات لم تعتمد.", icon: "error"});
+                    }
+                }
+            );
+
+    }
+
+
+
     $(document).ready(function() {
         // var table1 = $('#dataTable1').DataTable( {
         //     "processing": true,

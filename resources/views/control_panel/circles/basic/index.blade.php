@@ -297,11 +297,6 @@
                     $('#total_circlestudents_count').empty().html(table.data().context[0].json['total_circlestudents_count']);
                     $('#total_circlestudents_makfool').empty().html(table.data().context[0].json['total_circlestudents_makfool']);
                     $('#total_circlestudents_volunteer').empty().html(table.data().context[0].json['total_circlestudents_volunteer']);
-
-
-
-
-
                 },
 
 
