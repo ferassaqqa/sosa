@@ -90,8 +90,23 @@ class mohafezController extends Controller
         $total_circle_count = $circle_volunteer + $circle_makfool;
 
         $total_circlestudents_count =   User::department(3)->subarea($sub_area_id,$area_id)->count();
-        $total_circlestudents_makfool = 0;
-        $total_circlestudents_volunteer =  0;
+        $total_circlestudents_makfool =  User::department(3)
+                                        ->subarea($sub_area_id,$area_id)
+                                        ->whereHas('circleStudentTeacher',function($query){
+                                            $query->whereHas('userExtraData',function($query){
+                                                $query->where('contract_type', 'مكفول');
+                                            });
+                                        })
+                                        ->count();
+
+        $total_circlestudents_volunteer =   User::department(3)
+                                        ->subarea($sub_area_id,$area_id)
+                                        ->whereHas('circleStudentTeacher',function($query){
+                                            $query->whereHas('userExtraData',function($query){
+                                                $query->where('contract_type', 'متطوع');
+                                            });
+                                        })
+                                        ->count();
 
 
         if(!empty($search)){

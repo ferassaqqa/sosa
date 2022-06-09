@@ -87,20 +87,6 @@ class CirclesController extends Controller
 
         $value = array();
 
-
-        // $mohafez_makfool = Circle::subarea($sub_area_id,$area_id)
-        //                     ->teacher($teacher_id)
-        //                     ->circleStatus($circle_status)
-        //                     ->contractType('مكفول')
-        //                     ->get()->count();
-
-
-        // $mohafez_volunteer = Circle::subarea($sub_area_id,$area_id)
-        //                         ->teacher($teacher_id)
-        //                         ->circleStatus($circle_status)
-        //                         ->contractType('متطوع')
-        //                         ->get()->count();
-
         $mohafez_makfool = User::
                                 department(1)
                                 ->subarea($sub_area_id,$area_id)
@@ -135,8 +121,23 @@ class CirclesController extends Controller
 
 
         $total_circlestudents_count =   User::department(3)->subarea($sub_area_id,$area_id)->count();
-        $total_circlestudents_makfool = 0;
-        $total_circlestudents_volunteer =  0;
+        $total_circlestudents_makfool =  User::department(3)
+                                                ->subarea($sub_area_id,$area_id)
+                                                ->whereHas('circleStudentTeacher',function($query){
+                                                    $query->whereHas('userExtraData',function($query){
+                                                        $query->where('contract_type', 'مكفول');
+                                                    });
+                                                })
+                                                ->count();
+
+        $total_circlestudents_volunteer =   User::department(3)
+                                            ->subarea($sub_area_id,$area_id)
+                                            ->whereHas('circleStudentTeacher',function($query){
+                                                $query->whereHas('userExtraData',function($query){
+                                                    $query->where('contract_type', 'متطوع');
+                                                });
+                                            })
+                                            ->count();
 
         if(!empty($search)){
             $count = Circle::search($search)
