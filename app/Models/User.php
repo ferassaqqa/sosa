@@ -257,8 +257,16 @@ class User extends Authenticatable
         return [
             'id' => self::$counter,
             'name' => $this->name,
+            'id_num' => $this->id_num,
+            'contract_type' => $this->circleStudentTeacher->userExtraData->contract_type,
             'teacher_name' => $this->teacher_name,
             'books'=>$this->student_stored_books,
+            'area_father_name' => $this->area_father_name,
+            'area_name' => $this->area_name,
+
+            'area_supervisor'=>areaSupervisor($this->area_father_id_for_permissions),
+
+
             'hadith_count'=>0,
             'tools' => '
                     <button type="button" class="btn btn-warning" title="تعديل بيانات الطالب" data-url="' . route('circleStudents.edit',$this->id) . '" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')"><i class="mdi mdi-comment-edit"></i></button>
@@ -266,6 +274,18 @@ class User extends Authenticatable
                 '
         ];
     }
+
+    public function scopeContractType($query,$contract_type){
+        if ($contract_type) {
+            return $query->whereHas('UserExtraData', function ($query) use ($contract_type) {
+                    $query->where('contract_type', $contract_type);
+            });
+
+        }else{
+            return $query;
+        }
+    }
+
     public function getMohafezDisplayDataAttribute(){
         self::$counter++;
         $letEnterLateReports = $this->has_late_reports ? '<button type="button" class="btn btn-primary" onclick="letEnterLateReports('.$this->id.')"><i class="mdi mdi-plus-circle-multiple-outline"></i></button>' : '';
@@ -275,7 +295,9 @@ class User extends Authenticatable
             'id_num' => $this->id_num,
             'mobile' => $this->userExtraData->mobile,
             'contract_type' => $this->userExtraData->contract_type,
-            'supervisor_name'=>subAreaSupervisor($this->area_id_for_permissions),
+            'area_supervisor'=>areaSupervisor($this->area_father_id_for_permissions),
+            'sub_area_supervisor'=>subAreaSupervisor($this->area_id_for_permissions),
+            'area_name'=>$this->area_name,
 
 
             'studentCount' => $this->circleStudents->count(),

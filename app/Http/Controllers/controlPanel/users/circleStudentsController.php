@@ -44,9 +44,16 @@ class circleStudentsController extends Controller
         $direction = $request->order[0]["dir"];
         $search = trim($request->search["value"]);
 
+        $sub_area_id = (int)$request->sub_area_id ? (int)$request->sub_area_id : 0;
+        $area_id = (int)$request->area_id ? (int)$request->area_id : 0;
+
 
         $value = array();
         User::$counter = 0;
+
+        $total_circlestudents_count =   User::department(3)->subarea($sub_area_id,$area_id)->count();
+        $total_circlestudents_makfool = 0;
+        $total_circlestudents_volunteer =  0;
 
         if(!empty($search)){
             $count = User::search($search)
@@ -74,7 +81,12 @@ class circleStudentsController extends Controller
             "recordsTotal" => $count,
             "recordsFiltered" => $count,
             "data" => (array)$value,
-            "order" => $columns[$order]["db"]
+            "order" => $columns[$order]["db"],
+
+            'total_circlestudents_count'  => $total_circlestudents_count,
+            'total_circlestudents_makfool' => $total_circlestudents_makfool,
+            'total_circlestudents_volunteer' => $total_circlestudents_volunteer,
+
         ];
 //        return $users;
     }

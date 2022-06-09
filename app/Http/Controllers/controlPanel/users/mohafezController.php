@@ -39,7 +39,7 @@ class mohafezController extends Controller
             array( 'db' => 'name',      'dt' => 1 ),
             array( 'db' => 'tools',      'dt' => 2 ),
         );
-        
+
 
         $draw = (int)$request->draw;
         $start = (int)$request->start;
@@ -58,70 +58,62 @@ class mohafezController extends Controller
         User::$counter = $start;
 
 
-        
-        $mohafez_makfool = Circle::query()
-                            ->rightJoin('users', 'users.id', '=', 'circles.teacher_id')
-                            ->rightJoin('user_extra_data', 'user_extra_data.user_id', '=', 'circles.teacher_id')
-                            ->where('user_extra_data.contract_type' , '=', 'مكفول')
-                            ->groupBy('users.id')
-                            ->select('users.id')->subarea($sub_area_id,$area_id)
-                            ->teacher($teacher_id)
-                            ->circleStatus($circle_status)
-                            ->get()->count();
-        
-        $mohafez_volunteer = Circle::query()
-                            ->rightJoin('users', 'users.id', '=', 'circles.teacher_id')
-                            ->rightJoin('user_extra_data', 'user_extra_data.user_id', '=', 'circles.teacher_id')
-                            ->where('user_extra_data.contract_type' , '=', 'متطوع')
-                            ->groupBy('users.id')
-                            ->select('users.id')->subarea($sub_area_id,$area_id)
-                            ->teacher($teacher_id)
-                            ->circleStatus($circle_status)
+
+        $mohafez_makfool = User::
+                                department(1)
+                                ->subarea($sub_area_id,$area_id)
+                                ->whereHas('userExtraData', function($q) {
+                                    $q->where('contract_type', 'مكفول');
+                                })
+                                ->get()->count();
+
+        $mohafez_volunteer = User::
+                            department(1)
+                            ->subarea($sub_area_id,$area_id)
+                            ->whereHas('userExtraData', function($q) {
+                                $q->where('contract_type', 'متطوع');
+                            })
                             ->get()->count();
 
         $total_mohafez_count = $mohafez_makfool + $mohafez_volunteer;
 
-        $circle_volunteer = Circle::query()
-                                                    ->leftJoin('users', 'users.id', '=', 'circles.teacher_id')
-                                                    ->leftJoin('user_extra_data', 'user_extra_data.user_id', '=', 'circles.teacher_id')
-                                                    ->where('user_extra_data.contract_type' , '=', 'متطوع')
-                                                    ->groupBy('circles.id')
-                                                    ->select('users.id')->subarea($sub_area_id,$area_id)
-                                                    ->teacher($teacher_id)
-                                                    ->circleStatus($circle_status)
-                                                    ->get()->count();
-                               
-        $circle_makfool = Circle::query()
-                                                    ->leftJoin('users', 'users.id', '=', 'circles.teacher_id')
-                                                    ->leftJoin('user_extra_data', 'user_extra_data.user_id', '=', 'circles.teacher_id')
-                                                    ->where('user_extra_data.contract_type' , '=', 'مكفول')
-                                                    ->groupBy('circles.id')
-                                                    ->select('users.id')->subarea($sub_area_id,$area_id)
-                                                    ->teacher($teacher_id)
-                                                    ->circleStatus($circle_status)
-                                                    ->get()->count();
-                    
+        $circle_volunteer = Circle::subarea($sub_area_id,$area_id)
+                            ->circleStatus($circle_status)
+                            ->contractType('متطوع')
+                            ->get()->count();
+
+
+        $circle_makfool = Circle::subarea($sub_area_id,$area_id)
+                            ->circleStatus($circle_status)
+                            ->contractType('مكفول')
+                            ->get()->count();
+        $total_circle_count = $circle_volunteer + $circle_makfool;
+
         $total_circlestudents_count =   User::department(3)->subarea($sub_area_id,$area_id)->count();
-        $total_circlestudents_makfool = 0;                                                    
+        $total_circlestudents_makfool = 0;
         $total_circlestudents_volunteer =  0;
 
 
         if(!empty($search)){
             $count = User::subarea($sub_area_id,$area_id)
                 ->search($search)
+                ->contractType($circle_type)
                 ->department(1)
                 ->count();
             $users = User::subarea($sub_area_id,$area_id)
                 ->search($search)
+                ->contractType($circle_type)
                 ->department(1)
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                 ->get();
         } else {
             $count = User::subarea($sub_area_id,$area_id)
                 ->department(1)
+                ->contractType($circle_type)
                 ->count();
             $users = User::subarea($sub_area_id,$area_id)
                 ->department(1)
+                ->contractType($circle_type)
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                 ->get();
 //            dd($users);
@@ -141,7 +133,7 @@ class mohafezController extends Controller
             'mohafez_makfool' => $mohafez_makfool,
             'mohafez_volunteer' => $mohafez_volunteer,
 
-            'total_circle_count'  => $count,
+            'total_circle_count'  => $total_circle_count,
             'circle_makfool' => $circle_makfool,
             'circle_volunteer' => $circle_volunteer,
 

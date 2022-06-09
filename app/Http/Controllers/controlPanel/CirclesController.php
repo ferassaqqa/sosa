@@ -88,96 +88,55 @@ class CirclesController extends Controller
         $value = array();
 
 
-        $mohafez_makfool = Circle::query()
-                            ->rightJoin('users', 'users.id', '=', 'circles.teacher_id')
-                            ->rightJoin('user_extra_data', 'user_extra_data.user_id', '=', 'circles.teacher_id')
-                            ->where('user_extra_data.contract_type' , '=', 'مكفول')
-                            ->groupBy('users.id')
-                            ->select('users.id')->subarea($sub_area_id,$area_id)
-                            ->teacher($teacher_id)
-                            ->circleStatus($circle_status)
-                            ->get()->count();
-
-                            // Circle::whereHas('teacher',function($q){
-                            //     $q->whereHas('UserExtraData', function ($q) {
-                            //         $q->where('contract_type', 'مكفول');
-                            //     });
-                            // })->contractType($circle_type)
-                            // ->teacher($teacher_id)
-                            // ->circleStatus($circle_status)
-                            // ->count();
+        // $mohafez_makfool = Circle::subarea($sub_area_id,$area_id)
+        //                     ->teacher($teacher_id)
+        //                     ->circleStatus($circle_status)
+        //                     ->contractType('مكفول')
+        //                     ->get()->count();
 
 
+        // $mohafez_volunteer = Circle::subarea($sub_area_id,$area_id)
+        //                         ->teacher($teacher_id)
+        //                         ->circleStatus($circle_status)
+        //                         ->contractType('متطوع')
+        //                         ->get()->count();
 
-        $mohafez_volunteer = Circle::query()
-                                ->rightJoin('users', 'users.id', '=', 'circles.teacher_id')
-                                ->rightJoin('user_extra_data', 'user_extra_data.user_id', '=', 'circles.teacher_id')
-                                ->where('user_extra_data.contract_type' , '=', 'متطوع')
-                                ->groupBy('users.id')
-                                ->select('users.id')->subarea($sub_area_id,$area_id)
-                                ->teacher($teacher_id)
-                                ->circleStatus($circle_status)
+        $mohafez_makfool = User::
+                                department(1)
+                                ->subarea($sub_area_id,$area_id)
+                                ->whereHas('userExtraData', function($q) {
+                                    $q->where('contract_type', 'مكفول');
+                                })
                                 ->get()->count();
 
-                                // Circle::whereHas('teacher',function($q){
-                                //     $q->whereHas('UserExtraData', function ($q) {
-                                //         $q->where('contract_type', 'متطوع');
-                                //     });
-                                // })->contractType($circle_type)
-                                // ->teacher($teacher_id)
-                                // ->circleStatus($circle_status)
-                                // ->count();
-
+        $mohafez_volunteer = User::
+                                department(1)
+                                ->subarea($sub_area_id,$area_id)
+                                ->whereHas('userExtraData', function($q) {
+                                    $q->where('contract_type', 'متطوع');
+                                })
+                                ->get()->count();
 
 
         $total_mohafez_count = $mohafez_makfool + $mohafez_volunteer;
 
-        $circle_volunteer = Circle::query()
-                                ->leftJoin('users', 'users.id', '=', 'circles.teacher_id')
-                                ->leftJoin('user_extra_data', 'user_extra_data.user_id', '=', 'circles.teacher_id')
-                                ->where('user_extra_data.contract_type' , '=', 'متطوع')
-                                ->groupBy('circles.id')
-                                ->select('users.id')->subarea($sub_area_id,$area_id)
+        $circle_volunteer = Circle::subarea($sub_area_id,$area_id)
                                 ->teacher($teacher_id)
                                 ->circleStatus($circle_status)
+                                ->contractType('متطوع')
                                 ->get()->count();
 
 
-        $circle_makfool = Circle::query()
-                                ->leftJoin('users', 'users.id', '=', 'circles.teacher_id')
-                                ->leftJoin('user_extra_data', 'user_extra_data.user_id', '=', 'circles.teacher_id')
-                                ->where('user_extra_data.contract_type' , '=', 'مكفول')
-                                ->groupBy('circles.id')
-                                ->select('users.id')->subarea($sub_area_id,$area_id)
+        $circle_makfool = Circle::subarea($sub_area_id,$area_id)
                                 ->teacher($teacher_id)
                                 ->circleStatus($circle_status)
+                                ->contractType('مكفول')
                                 ->get()->count();
-
-
 
 
         $total_circlestudents_count =   User::department(3)->subarea($sub_area_id,$area_id)->count();
         $total_circlestudents_makfool = 0;
-
-                                    // Circle::query()
-                                    //     ->rightJoin('users', 'users.id', '=', 'circles.teacher_id')
-                                    //     ->rightJoin('user_extra_data', 'user_extra_data.user_id', '=', 'circles.teacher_id')
-                                    //     ->where('user_extra_data.contract_type' , '=', 'مكفول')
-
-                                    //     ->groupBy('users.id')
-                                    //     ->select('users.id')->subarea($sub_area_id,$area_id)
-                                    //     ->get()->count();
-
         $total_circlestudents_volunteer =  0;
-                                        // Circle::query()
-                                        // ->rightJoin('users', 'users.id', '=', 'circles.teacher_id')
-                                        // ->rightJoin('user_extra_data', 'user_extra_data.user_id', '=', 'circles.teacher_id')
-                                        // ->where('user_extra_data.contract_type' , '=', 'متطوع')
-                                        //     ->groupBy('users.id')
-                                        //     ->select('users.id')->subarea($sub_area_id,$area_id)
-                                        //     ->get()->count();
-
-
 
         if(!empty($search)){
             $count = Circle::search($search)

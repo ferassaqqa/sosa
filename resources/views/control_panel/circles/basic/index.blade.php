@@ -8,7 +8,7 @@
 @endsection
 @section('content')
     <style>
-        .static .table_header {
+    .static .table_header {
             color: white;
             background-color: #00937C;
             font-weight: 600;
@@ -16,17 +16,17 @@
         }
 
         .static td {
-            border: 1px solid #bbbdbe !important;
+            border: 1px solid #e8eaeb !important;
         }
 
         .static tr {
-            background-color: #f3f3f4;
+            background-color: #f1f1f3;
         }
 
         .static .value {
             font-weight: 600;
             font-size: 16px;
-            border: 1px solid #bbbdbe;
+            border: 1px solid #dadcdd;
         }
 
         .white_space {
@@ -187,7 +187,7 @@
                         <div class="col-md-4">
                             <button type="button" style="width:100%" onclick="updateDateTable()" class="btn btn-primary btn-block">
                                 <i class="mdi mdi-magnify" aria-hidden="true"></i>
-                                بحث
+                                ابحث
                             </button>
                         </div>
                     </div>

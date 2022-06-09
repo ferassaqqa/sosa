@@ -10,7 +10,7 @@
 @section('content')
 
 <style>
-    
+
     .static .table_header {
             color: white;
             background-color: #00937C;
@@ -30,6 +30,29 @@
             font-weight: 600;
             font-size: 16px;
             border: 1px solid #dadcdd;
+        }
+        .white_space {
+            white-space: break-spaces !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_filter input {
+            width: 100%;
+        }
+
+        .dataTables_wrapper .dataTables_filter {
+            float: left;
+        }
+
+        div.dataTables_filter,
+        div.dataTables_length {
+            margin-left: 1em;
+        }
+
+        div.dataTables_wrapper div.dataTables_processing {
+            top: 5%;
+        }
+        .dataTables_wrapper {
+            margin-top: -35px;
         }
 </style>
 
@@ -105,30 +128,57 @@
         </div>
     </div>
 
+
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
                 <div class="row mb-3">
-                    <div class="col-md-3">
-                        <button class="btn btn-primary create-new-user" onclick="createNewMohafez()" style="width: 306px;">
-                            <i class="mdi mdi-plus"></i>
-                            اضافة محفظ جديد
-                        </button>
-                    </div>
 
-                    <div class="col-md-3" style="margin-right: -11px;">
-                        <select class="form-control" onchange="getSubAreas(this)" id="areas_select">
-                            <option value="0">اختر المنطقة الكبرى</option>
-                            @foreach($areas as $area)
-                                <option value="{{ $area->id }}">{{ $area->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <select class="form-control" id="sub_areas_select" onchange="updateDateTable()">
-                            <option value="0">اختر المنطقة المحلية</option>
-                        </select>
-                    </div>
+                <div class="col-md-3" >
+                    <select class="form-control" onchange="getSubAreas(this)" id="areas_select">
+                        <option value="0">اختر المنطقة الكبرى</option>
+                        @foreach($areas as $area)
+                            <option value="{{ $area->id }}">{{ $area->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-control" id="sub_areas_select">
+                        <option value="0">اختر المنطقة المحلية</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <select class="form-control" id="circle_type_select">
+                        <option value="">نوع الحلقة</option>
+
+                        <option value="مكفول">مكفول</option>
+                        <option value="متطوع">متطوع</option>
+
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <button type="button" style="width:100%" onclick="updateDateTable()" class="btn btn-primary btn-block">
+                        <i class="mdi mdi-magnify" aria-hidden="true"></i>
+                        ابحث
+                    </button>
+                </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="col-md-2">
+                    <button class="btn btn-primary  create-new-user btn-block" onclick="createNewMohafez()" style="width: 307px;">
+                        <i class="mdi mdi-plus"></i>
+                        اضافة محفظ جديد
+                    </button>
                 </div>
                 <div class="">
                     <table class="table table-centered table-nowrap mb-0" id="dataTable">
@@ -147,6 +197,11 @@
                                 <th scope="col">عدد الطلاب</th>
                                 <th scope="col">المنطقة الكبرى</th>
                                 <th scope="col">المنطقة المحلية</th>
+
+                                <th scope="col">المشرف العام</th>
+                                <th scope="col">المشرف الميداني</th>
+
+
 
                                 <th scope="col">التقارير</th>
                                 <th scope="col">أدوات</th>
@@ -181,29 +236,31 @@
                 "serverSide": true,
                 "ajax": "{{ route('mohafez.getData') }}",
                 language: {
-                    search: "بحث",
-                    processing:     "جاري معالجة البيانات" ,
-                    lengthMenu:    "عدد _MENU_ الصفوف",
-                    info:           "من _START_ الى _END_ من أصل _TOTAL_ صفحة",
+                    search: "",
+                    searchPlaceholder: "بحث سريع",
+                    processing: "<span style='background-color: #0a9e87;color: #fff;padding: 25px;'>انتظر من فضلك ، جار جلب البيانات ...</span>",
+                    lengthMenu: " _MENU_ ",
+                    info: "من _START_ الى _END_ من أصل _TOTAL_ صفحة",
                     infoEmpty: "لا يوجد بيانات",
                     loadingRecords: "يتم تحميل البيانات",
-                    zeroRecords:    "<p style='text-align: center'>لا يوجد بيانات</p>",
-                    emptyTable:     "<p style='text-align: center'>لا يوجد بيانات</p>",
+                    zeroRecords: "<p style='text-align: center'>لا يوجد بيانات</p>",
+                    emptyTable: "<p style='text-align: center'>لا يوجد بيانات</p>",
                     paginate: {
-                        first:      "الأول",
-                        previous:   "السابق",
-                        next:       "التالي",
-                        last:       "الأخير"
+                        first: "الأول",
+                        previous: "السابق",
+                        next: "التالي",
+                        last: "الأخير"
                     },
                     aria: {
-                        sortAscending:  ": ترتيب تصاعدي",
+                        sortAscending: ": ترتيب تصاعدي",
                         sortDescending: ": ترتيب تنازلي"
                     }
                 },
-                "columnDefs": [
-                    { "sortable": false, "targets": [2,3,4,5] }
-                    // { "sortable": false, "targets": [3] }
-                ],
+                   "columnDefs": [{
+                    className: "white_space",
+                    "sortable": false,
+                    "targets": [1,2,3,4,5]
+                }],
                 "aoColumns": [
                     { "mData": "id" },
                     { "mData": "name" },
@@ -211,11 +268,13 @@
                     { "mData": "mobile" },
                     { "mData": "contract_type" },
 
-
                     { "mData": "studentCount" },
                     { "mData": "area_father_name" },
+                    { "mData": "area_name" },
 
-                    { "mData": "supervisor_name" },
+
+                    { "mData": "area_supervisor" },
+                    { "mData": "sub_area_supervisor" },
 
 
                     { "mData": "circleReports" },
@@ -314,15 +373,15 @@
                 $.get('/getSubAreas/'+obj.value, function (data) {
                     $('#sub_areas_select').empty().html(data);
                 });
-                updateDateTable();
+                // updateDateTable();
             }else{
                 $('#sub_areas_select').empty().html('<option value="0">اختر المنطقة المحلية</option>');
-                updateDateTable();
+                // updateDateTable();
             }
         }
         function updateDateTable() {
             table.ajax.url(
-                "/getMohafezData?sub_area_id="+$('#sub_areas_select').val()+'&area_id='+$('#areas_select').val()
+                "/getMohafezData?sub_area_id="+$('#sub_areas_select').val()+'&area_id='+$('#areas_select').val()+ '&circle_type=' + $('#circle_type_select').val()
             ).load();
         }
         function letEnterLateReports(user_id) {

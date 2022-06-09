@@ -8,7 +8,52 @@
     <title>برنامج السنة | طلاب حلقات التحفيظ </title>
 @endsection
 @section('content')
+<style>
 
+    .static .table_header {
+            color: white;
+            background-color: #00937C;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .static td {
+            border: 1px solid #e8eaeb !important;
+        }
+
+        .static tr {
+            background-color: #f1f1f3;
+        }
+
+        .static .value {
+            font-weight: 600;
+            font-size: 16px;
+            border: 1px solid #dadcdd;
+        }
+        .white_space {
+            white-space: break-spaces !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_filter input {
+            width: 100%;
+        }
+
+        .dataTables_wrapper .dataTables_filter {
+            float: left;
+        }
+
+        div.dataTables_filter,
+        div.dataTables_length {
+            margin-left: 1em;
+        }
+
+        div.dataTables_wrapper div.dataTables_processing {
+            top: 5%;
+        }
+        .dataTables_wrapper {
+            margin-top: -35px;
+        }
+</style>
 <!-- start page title -->
 <div class="row">
     <div class="col-12">
@@ -28,6 +73,40 @@
 <!-- end page title -->
 
 <div class="row">
+
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row mb-3">
+                    <table width="100%" class="table table-centered table_bordered static" dir="rtl">
+                        <tbody>
+                            <tr class="table_header">
+                                <td colspan="2">عدد الطلاب الكلي <span id="total_circlestudents_count"></span>
+                                </td>
+                            </tr>
+
+                            <tr>
+                               <td>عدد الطلاب المكفولين</td>
+                               <td>عدد الطلاب المتطوعين</td>
+
+                            </tr>
+
+                            <tr class="value">
+                                <td id="total_circlestudents_makfool"></td>
+                                <td id="total_circlestudents_volunteer"></td>
+                            </tr>
+
+
+
+                        </tbody>
+                    </table>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
@@ -48,9 +127,19 @@
                                     #
                                 </th>
                                 <th scope="col">اسم الطالب رباعيا</th>
-                                <th scope="col">المحفظ</th>
+                                <th scope="col">رقم الهوية</th>
+                                <th scope="col">اسم المحفظ</th>
+                                <th scope="col">نوع الحلقة</th>
+
                                 <th scope="col">الكتاب</th>
+
+                                <th scope="col">المنطقة الكبرى</th>
+                                <th scope="col">المنطقة المحلية</th>
+                                <th scope="col">المشرف العام</th>
+
+
                                 <th scope="col">عدد الاحاديث</th>
+
                                 <th scope="col">أدوات</th>
                             </tr>
                         </thead>
@@ -99,11 +188,25 @@
                 "columnDefs": [
                     { "sortable": false, "targets": [2] }
                 ],
+                "drawCallback": function() {
+                    $('#total_circlestudents_count').empty().html(table.data().context[0].json['total_circlestudents_count']);
+                    $('#total_circlestudents_makfool').empty().html(table.data().context[0].json['total_circlestudents_makfool']);
+                    $('#total_circlestudents_volunteer').empty().html(table.data().context[0].json['total_circlestudents_volunteer']);
+                },
                 "aoColumns": [
                     { "mData": "id" },
                     { "mData": "name" },
+                    { "mData": "id_num" },
                     { "mData": "teacher_name" },
+                    { "mData": "contract_type" },
                     { "mData": "books" },
+
+                    { "mData": "area_father_name" },
+                    { "mData": "area_name" },
+
+                    { "mData": "area_supervisor" },
+
+
                     { "mData": "hadith_count" },
                     { "mData": "tools" }
                 ]
