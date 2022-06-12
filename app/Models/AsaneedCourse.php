@@ -13,6 +13,8 @@ class AsaneedCourse extends Model
     public function getCourseDisplayDataAttribute(){
         self::$counter++;
         $addStudent = $this->status != 'منتهية' ? '<button type="button" class="btn btn-info btn-sm" title="اضافة طالب"  onclick="createNewCourseStudents('.$this->id.')"><i class="mdi mdi-account-plus"></i></button>' : '';
+
+        $addExcelStudent = ($this->status != 'منتهية') ?'<button type="button" class="btn btn-primary btn-sm" title="اضافة طلاب من ملف اكسل"  onclick="addExcelAsaneedStudents('.$this->id.')"><i class="mdi mdi-microsoft-excel"></i></button>&nbsp' : '';
         return [
             'id'=>self::$counter,
             'teacher_name'=>$this->name,
@@ -23,7 +25,7 @@ class AsaneedCourse extends Model
                         <button type="button" class="btn btn-success btn-sm" title="عرض الطلاب" data-url="'.route('asaneedCourseStudents.ShowCourseStudents',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')"><i class="mdi mdi-account-multiple"></i></button>
                         <button type="button" class="btn btn-warning btn-sm" title="تعديل بيانات الدورة" data-url="'.route('asaneedCourses.edit',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-center" onclick="callApi(this,\'modal_content\')"><i class="mdi mdi-comment-edit"></i></button>
                         <button type="button" class="btn btn-danger btn-sm" title="حذف بيانات الدورة" data-url="'.route('asaneedCourses.destroy',$this->id).'" onclick="deleteItem(this)"><i class="mdi mdi-trash-can"></i></button>
-                    '
+                    '.$addExcelStudent
         ];
     }
     public function getNameAttribute(){

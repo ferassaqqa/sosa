@@ -30,6 +30,13 @@ class AsaneedCoursesController extends Controller
                    </select>';
         return view('control_panel.asaneed.courses.basic.index',compact('areas','statuses'));
     }
+
+    public function showLoadingAsaneedStudents(AsaneedCourse $asaneedCourse)
+    {
+        return view('control_panel.asaneed.courses.showLoadingAsaneedStudents', compact('asaneedCourse'));
+    }
+
+
     public function getData(Request $request)
     {
         $columns = array(

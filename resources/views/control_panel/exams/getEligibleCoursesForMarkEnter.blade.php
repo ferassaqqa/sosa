@@ -60,13 +60,13 @@
                         <table class="table table-centered table-nowrap mb-0" id="dataTable1">
                             <thead>
                             <th>#</th>
-                            <th>الكتاب:</th>
-                            <th>مدرس الدورة:</th>
-                            <th>المنطقة الكبرى:</th>
-                            <th>المنطقة المحلية:</th>
-                            <th>مكان الدورة:</th>
-                            <th>عدد الطلاب:</th>
-                            <th>تاريخ البدء:</th>
+                            <th>الكتاب</th>
+                            <th>مدرس الدورة</th>
+                            <th>المنطقة الكبرى</th>
+                            <th>المنطقة المحلية</th>
+                            <th>مكان الدورة</th>
+                            <th>عدد الطلاب</th>
+                            <th>تفاصيل الاختبار</th>
                             <th></th>
                             </thead>
                             <tbody></tbody>

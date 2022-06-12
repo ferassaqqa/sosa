@@ -9,7 +9,6 @@
 @endsection
 @section('content')
 <style>
-
     .static .table_header {
             color: white;
             background-color: #00937C;
@@ -131,14 +130,14 @@
                                 <th scope="col">اسم المحفظ</th>
                                 <th scope="col">نوع الحلقة</th>
 
-                                <th scope="col">الكتاب</th>
+                                {{-- <th scope="col">الكتاب</th> --}}
 
                                 <th scope="col">المنطقة الكبرى</th>
                                 <th scope="col">المنطقة المحلية</th>
                                 <th scope="col">المشرف العام</th>
 
 
-                                <th scope="col">عدد الاحاديث</th>
+                                {{-- <th scope="col">عدد الاحاديث</th> --}}
 
                                 <th scope="col">أدوات</th>
                             </tr>
@@ -166,22 +165,23 @@
                 "serverSide": true,
                 "ajax": "{{ route('circleStudents.getData') }}",
                 language: {
-                    search: "بحث",
-                    processing:     "جاري معالجة البيانات" ,
-                    lengthMenu:    "عدد _MENU_ الصفوف",
-                    info:           "من _START_ الى _END_ من أصل _TOTAL_ صفحة",
+                    search: "",
+                    searchPlaceholder: "بحث سريع",
+                    processing: "<span style='background-color: #0a9e87;color: #fff;padding: 25px;'>انتظر من فضلك ، جار جلب البيانات ...</span>",
+                    lengthMenu: " _MENU_ ",
+                    info: "من _START_ الى _END_ من أصل _TOTAL_ صفحة",
                     infoEmpty: "لا يوجد بيانات",
                     loadingRecords: "يتم تحميل البيانات",
-                    zeroRecords:    "<p style='text-align: center'>لا يوجد بيانات</p>",
-                    emptyTable:     "<p style='text-align: center'>لا يوجد بيانات</p>",
+                    zeroRecords: "<p style='text-align: center'>لا يوجد بيانات</p>",
+                    emptyTable: "<p style='text-align: center'>لا يوجد بيانات</p>",
                     paginate: {
-                        first:      "الأول",
-                        previous:   "السابق",
-                        next:       "التالي",
-                        last:       "الأخير"
+                        first: "الأول",
+                        previous: "السابق",
+                        next: "التالي",
+                        last: "الأخير"
                     },
                     aria: {
-                        sortAscending:  ": ترتيب تصاعدي",
+                        sortAscending: ": ترتيب تصاعدي",
                         sortDescending: ": ترتيب تنازلي"
                     }
                 },
@@ -199,7 +199,7 @@
                     { "mData": "id_num" },
                     { "mData": "teacher_name" },
                     { "mData": "contract_type" },
-                    { "mData": "books" },
+                    // { "mData": "books" },
 
                     { "mData": "area_father_name" },
                     { "mData": "area_name" },
@@ -207,7 +207,7 @@
                     { "mData": "area_supervisor" },
 
 
-                    { "mData": "hadith_count" },
+                    // { "mData": "hadith_count" },
                     { "mData": "tools" }
                 ]
             } );
@@ -264,6 +264,7 @@
                                 Swal.close();
                                 $('.bs-example-modal-xl').modal('show');
                                 $('#user_modal_content').html(responseJson.view);
+
                             }
                             // Do something with the response
                         })

@@ -228,6 +228,8 @@ Route::get('getYearBooksForNewAsaneedCourse/{year}/{type}', [\App\Http\Controlle
 Route::get('createOutOfPlanAsaneedBook/{year}', [\App\Http\Controllers\controlPanel\Asaneed\AsaneedCoursesController::class,'createOutOfPlanBook'])->name('asaneedCourses.createOutOfPlanBook');
 Route::get('storeAsaneedStudentsMarks/{asaneedCourse}', [\App\Http\Controllers\controlPanel\Asaneed\AsaneedCoursesController::class,'storeStudentsMarks'])->name('asaneedCourses.storeStudentsMarks');
 Route::get('getPlaceAsaneedTeachers/{place}/{teacher_id}', [\App\Http\Controllers\controlPanel\Asaneed\AsaneedCoursesController::class,'getPlaceTeachersForCourses'])->name('asaneedCourses.getPlaceTeachers');
+Route::get('showLoadingAsaneedStudents/{asaneedCourse}', [\App\Http\Controllers\controlPanel\Asaneed\AsaneedCoursesController::class,'showLoadingAsaneedStudents'])->name('courseStudents.showLoadingAsaneedStudents');
+Route::post('importAsaneedStudentsExcel/{asaneedCourse}', [\App\Http\Controllers\controlPanel\ExcelExporterController::class,'importCourseStudentsExcel'])->name('courses.importCourseStudentsExcel');
 
 /**
  *  End Asaneed Courses Operations

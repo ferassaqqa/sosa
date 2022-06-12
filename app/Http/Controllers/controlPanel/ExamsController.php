@@ -623,30 +623,32 @@ class ExamsController extends Controller
 
             if (!empty($search)) {
                 $count = Exam::where('status',1)
-                    ->where('date','<=',Carbon::now()->format('Y-m-d'))
+                    // ->where('date','<=',Carbon::now()->format('Y-m-d'))
                     ->area($area_id,0)->coursebook($book_id)
                     ->search($search)
                     ->count();
 
                 $exams = Exam::where('status',1)
-                    ->where('date','<=',Carbon::now()->format('Y-m-d'))
+                    // ->where('date','<=',Carbon::now()->format('Y-m-d'))
                     ->area($area_id,0)->coursebook($book_id)
                     ->search($search)
                     ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                     ->get();
             } else {
                 $count = Exam::where('status',1)
-                    ->where('date','<=',Carbon::now()->format('Y-m-d'))
+                    // ->where('date','<=',Carbon::now()->format('Y-m-d'))
                     ->area($area_id,0)->coursebook($book_id)
                     ->search($search)
                     ->count();
                 $exams = Exam::where('status',1)
-                    ->where('date','<=',Carbon::now()->format('Y-m-d'))
+                    // ->where('date','<=',Carbon::now()->format('Y-m-d'))
                     ->area($area_id,0)->coursebook($book_id)
                     ->search($search)
                     ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                     ->get();
             }
+        Carbon::setLocale('ar');
+
             Exam::$counter = $start;
             foreach ($exams as $index => $item) {
 //                dd($item->examable);
@@ -664,7 +666,9 @@ class ExamsController extends Controller
                         'course_area_name'=>$item->course_area_name,
                         'course_place_name'=>$item->course_place_name,
                         'students_count'=>$item->students_count,
-                        'course_start_date'=>$item->course_start_date,
+                        // 'course_start_date'=>$item->course_start_date,
+                        'course_start_date'=>$item->date? GetFormatedDate($item->date) . ' الساعة '. Carbon::parse($item->time)->isoFormat('h:mm a'):'',
+
                         'tools'=>$enterExamMarksButton
                     ]
                 );

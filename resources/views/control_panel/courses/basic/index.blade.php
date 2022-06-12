@@ -144,7 +144,7 @@
                             <button type="button" style="width:100%" onclick="updateDateTable()"
                                 class="btn btn-primary btn-block">
                                 <i class="mdi mdi-magnify" aria-hidden="true"></i>
-                                بحث
+                                ابحث
                             </button>
                         </div>
 
@@ -164,7 +164,7 @@
                 <div class="card-body">
 
 
-                    <div class="row mb-3">
+                    {{-- <div class="row mb-3"> --}}
                         @if (hasPermissionHelper('اضافة دورة علمية'))
                             <div class="col-md-3">
                                 <button type="button" onclick="callApi(this,'user_modal_content_new')"
@@ -209,7 +209,7 @@
                                 </tbody>
                             </table>
                         </div>
-                    </div>
+                    {{-- </div> --}}
                     <!-- end card-body -->
                 </div>
                 <!-- end card -->

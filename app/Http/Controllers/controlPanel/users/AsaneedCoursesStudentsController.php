@@ -169,7 +169,7 @@ class AsaneedCoursesStudentsController extends Controller
     }
     public function ShowCourseStudents(AsaneedCourse $asaneedCourse)
     {
-//        dd(in_array('ثانوية',$course->student_categories));
+    //    dd($asaneedCourse);
         $users = User::whereHas('asaneedCourses',function($query) use ($asaneedCourse){
             $query->where('asaneed_course_id',$asaneedCourse->id);
         })->get();

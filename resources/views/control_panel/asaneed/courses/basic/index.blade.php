@@ -5,7 +5,7 @@
     <link href="{{asset('control_panel/assets/css/datatable.css')}}" rel="stylesheet" type="text/css" />
 @endsection
 @section('title')
-    <title>برنامج السنة | قسم الدورات العلمية </title>
+    <title>برنامج السنة | قسم الأسانيد والإجازات </title>
 @endsection
 @section('content')
 
@@ -13,12 +13,12 @@
 <div class="row">
     <div class="col-12">
         <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-            <h4 class="mb-sm-0">قسم الدورات العلمية</h4>
+            <h4 class="mb-sm-0">قسم الأسانيد والإجازات</h4>
 
             <div class="page-title-right">
                 <ol class="breadcrumb m-0">
                     <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">الرئيسية</a></li>
-                    <li class="breadcrumb-item active">قسم الدورات العلمية</li>
+                    <li class="breadcrumb-item active">قسم الأسانيد والإجازات</li>
                 </ol>
             </div>
 
@@ -82,11 +82,84 @@
     <!-- end col -->
 </div>
 
+<input type="file" id="excelStudentsImport" style="display: none;">
+
+
 @endsection
 
 @section('script')
 
     <script>
+
+var asaneed_id = 0;
+
+            function addExcelAsaneedStudents(asaneedCourse) {
+                $('#excelStudentsImport').click();
+                asaneed_id = asaneedCourse;
+            }
+
+            function ShowCourseStudents(asaneed_id) {
+                    $('.bs-example-modal-xl').modal('toggle');
+                    $('.user_modal_content')
+                        .html(
+                            '<div class="spinner-border text-success" role="status" style="margin:25px auto;">' +
+                            '   <span class="sr-only">يرجى الانتظار ...</span>' +
+                            '</div>'
+                        );
+                    $.get('/ShowAsaneedCourseStudents/'+asaneed_id,function (data) {
+                        $('.bs-example-modal-xl').modal('toggle');
+                        $('#user_modal_content').empty().html(data);
+                    });
+                }
+
+            $('#excelStudentsImport').change(function(e) {
+                // console.log($(this),asaneed_id);
+                // $('div[class="student_excel_import_loading"]').css('display','block');
+                $.get('/showLoadingAsaneedStudents/' + asaneed_id, function(data) {
+                    $('.bs-example-modal-xl').modal('show');
+                    $('#user_modal_content')
+                        .html(data);
+                });
+                var fd = new FormData();
+                var files = $(this)[0].files;
+                fd.append('file', files[0]);
+                fd.append('_token', '{{ csrf_token() }}');
+                $(this).val('');
+                $.ajax({
+                    url: '/importAsaneedStudentsExcel/' + asaneed_id,
+                    type: 'post',
+                    data: fd,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        // console.log(response);
+                        if (response.file_link) {
+                            window.open(
+                                response.file_link, "_blank");
+                        }
+                        if (response.msg) {
+                            Swal.fire(
+                                'تم استيراد الملف',
+                                response.msg,
+                                'success'
+                            ).then(function(value) {
+                                ShowCourseStudents(asaneed_id);
+                            });
+                        }
+                        $('.bs-example-modal-xl').modal('hide');
+                        $('#dataTable').DataTable().ajax.reload();
+                        $('#spinner').remove();
+                    },
+                    error: function(errors) {
+                        const entries = Object.entries(errors.responseJSON.errors);
+                        var errors_message = document.createElement('div');
+                        Swal.fire(entries[0][1][0]);
+                        $('div[class="student_excel_import_loading"]').css('display', 'none');
+                    }
+                });
+            });
+
+
         var table = '';
         $(document).ready(function(){
             table = $('#dataTable').DataTable( {

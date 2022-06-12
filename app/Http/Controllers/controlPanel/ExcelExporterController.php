@@ -9,6 +9,7 @@ use App\Exports\courseStudentsMarksExport;
 use App\Exports\exportMoallemsAsExcelSheet;
 use App\Exports\RoleExport;
 use App\Exports\RoleFaultsExport;
+use App\Exports\asaneedStudentsFaultsExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\controlPanel\Roles\ImportExcelRequest;
 use App\Imports\CourseNewStudentsMarkImport;
@@ -16,6 +17,8 @@ use App\Imports\CourseStudentsImport;
 use App\Imports\CourseStudentsMarkImport;
 use App\Imports\RoleImport;
 use App\Models\Course;
+use App\Models\AsaneedCourse;
+use App\Imports\AsaneedStudentsImport;
 use App\Models\Exam;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -44,6 +47,29 @@ class ExcelExporterController extends Controller
 //        return Response::download();
         return response()->json(['file_link'=>asset('storage/roles_faulties.xlsx')]);
     }
+
+
+    public function importAsaneedStudentsExcel(AsaneedCourse $asaneedCourse,Excel $excel,ImportExcelRequest $request){
+
+        $import = new AsaneedStudentsImport($asaneedCourse);
+
+        // dd($asaneedCourse);
+
+        $import->import(request()->file('file'));
+        $asaneedCourse->update(['status'=>'قائمة']);
+        if($import->failures()->count()) {
+            $excel->store(
+                new asaneedStudentsFaultsExport($import->failures())
+                , 'public/ اخطاء استيراد الطلاب من ملف الاكسل لدورة ' . $asaneedCourse->book_name . ' للمعلم ' . $asaneedCourse->name . '.xlsx');
+            return response()->json(['msg'=>'تم استيراد ملف دورة '. $asaneedCourse->book_name . ' للمعلم ' . $asaneedCourse->name.' <br><span>
+           <div class="swal2-icon swal2-error swal2-icon-show" style="display: flex;"><div class="swal2-icon-content">!</div></div>
+            ويوجد عدد '.$import->failures()->count().' طلاب لم يتم استيرادهم ، لمعرفة الارقام <a  style="color: red;" href="'.asset('storage/ اخطاء استيراد الطلاب من ملف الاكسل لدورة ' . $asaneedCourse->book_name . ' للمعلم ' . $asaneedCourse->name . '.xlsx').'">اضغط هنا</a> لتحميل الملف.</span> ']);
+        }else{
+            return response()->json(['msg'=>'تم استيراد ملف دورة '. $asaneedCourse->book_name . ' للمعلم ' . $asaneedCourse->name.' بنجاح.']);
+        }
+    }
+
+
     public function importCourseStudentsExcel(Course $course,Excel $excel,ImportExcelRequest $request){
         $import = new CourseStudentsImport($course);
         $import->import(request()->file('file'));
