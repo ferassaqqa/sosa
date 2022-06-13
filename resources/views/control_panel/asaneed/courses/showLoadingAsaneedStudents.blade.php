@@ -46,7 +46,7 @@
 </div>
 
 <script>
-    function deleteCourseStudent (obj){
+    function deleteAsaneedStudent (obj){
         var url = obj.getAttribute('data-url');
         // console.log(url);
         var deleteButton = $(obj);
@@ -90,17 +90,17 @@
             );
 
     }
-    function showCourseStudents(course_id) {
-        $('.bs-example-modal-xl').modal('toggle');
-        $('.user_modal_content')
-            .html(
-                '<div class="spinner-border text-success" role="status" style="margin:25px auto;">' +
-                '   <span class="sr-only">يرجى الانتظار ...</span>' +
-                '</div>'
-            );
-        $.get('/ShowCourseStudents/'+course_id,function (data) {
-            $('.bs-example-modal-xl').modal('toggle');
-            $('#user_modal_content').empty().html(data);
-        });
-    }
+    // function showCourseStudents(course_id) {
+    //     $('.bs-example-modal-xl').modal('toggle');
+    //     $('.user_modal_content')
+    //         .html(
+    //             '<div class="spinner-border text-success" role="status" style="margin:25px auto;">' +
+    //             '   <span class="sr-only">يرجى الانتظار ...</span>' +
+    //             '</div>'
+    //         );
+    //     $.get('/ShowCourseStudents/'+course_id,function (data) {
+    //         $('.bs-example-modal-xl').modal('toggle');
+    //         $('#user_modal_content').empty().html(data);
+    //     });
+    // }
 </script>

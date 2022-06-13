@@ -52,9 +52,6 @@ class ExcelExporterController extends Controller
     public function importAsaneedStudentsExcel(AsaneedCourse $asaneedCourse,Excel $excel,ImportExcelRequest $request){
 
         $import = new AsaneedStudentsImport($asaneedCourse);
-
-        // dd($asaneedCourse);
-
         $import->import(request()->file('file'));
         $asaneedCourse->update(['status'=>'قائمة']);
         if($import->failures()->count()) {

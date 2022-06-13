@@ -202,7 +202,7 @@
                         <div class="col-md-4">
                             <button type="button" style="width:100%" onclick="updateDateTable()" class="btn btn-primary btn-block">
                                 <i class="mdi mdi-magnify" aria-hidden="true"></i>
-                                بحث
+                                ابحث
                             </button>
                         </div>
 

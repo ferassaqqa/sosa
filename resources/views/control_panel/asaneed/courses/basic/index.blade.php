@@ -9,6 +9,41 @@
 @endsection
 @section('content')
 
+<style>
+        .course_status_option {
+        background: white;
+        color: black;
+    }
+
+    .course_status_select {
+        color: white !important;
+    }
+
+    .white_space {
+        white-space: break-spaces !important;
+    }
+
+    .align_td_right {
+        text-align: right !important;
+    }
+
+    .swal2-modal {
+        width: 861px !important;
+    }
+    div.dataTables_filter,
+        div.dataTables_length {
+            margin-left: 1em;
+        }
+
+    #dataTable_wrapper .dataTables_filter {
+        float: left;
+    }
+
+    .dataTables_wrapper {
+        margin-top: -35px;
+    }
+</style>
+
 <!-- start page title -->
 <div class="row">
     <div class="col-12">
@@ -27,45 +62,107 @@
 </div>
 <!-- end page title -->
 
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row mb-3">
+
+                @if (hasPermissionHelper('فلترة الدورات العلمية'))
+                <div class="col-md-3">
+                    <select class="form-control select2" onchange="getSubAreas(this)" id="areas_select">
+                        <option value="0">اختر المنطقة الكبرى</option>
+                        @foreach ($areas as $area)
+                            <option value="{{ $area->id }}">{{ $area->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+
+
+                <div class="col-md-3">
+                    <select class="form-control select2" id="sub_areas_select"
+                        onchange="getSubAreaTeachers(this)">
+                        <option value="0">اختر المنطقة المحلية</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <select class="form-control select2" id="teachers_select">
+                        <option value="0">اختر الشيخ</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <select class="form-control select2" id="books_select">
+                        <option value="0">اختر الكتاب</option>
+                        @foreach ($books as $book)
+                            <option value="{{ $book->id }}">{{ $book->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+        </div>
+
+        <div class="row mb-3">
+
+            <div class="col-md-3">
+                <select class="form-control select2" id="place_area">
+                    <option value="0">اختر مكان المجلس</option>
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                {!! $statuses !!}
+            </div>
+
+            <div class="col-md-3">
+                <button type="button" onclick="updateDateTable()"
+                    class="btn btn-success btn-block" style="background-color:#00937C;width: 100%;">
+                    <i class="mdi mdi-magnify" aria-hidden="true"></i>
+                    ابحث
+                </button>
+            </div>
+
+        </div>
+        @endif
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
                 <div class="row mb-3">
                     <div class="col-md-3">
-                        <button type="button" class="btn btn-info call-user-modal" data-url="{{route('asaneedCourses.create')}}" style="width: 305px;"
+                        <button type="button" class="btn btn-success btn-block call-user-modal"
+                        data-url="{{route('asaneedCourses.create')}}" style="background-color:#00937C;width: 100%;"
                                 data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" >
                             <i class="mdi mdi-plus"></i>
                             اضافة مجلس اسناد
                         </button>
+
+
                     </div>
-                    <div class="col-md-3">
-                        <select class="form-control" onchange="getSubAreas(this)" id="areas_select">
-                            <option value="0">اختر المنطقة الكبرى</option>
-                            @foreach($areas as $area)
-                                <option value="{{ $area->id }}">{{ $area->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <select class="form-control" id="sub_areas_select" onchange="updateDateTable()">
-                            <option value="0">اختر المنطقة المحلية</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        {!! $statuses !!}
-                    </div>
+
                 </div>
                 <div class="">
-                    <table class="table table-centered table-nowrap mb-0" id="dataTable" style="display: inline-table;">
-                        <thead style="background-color: #c4ffeb">
+                    <table class="table table-centered table-nowrap mb-0" id="dataTable" style="width: 100%;">
+                        <thead>
                             <tr>
                                 <th scope="col"  style="width: 50px; ">
                                     #
                                 </th>
-                                <th scope="col">اسم الشيخ المجيز رباعياّ</th>
                                 <th scope="col">الكتاب</th>
+                                <th scope="col">اسم الشيخ المجيز رباعياّ</th>
+                                <th scope="col">عدد الطلاب</th>
+
                                 <th scope="col">مكان المجلس</th>
+                                <th scope="col">المشرف</th>
                                 <th scope="col">حالة المجلس </th>
                                 <th scope="col">أدوات</th>
                             </tr>
@@ -91,14 +188,34 @@
 
     <script>
 
-var asaneed_id = 0;
+            $('.select2').select2({
+                dir: "rtl",
+                dropdownAutoWidth: true,
+            });
+
+            var asaneed_id = 0;
 
             function addExcelAsaneedStudents(asaneedCourse) {
                 $('#excelStudentsImport').click();
                 asaneed_id = asaneedCourse;
             }
 
-            function ShowCourseStudents(asaneed_id) {
+            function getSubAreaTeachers(obj) {
+                    if (obj.value != 0) {
+                        $.get('/getSubAreaAsaneedTeachers/' + obj.value, function(data) {
+                            $('#teachers_select').empty().html(data[0]);
+                            $('#place_area').empty().html(data[1]);
+                        });
+
+                    } else {
+                        $('#teachers_select').empty().html('<option value="0">اختر الشيخ</option>');
+                        $('#place_area').empty().html('<option value="0">اختر مكان المجلس</option>');
+
+                    }
+                }
+
+
+            function ShowAsaneedStudents(asaneed_id) {
                     $('.bs-example-modal-xl').modal('toggle');
                     $('.user_modal_content')
                         .html(
@@ -112,14 +229,20 @@ var asaneed_id = 0;
                     });
                 }
 
+
+$(document).ready(function() {
+
+
+
+
             $('#excelStudentsImport').change(function(e) {
-                // console.log($(this),asaneed_id);
-                // $('div[class="student_excel_import_loading"]').css('display','block');
-                $.get('/showLoadingAsaneedStudents/' + asaneed_id, function(data) {
-                    $('.bs-example-modal-xl').modal('show');
-                    $('#user_modal_content')
-                        .html(data);
-                });
+
+                $('div[class="student_excel_import_loading"]').css('display','block');
+                // $.get('/showLoadingAsaneedStudents/' + asaneed_id, function(data) {
+                //     $('.bs-example-modal-xl').modal('show');
+                //     $('#user_modal_content')
+                //         .html(data);
+                // });
                 var fd = new FormData();
                 var files = $(this)[0].files;
                 fd.append('file', files[0]);
@@ -143,12 +266,12 @@ var asaneed_id = 0;
                                 response.msg,
                                 'success'
                             ).then(function(value) {
-                                ShowCourseStudents(asaneed_id);
+                                ShowAsaneedStudents(asaneed_id);
                             });
                         }
-                        $('.bs-example-modal-xl').modal('hide');
+                        // $('.bs-example-modal-xl').modal('hide');
                         $('#dataTable').DataTable().ajax.reload();
-                        $('#spinner').remove();
+                        $('div[class="student_excel_import_loading"]').css('display', 'none');
                     },
                     error: function(errors) {
                         const entries = Object.entries(errors.responseJSON.errors);
@@ -158,7 +281,7 @@ var asaneed_id = 0;
                     }
                 });
             });
-
+        });
 
         var table = '';
         $(document).ready(function(){
@@ -167,33 +290,40 @@ var asaneed_id = 0;
                 "serverSide": true,
                 "ajax": "{{ route('asaneedCourses.getData') }}",
                 language: {
-                    search: "بحث",
-                    processing:     "جاري معالجة البيانات" ,
-                    lengthMenu:    "عدد _MENU_ الصفوف",
-                    info:           "من _START_ الى _END_ من أصل _TOTAL_ صفحة",
-                    infoEmpty: "لا يوجد بيانات",
-                    loadingRecords: "يتم تحميل البيانات",
-                    zeroRecords:    "<p style='text-align: center'>لا يوجد بيانات</p>",
-                    emptyTable:     "<p style='text-align: center'>لا يوجد بيانات</p>",
-                    paginate: {
-                        first:      "الأول",
-                        previous:   "السابق",
-                        next:       "التالي",
-                        last:       "الأخير"
+                        search: "",
+                        searchPlaceholder: "بحث سريع",
+                        processing: "<span style='background-color: #0a9e87;color: #fff;padding: 25px;'>انتظر من فضلك ، جار جلب البيانات ...</span>",
+                        lengthMenu: " _MENU_ ",
+                        info: "من _START_ الى _END_ من أصل _TOTAL_ صفحة",
+                        infoEmpty: "لا يوجد بيانات",
+                        loadingRecords: "يتم تحميل البيانات",
+                        zeroRecords: "<p style='text-align: center'>لا يوجد بيانات</p>",
+                        emptyTable: "<p style='text-align: center'>لا يوجد بيانات</p>",
+                        paginate: {
+                            first: "الأول",
+                            previous: "السابق",
+                            next: "التالي",
+                            last: "الأخير"
+                        },
+                        aria: {
+                            sortAscending: ": ترتيب تصاعدي",
+                            sortDescending: ": ترتيب تنازلي"
+                        }
                     },
-                    aria: {
-                        sortAscending:  ": ترتيب تصاعدي",
-                        sortDescending: ": ترتيب تنازلي"
-                    }
-                },
                 "columnDefs": [
                     { "sortable": false, "targets": [5] }
                 ],
                 "aoColumns": [
                     { "mData": "id" },
-                    { "mData": "teacher_name" },
                     { "mData": "book" },
+                    { "mData": "teacher_name" },
+                    { "mData": "studentCount" },
+
+
                     { "mData": "place" },
+                    { "mData": "supervisor" },
+
+
                     { "mData": "status" },
                     { "mData": "tools" }
                 ]
@@ -318,16 +448,23 @@ var asaneed_id = 0;
                 $.get('/getSubAreas/'+obj.value, function (data) {
                     $('#sub_areas_select').empty().html(data);
                 });
-                updateDateTable();
+                // updateDateTable();
             }else{
                 $('#sub_areas_select').empty().html('<option value="0">اختر المنطقة المحلية</option>');
-                updateDateTable();
+                // updateDateTable();
             }
         }
 
         function updateDateTable() {
             table.ajax.url(
-                "/getAsaneedCoursesData?sub_area_id="+$('#sub_areas_select').val()+'&area_id='+$('#areas_select').val()+'&status='+$('#filterCoursesByStatus').val()
+                "/getAsaneedCoursesData?sub_area_id="+$('#sub_areas_select').val()+'&area_id='+$('#areas_select').val()
+                +'&status='+$('#filterCoursesByStatus').val()
+                +'&book_id='+$('#books_select').val()
+                +'&teacher_id='+$('#teachers_select').val()
+                +'&place_area='+$('#place_area').val()
+
+
+
             ).load();
         }
     </script>

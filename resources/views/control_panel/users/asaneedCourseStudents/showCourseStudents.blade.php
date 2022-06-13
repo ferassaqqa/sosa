@@ -20,7 +20,7 @@
                     <td>{{ $user->dob }}</td>
                     <td>{{ $user->pob }}</td>
                     <td>{!! in_array($user->student_category,$asaneedCourse->student_categories) ? '<i class="mdi mdi-checkbox-marked-circle-outline" style="color:green"></i>' : '<i class="mdi mdi-close-circle-outline" style="color:red"></i>' !!}</td>
-                    <td>{!! $user->deleteAsaneedCourseStudent() !!}</td>
+                    <td>{!! $user->deleteAsaneedCourseStudent($user->id, $asaneedCourse->id) !!}</td>
                 </tr>
             @endforeach
         </tbody>

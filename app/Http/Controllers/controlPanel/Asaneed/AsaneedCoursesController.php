@@ -10,6 +10,8 @@ use App\Models\AsaneedBook;
 use App\Models\AsaneedCourse;
 use App\Models\Place;
 use Illuminate\Http\Request;
+use App\Models\User;
+
 
 class AsaneedCoursesController extends Controller
 {
@@ -21,14 +23,41 @@ class AsaneedCoursesController extends Controller
     public function index()
     {
         $areas = Area::whereNull('area_id')->get();
-        $statuses = '<select id="filterCoursesByStatus" onchange="updateDateTable()" class="form-control">
-                        <option value="0">الكل</option>
+        $statuses = '<select id="filterCoursesByStatus" class="form-control">
+                        <option value="0">حالة المجلس</option>
                         <option value="انتظار الموافقة">انتظار الموافقة</option>
                         <option value="قائمة">قائمة</option>
                         <option value="منتهية">منتهية</option>
                         <option value="معلقة">معلقة</option>
                    </select>';
-        return view('control_panel.asaneed.courses.basic.index',compact('areas','statuses'));
+
+        $books = AsaneedBook::all();
+        return view('control_panel.asaneed.courses.basic.index',compact('areas','statuses','books'));
+    }
+
+
+    public function getSubAreaAsaneedTeachers($area_id)
+    {
+
+
+        $result = array();
+        $moallems = User::department(7)->subarea($area_id,0)->get();
+        $moallem_list = '<option value="0">اختر الشيخ</option>';
+        foreach ($moallems as $moallem) {
+            $moallem_list .= '<option value="'.$moallem->id.'">'.$moallem->name.'</option>';
+        }
+
+        $result[] = $moallem_list;
+
+        $places = Place::where('area_id',$area_id)->get();
+        $place_list = '<option value="0">اختر المكان</option>';
+        foreach ($places as $place) {
+            $place_list .= '<option value="'.$place->id.'">'.$place->name.'</option>';
+        }
+
+        $result[] = $place_list;
+
+        return $result;
     }
 
     public function showLoadingAsaneedStudents(AsaneedCourse $asaneedCourse)
@@ -54,9 +83,14 @@ class AsaneedCoursesController extends Controller
         $order = $request->order[0]["column"];
         $direction = $request->order[0]["dir"];
         $search = trim($request->search["value"]);
+
         $sub_area_id = (int)$request->sub_area_id ? (int)$request->sub_area_id : 0;
         $area_id = (int)$request->area_id ? (int)$request->area_id : 0;
+        $teacher_id = (int)$request->teacher_id ? (int)$request->teacher_id : 0;
+        $book_id = (int)$request->book_id ? (int)$request->book_id : 0;
         $status = $request->status ? $request->status : 0;
+
+        $place_area = $request->place_area ? $request->place_area : 0;
 
 
         $value = array();
@@ -65,18 +99,30 @@ class AsaneedCoursesController extends Controller
             $count = AsaneedCourse::subarea($sub_area_id,$area_id)
                 ->wherestatus($status)
                 ->search($search)
+                ->book($book_id)
+                ->teacher($teacher_id)
+                ->placearea($place_area)
                 ->count();
             $courses = AsaneedCourse::subarea($sub_area_id,$area_id)
                 ->wherestatus($status)
                 ->search($search)
+                ->book($book_id)
+                ->teacher($teacher_id)
+                ->placearea($place_area)
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                 ->get();
         } else {
             $count = AsaneedCourse::subarea($sub_area_id,$area_id)
                 ->wherestatus($status)
+                ->book($book_id)
+                ->teacher($teacher_id)
+                ->placearea($place_area)
                 ->count();
             $courses = AsaneedCourse::subarea($sub_area_id,$area_id)
                 ->wherestatus($status)
+                ->book($book_id)
+                ->teacher($teacher_id)
+                ->placearea($place_area)
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                 ->get();
         }

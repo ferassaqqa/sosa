@@ -214,23 +214,31 @@ class User extends Authenticatable
     }
     public function getAsaneedStudentsDisplayDataAttribute(){
         self::$counter++;
+    $allCoursesBtn = $this->studentAsaneedCourses->count()?'<button type="button" class="btn btn-info"  title="جميع الدورات" data-url="' . route('asaneedCourseStudents.getCourses',$this->id) . '" onclick="callApi(this,\'user_modal_content\')" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl"><i class="mdi mdi-account-details"></i></button>':'<button disabled type="button" class="btn btn-default"><i class="mdi mdi-account-details"></i></button>';
+
         return [
             'id' => self::$counter,
             'name' => $this->name,
             'teacher_name' => $this->name,
+
+            'id_num' => $this->id_num,
+            'area_father_name' => $this->area_father_name,
+            'area_name' => $this->area_name,
+            'area_supervisor'=>areaSupervisor($this->area_father_id_for_permissions),
+            'sub_area_supervisor'=>subAreaSupervisor($this->area_id_for_permissions),
+
             'passedCourses' => $this->passedAsaneedStudentCourses->count() ?
                 '<a href="#!" data-url="' . route('asaneedCourseStudents.getPassedCourses',$this->id) . '" onclick="callApi(this,\'user_modal_content\')" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl">'.$this->passedStudentCourses->count().'</a>'
                 : 0,
             'failedCourses' => $this->failedAsaneedStudentCourses->count() ?
                 '<a href="#!" data-url="' . route('asaneedCourseStudents.getFailedCourses',$this->id) . '" onclick="callApi(this,\'user_modal_content\')" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl">'.$this->failedStudentCourses->count().'</a>'
                 : 0,
-            'courses' => $this->studentAsaneedCourses->count() ?
-                '<a href="#!" data-url="' . route('asaneedCourseStudents.getCourses',$this->id) . '" onclick="callApi(this,\'user_modal_content\')" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl">'.$this->studentCourses->count().'</a>'
-                : 0,
-            'tools' => '
-                    <button type="button" class="btn btn-warning btn-sm" data-url="' . route('asaneedCourseStudents.edit',$this->id) . '" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')"><i class="mdi mdi-comment-edit"></i></button>
-                    <button type="button" class="btn btn-danger btn-sm" data-url="' . route('asaneedCourseStudents.edit',$this->id) . '" onclick="deleteItem(this)"><i class="mdi mdi-trash-can"></i></button>
-                '
+            'courses' => $this->studentAsaneedCourses->count(),
+            'tools' => $allCoursesBtn
+            // '
+            //         <button type="button" class="btn btn-warning btn-sm" data-url="' . route('asaneedCourseStudents.edit',$this->id) . '" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')"><i class="mdi mdi-comment-edit"></i></button>
+            //         <button type="button" class="btn btn-danger btn-sm" data-url="' . route('asaneedCourseStudents.edit',$this->id) . '" onclick="deleteItem(this)"><i class="mdi mdi-trash-can"></i></button>
+            //     '
         ];
     }
     public function getStudentStoredBooksAttribute(){
@@ -279,6 +287,17 @@ class User extends Authenticatable
         if ($contract_type) {
             return $query->whereHas('UserExtraData', function ($query) use ($contract_type) {
                     $query->where('contract_type', $contract_type);
+            });
+
+        }else{
+            return $query;
+        }
+    }
+
+    public function scopeIdNum($query,$id_num){
+        if ($id_num) {
+            return $query->whereHas('UserExtraData', function ($query) use ($id_num) {
+                    $query->where('id_num', $id_num);
             });
 
         }else{
@@ -348,6 +367,9 @@ class User extends Authenticatable
         return [
             'id' => self::$counter,
             'name' => $this->name,
+            'id_num' => $this->id_num,
+            'mobile' => $this->userExtraData->mobile,
+
             'area_supervisor'=>areaSupervisor($this->area_father_id_for_permissions),
             'sub_area_supervisor'=>subAreaSupervisor($this->area_id_for_permissions),
             'area_father_name'=>$this->area_father_name,
@@ -855,8 +877,8 @@ class User extends Authenticatable
     public function deleteCourseStudent($course_id){
         return '<button type="button" class="btn btn-danger btn-sm" data-url="'.route('courseStudents.destroy',['user'=>$this->id,'course'=>$course_id]).'" onclick="deleteCourseStudent(this)"><i class="mdi mdi-trash-can"></i></button>';
     }
-    public function deleteAsaneedCourseStudent(){
-        return '<button type="button" class="btn btn-danger btn-sm" data-url="'.route('asaneedCourseStudents.destroy',$this->id).'" onclick="deleteItem(this)"><i class="mdi mdi-trash-can"></i></button>';
+    public function deleteAsaneedCourseStudent($user_id,$course_id){
+        return '<button type="button" class="btn btn-danger btn-sm" data-url="'.route('asaneedCourseStudents.destroy',['user'=>$user_id,'asaneedCourse'=>$course_id]).'" onclick="deleteItem(this)"><i class="mdi mdi-trash-can"></i></button>';
     }
     public function students(){
         return $this->hasMany(User::class,'teacher_id');

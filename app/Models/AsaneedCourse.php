@@ -19,13 +19,19 @@ class AsaneedCourse extends Model
             'id'=>self::$counter,
             'teacher_name'=>$this->name,
             'book'=>$this->book_name,
-            'place'=>$this->place_name,
+            'place'=>$this->area_father_name.' - '.$this->area_name.' <br> '.$this->place_name,
+
+            'supervisor' =>'الميداني: '.$this->sub_area_supervisor_name.'<br>'
+                                .'العام: '.$this->area_supervisor_name,
+
+            'studentCount'=>$this->students->count(),
+
             'status'=>$this->status != 'منتهية' ? $this->status_select : $this->status,
-            'tools'=>$addStudent.'
+            'tools'=>$addStudent.' '.$addExcelStudent.'
                         <button type="button" class="btn btn-success btn-sm" title="عرض الطلاب" data-url="'.route('asaneedCourseStudents.ShowCourseStudents',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')"><i class="mdi mdi-account-multiple"></i></button>
                         <button type="button" class="btn btn-warning btn-sm" title="تعديل بيانات الدورة" data-url="'.route('asaneedCourses.edit',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-center" onclick="callApi(this,\'modal_content\')"><i class="mdi mdi-comment-edit"></i></button>
                         <button type="button" class="btn btn-danger btn-sm" title="حذف بيانات الدورة" data-url="'.route('asaneedCourses.destroy',$this->id).'" onclick="deleteItem(this)"><i class="mdi mdi-trash-can"></i></button>
-                    '.$addExcelStudent
+                    '
         ];
     }
     public function getNameAttribute(){
@@ -169,6 +175,34 @@ class AsaneedCourse extends Model
     public function scopeWhereStatus($query,$status){
         if ($status){
             return $query->where('status',$status);
+        }else{
+            return $query;
+        }
+    }
+
+    public function scopePlaceArea($query,$place_id){
+
+        if($place_id) {
+                return $query->where('place_id',$place_id);
+            }else{
+                return $query;
+            }
+    }
+
+    public function scopeTeacher($query,$teacher_id)
+    {
+        if ($teacher_id) {
+            return $query->where('teacher_id',$teacher_id);
+        }else{
+            return $query;
+        }
+    }
+
+
+    public function scopeBook($query,$book_id)
+    {
+        if ($book_id) {
+            return $query->where('book_id',$book_id);
         }else{
             return $query;
         }

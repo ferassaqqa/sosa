@@ -9,6 +9,34 @@
 @endsection
 @section('content')
 
+<style>
+
+
+        .white_space {
+            white-space: break-spaces !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_filter input {
+            width: 100%;
+        }
+
+        .dataTables_wrapper .dataTables_filter {
+            float: left;
+        }
+
+        div.dataTables_filter,
+        div.dataTables_length {
+            margin-left: 1em;
+        }
+
+        div.dataTables_wrapper div.dataTables_processing {
+            top: 5%;
+        }
+        .dataTables_wrapper {
+            margin-top: -40px;
+        }
+</style>
+
 <!-- start page title -->
 <div class="row">
     <div class="col-12">
@@ -27,6 +55,40 @@
 </div>
 <!-- end page title -->
 
+<div class="col-lg-12">
+    <div class="card">
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <select class="form-control" onchange="getSubAreas(this)" id="areas_select">
+                        <option value="0">اختر المنطقة الكبرى</option>
+                        @foreach($areas as $area)
+                            <option value="{{ $area->id }}">{{ $area->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-control" id="sub_areas_select">
+                        <option value="0">اختر المنطقة المحلية</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <input type="text" class="form-control" name="id_num" id="id_num" placeholder="رقم الهوية"/>
+                </div>
+
+                <div class="col-md-3">
+                    <button type="button" style="width:100%" onclick="updateDateTable()" class="btn btn-primary btn-block">
+                        <i class="mdi mdi-magnify" aria-hidden="true"></i>
+                        ابحث
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-lg-12">
         <div class="card">
@@ -39,28 +101,20 @@
                             اضافة شيخ جديد
                         </button>
                     </div>
-                    <div class="col-md-3">
-                        <select class="form-control" onchange="getSubAreas(this)" id="areas_select">
-                            <option value="0">اختر المنطقة الكبرى</option>
-                            @foreach($areas as $area)
-                                <option value="{{ $area->id }}">{{ $area->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <select class="form-control" id="sub_areas_select" onchange="updateDateTable()">
-                            <option value="0">اختر المنطقة المحلية</option>
-                        </select>
-                    </div>
+
                 </div>
                 <div class="">
-                    <table class="table table-centered table-nowrap mb-0" id="dataTable" style="display: inline-table">
-                        <thead style="background-color: #c4ffeb">
+                    <table class="table table-centered table-nowrap mb-0" id="dataTable">
+                        <thead>
                             <tr>
                                 <th scope="col"  style="width: 50px;">
                                     #
                                 </th>
                                 <th scope="col">اسم الشيخ</th>
+                                <th scope="col">رقم الهوية</th>
+                                <th scope="col">رقم الجوال</th>
+
+
                                 <th scope="col">المشرف العام</th>
                                 <th scope="col">المشرف الميداني</th>
                                 <th scope="col">المنطقة الكبرى</th>
@@ -98,22 +152,23 @@
                 "serverSide": true,
                 "ajax": "{{ route('asaneedMoallem.getData') }}",
                 language: {
-                    search: "بحث",
-                    processing:     "جاري معالجة البيانات" ,
-                    lengthMenu:    "عدد _MENU_ الصفوف",
-                    info:           "من _START_ الى _END_ من أصل _TOTAL_ صفحة",
+                    search: "",
+                    searchPlaceholder: "بحث سريع",
+                    processing: "<span style='background-color: #0a9e87;color: #fff;padding: 25px;'>انتظر من فضلك ، جار جلب البيانات ...</span>",
+                    lengthMenu: " _MENU_ ",
+                    info: "من _START_ الى _END_ من أصل _TOTAL_ صفحة",
                     infoEmpty: "لا يوجد بيانات",
                     loadingRecords: "يتم تحميل البيانات",
-                    zeroRecords:    "<p style='text-align: center'>لا يوجد بيانات</p>",
-                    emptyTable:     "<p style='text-align: center'>لا يوجد بيانات</p>",
+                    zeroRecords: "<p style='text-align: center'>لا يوجد بيانات</p>",
+                    emptyTable: "<p style='text-align: center'>لا يوجد بيانات</p>",
                     paginate: {
-                        first:      "الأول",
-                        previous:   "السابق",
-                        next:       "التالي",
-                        last:       "الأخير"
+                        first: "الأول",
+                        previous: "السابق",
+                        next: "التالي",
+                        last: "الأخير"
                     },
                     aria: {
-                        sortAscending:  ": ترتيب تصاعدي",
+                        sortAscending: ": ترتيب تصاعدي",
                         sortDescending: ": ترتيب تنازلي"
                     }
                 },
@@ -124,6 +179,9 @@
                 "aoColumns": [
                     { "mData": "id" },
                     { "mData": "name" },
+                    { "mData": "id_num" },
+                    { "mData": "mobile" },
+
                     { "mData": "area_supervisor" },
                     { "mData": "sub_area_supervisor" },
                     { "mData": "area_father_name" },
@@ -266,15 +324,16 @@
                 $.get('/getSubAreas/'+obj.value, function (data) {
                     $('#sub_areas_select').empty().html(data);
                 });
-                updateDateTable();
+                // updateDateTable();
             }else{
                 $('#sub_areas_select').empty().html('<option value="0">اختر المنطقة المحلية</option>');
-                updateDateTable();
+                // updateDateTable();
             }
         }
         function updateDateTable() {
             table.ajax.url(
                 "/getAsaneedMoallemData?sub_area_id="+$('#sub_areas_select').val()+'&area_id='+$('#areas_select').val()
+                +'&id_num='+$('#id_num').val()
             ).load();
         }
         function updateRoles(obj,user_id) {

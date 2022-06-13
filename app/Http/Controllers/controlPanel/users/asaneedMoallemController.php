@@ -51,25 +51,32 @@ class asaneedMoallemController extends Controller
         $sub_area_id = (int)$request->sub_area_id ? (int)$request->sub_area_id : 0;
         $area_id = (int)$request->area_id ? (int)$request->area_id : 0;
 
+        $id_num = (int)$request->id_num ? (int)$request->id_num : 0;
+
+
 
         $value = array();
 
         if(!empty($search)){
             $count = User::subarea($sub_area_id,$area_id)
                 ->search($search)
+                ->idnum($id_num)
                 ->department(7)
                 ->count();
             $users = User::subarea($sub_area_id,$area_id)
                 ->search($search)
+                ->idnum($id_num)
                 ->department(7)
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                 ->get();
         } else {
             $count = User::subarea($sub_area_id,$area_id)
                 ->department(7)
+                ->idnum($id_num)
                 ->count();
             $users = User::subarea($sub_area_id,$area_id)
                 ->department(7)
+                ->idnum($id_num)
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                 ->get();
 //            dd(Auth::user()->assignRole('رئيس الدائرة'));

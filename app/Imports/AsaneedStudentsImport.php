@@ -3,7 +3,7 @@
 namespace App\Imports;
 
 
-use App\Models\CourseStudent;
+use App\Models\AsaneedCourseStudent;
 use App\Models\Place;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
@@ -22,28 +22,30 @@ class AsaneedStudentsImport implements ToModel,WithUpserts,WithValidation,WithHe
 {
     use Importable,SkipsFailures;
 
-    private static $course;
-    public function __construct($course)
+    private static $asaneedCourse;
+    public function __construct($asaneedCourse)
     {
-        Self::$course = $course;
+        Self::$asaneedCourse = $asaneedCourse;
     }
 
     public function model(array $row)
     {
 //        dd((int)$row['rkm_alhoy']);
-        $course = Self::$course;
+        $asaneedCourse = Self::$asaneedCourse;
         $id_num = (int)$row['rkm_alhoy'];
-        if($course->teacher_id_num == $id_num){
-            return response()->json(['view' => '', 'errors' => 1, 'msg' => ' لا يمكن اضافة المعلم '.$course->teacher_name.' كطالب في دورته '], 404);
+        if($asaneedCourse->teacher_id_num == $id_num){
+            return response()->json(['view' => '', 'errors' => 1, 'msg' => ' لا يمكن اضافة المعلم '.$asaneedCourse->teacher_name.' كطالب في دورته '], 404);
         }else {
             $old_user = User::withoutGlobalScope('relatedUsers')->where('id_num', $id_num)->first();
 
             $user_validity_check = getGetDataFromIdentityNum($id_num);
             if($user_validity_check) {
-                $user_interior_ministry_data = array_merge(getUserBasicData($user_validity_check), ['place_id' => $course->place_id]);
+                $user_interior_ministry_data = array_merge(getUserBasicData($user_validity_check), ['place_id' => $asaneedCourse->place_id]);
                 if (!$old_user) {
 //                    if (in_array($user_interior_ministry_data['student_category'], $course->student_categories)) {
                         $user_data = array_merge(['id_num' => $id_num, 'password' => Hash::make($id_num)], $user_interior_ministry_data);
+
+
                         $user = User::create($user_data);
 //                        dd([
 //                            'row'=>'
@@ -69,17 +71,17 @@ class AsaneedStudentsImport implements ToModel,WithUpserts,WithValidation,WithHe
                                             <td>'. $user->dob .'</td>
                                             <td>'. $user->pob .'</td>
                                             <td>'. $user->student_category .'</td>
-                                            <td>'. (in_array($user->student_category,$course->student_categories) ? '<i class="mdi mdi-checkbox-marked-circle-outline" style="color:green"></i>' : '<i class="mdi mdi-close-circle-outline" style="color:red"></i>').'</td>
+                                            <td>'. (in_array($user->student_category,$asaneedCourse->student_categories) ? '<i class="mdi mdi-checkbox-marked-circle-outline" style="color:green"></i>' : '<i class="mdi mdi-close-circle-outline" style="color:red"></i>').'</td>
                                             '.(hasPermissionHelper('حذف طالب من دورة علمية') ?
-                                                '<td>'. $user->deleteCourseStudent($course->id) .'</td>' : '').'
+                                                '<td>'.  $user->deleteAsaneedCourseStudent($user->id,$asaneedCourse->id) .'</td>' : '').'
                                         </tr>'
                             ]
                         );
-                        $user->assignRole('طالب دورات علمية');
+                        $user->assignRole('طالب دورات أسانيد وإجازات');
                         // TODO: Implement model() method.
-                        return new CourseStudent([
+                        return new AsaneedCourseStudent([
                             'user_id' => $user->id,
-                            'course_id' => $course->id
+                            'asaneed_course_id' => $asaneedCourse->id
                         ]);
 //                    } else {
 //                        //exclude
@@ -99,8 +101,8 @@ class AsaneedStudentsImport implements ToModel,WithUpserts,WithValidation,WithHe
                         $user_data = array_merge(['password' => Hash::make($id_num)], $user_interior_ministry_data);
                         $old_user->update($user_data);
 
-                        if (!$old_user->hasRole('طالب دورات علمية')) {
-                            $old_user->assignRole('طالب دورات علمية');
+                        if (!$old_user->hasRole('طالب دورات أسانيد وإجازات')) {
+                            $old_user->assignRole('طالب دورات أسانيد وإجازات');
                         }
                         Auth::user()->sendFCM(
                             [
@@ -112,41 +114,25 @@ class AsaneedStudentsImport implements ToModel,WithUpserts,WithValidation,WithHe
                                             <td>'. $old_user->dob .'</td>
                                             <td>'. $old_user->pob .'</td>
                                             <td>'. $old_user->student_category .'</td>
-                                            <td>'. (in_array($old_user->student_category,$course->student_categories) ? '<i class="mdi mdi-checkbox-marked-circle-outline" style="color:green"></i>' : '<i class="mdi mdi-close-circle-outline" style="color:red"></i>').'</td>
+                                            <td>'. (in_array($old_user->student_category,$asaneedCourse->student_categories) ? '<i class="mdi mdi-checkbox-marked-circle-outline" style="color:green"></i>' : '<i class="mdi mdi-close-circle-outline" style="color:red"></i>').'</td>
                                             '.(hasPermissionHelper('حذف طالب من دورة علمية') ?
-                                        '<td>'. $old_user->deleteCourseStudent($course->id) .'</td>' : '').'
+                                        '<td>'. $old_user->deleteAsaneedCourseStudent($old_user->id,$asaneedCourse->id) .'</td>' : '').'
                                         </tr>'
                             ]
                         );
-                        $studentCourses = CourseStudent::where([
+                        $studentCourses = AsaneedCourseStudent::where([
                             'user_id' => $old_user->id,
-                            'course_id' => $course->id
+                            'asaneed_course_id' => $asaneedCourse->id
                         ])->count();
-//                dd($studentCourses);
+
                         if (!$studentCourses) {
                             // TODO: Implement model() method.
-                            return new CourseStudent([
+                            return new AsaneedCourseStudent([
                                 'user_id' => $old_user->id,
-                                'course_id' => $course->id
+                                'asaneed_course_id' => $asaneedCourse->id
                             ]);
                         }
-//                    } else {
-//                        if (!$old_user->hasRole('طالب دورات علمية')) {
-//                            $old_user->assignRole('طالب دورات علمية');
-//                        }
-//                        $studentCourses = CourseStudent::where([
-//                            'user_id' => $old_user->id,
-//                            'course_id' => $course->id
-//                        ])->count();
-////                dd($studentCourses);
-//                        if (!$studentCourses) {
-//                            // TODO: Implement model() method.
-//                            return new CourseStudent([
-//                                'user_id' => $old_user->id,
-//                                'course_id' => $course->id
-//                            ]);
-//                        }
-//                    }
+
                 }
             }else{
 

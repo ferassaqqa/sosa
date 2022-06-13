@@ -228,8 +228,9 @@ Route::get('getYearBooksForNewAsaneedCourse/{year}/{type}', [\App\Http\Controlle
 Route::get('createOutOfPlanAsaneedBook/{year}', [\App\Http\Controllers\controlPanel\Asaneed\AsaneedCoursesController::class,'createOutOfPlanBook'])->name('asaneedCourses.createOutOfPlanBook');
 Route::get('storeAsaneedStudentsMarks/{asaneedCourse}', [\App\Http\Controllers\controlPanel\Asaneed\AsaneedCoursesController::class,'storeStudentsMarks'])->name('asaneedCourses.storeStudentsMarks');
 Route::get('getPlaceAsaneedTeachers/{place}/{teacher_id}', [\App\Http\Controllers\controlPanel\Asaneed\AsaneedCoursesController::class,'getPlaceTeachersForCourses'])->name('asaneedCourses.getPlaceTeachers');
-Route::get('showLoadingAsaneedStudents/{asaneedCourse}', [\App\Http\Controllers\controlPanel\Asaneed\AsaneedCoursesController::class,'showLoadingAsaneedStudents'])->name('courseStudents.showLoadingAsaneedStudents');
-Route::post('importAsaneedStudentsExcel/{asaneedCourse}', [\App\Http\Controllers\controlPanel\ExcelExporterController::class,'importCourseStudentsExcel'])->name('courses.importCourseStudentsExcel');
+Route::get('showLoadingAsaneedStudents/{asaneedCourse}', [\App\Http\Controllers\controlPanel\Asaneed\AsaneedCoursesController::class,'showLoadingAsaneedStudents'])->name('asaneedCourses.showLoadingAsaneedStudents');
+Route::post('importAsaneedStudentsExcel/{asaneedCourse}', [\App\Http\Controllers\controlPanel\ExcelExporterController::class,'importAsaneedStudentsExcel'])->name('asaneedCourses.importAsaneedStudentsExcel');
+Route::get('getSubAreaAsaneedTeachers/{area_id}', [\App\Http\Controllers\controlPanel\Asaneed\AsaneedCoursesController::class,'getSubAreaAsaneedTeachers'])->name('asaneedCourses.getSubAreaAsaneedTeachers');
 
 /**
  *  End Asaneed Courses Operations
@@ -287,6 +288,7 @@ Route::get('asaneedCourseStudents/create/{id_num}/{asaneedCourse}', [\App\Http\C
 Route::get('getAsaneedCourses/{user}', [\App\Http\Controllers\controlPanel\users\AsaneedCoursesStudentsController::class,'getCourses'])->name('asaneedCourseStudents.getCourses');
 Route::get('getAsaneedPassedCourses/{user}', [\App\Http\Controllers\controlPanel\users\AsaneedCoursesStudentsController::class,'getPassedCourses'])->name('asaneedCourseStudents.getPassedCourses');
 Route::get('getAsaneedFailedCourses/{user}', [\App\Http\Controllers\controlPanel\users\AsaneedCoursesStudentsController::class,'getFailedCourses'])->name('asaneedCourseStudents.getFailedCourses');
+Route::delete('asaneedCourseStudents/destroy/{user}/{asaneedCourse}', [\App\Http\Controllers\controlPanel\users\AsaneedCoursesStudentsController::class,'destroy'])->name('asaneedCourseStudents.destroy');
 
 /**
  *  End asaneedCourseStudents Operations

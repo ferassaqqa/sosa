@@ -8,6 +8,8 @@ use App\Models\AsaneedBook;
 use App\Models\AsaneedCourse;
 use App\Models\AsaneedCourseStudent;
 use App\Models\User;
+use App\Models\Area;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -25,7 +27,9 @@ class AsaneedCoursesStudentsController extends Controller
     public function index()
     {
         $moallems = User::whereHas('teacherAsaneedCourses')->get();
-        return view('control_panel.users.asaneedCourseStudents.basic.index',compact('moallems'));
+        $areas = Area::whereNull('area_id')->get();
+
+        return view('control_panel.users.asaneedCourseStudents.basic.index',compact('moallems','areas'));
     }
     public function getData(Request $request)
     {
@@ -40,9 +44,14 @@ class AsaneedCoursesStudentsController extends Controller
         $length = (int)$request->length;
         $order = $request->order[0]["column"];
         $direction = $request->order[0]["dir"];
+
+
         $search = trim($request->search["value"]);
         $teacher_id = (int)$request->teacher_id ? (int)$request->teacher_id : 0;
         $book_id = (int)$request->book_id ? (int)$request->book_id : 0;
+        $place_id = (int)$request->place_id ? (int)$request->place_id : 0;
+        $sub_area_id = (int)$request->sub_area_id ? (int)$request->sub_area_id : 0;
+        $area_id = (int)$request->area_id ? (int)$request->area_id : 0;
 
 
         $value = array();
@@ -51,18 +60,22 @@ class AsaneedCoursesStudentsController extends Controller
             $count = User::asaneedcoursebookorteacher($teacher_id,$book_id)
                 ->search($search)
                 ->department(8)
+                ->subarea($sub_area_id, $area_id)
                 ->count();
             $users = User::asaneedcoursebookorteacher($teacher_id,$book_id)
                 ->search($search)
                 ->department(8)
+                ->subarea($sub_area_id, $area_id)
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                 ->get();
         } else {
             $count = User::asaneedcoursebookorteacher($teacher_id,$book_id)
                 ->department(8)
+                ->subarea($sub_area_id, $area_id)
                 ->count();
             $users = User::asaneedcoursebookorteacher($teacher_id,$book_id)
                 ->department(8)
+                ->subarea($sub_area_id, $area_id)
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                 ->get();
 //            dd($users);
@@ -277,7 +290,7 @@ class AsaneedCoursesStudentsController extends Controller
             $courseStudent->delete();
             $studentCourses = AsaneedCourseStudent::where([
                 'user_id' => $user->id,
-                'asaneed_course_id' => $asaneedCourse->id
+                // 'asaneed_course_id' => $asaneedCourse->id
             ])->count();
             if (!$studentCourses) {
                 if ($user->hasRole('طالب دورات أسانيد وإجازات')) {
@@ -306,7 +319,7 @@ class AsaneedCoursesStudentsController extends Controller
             $courses = $book->load(['courses'=>function($query) use($teacher_id){
                 $query->where('teacher_id',$teacher_id);
             },'courses.place']);
-            $places = '<option value="0">اختر الكتاب</option>';
+            $places = '<option value="0">اختر المكان</option>';
             foreach ($courses->courses->pluck('place')->unique() as $value) {
                 $places .= '<option value="' . $value->id . '">' . $value->name . '</option>';
             }
