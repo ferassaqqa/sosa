@@ -1,8 +1,11 @@
 
-<div class="modal-header" style="background-color: #c4ffeb">
-    <h5 class="modal-title" id="myLargeModalLabel" style="color: #000 !important;">إضافة مجلس اسناد علمي</h5>
+<div class="modal-header " style="background-color: #00937c !important;">
+    <h5 class="modal-title" id="myLargeModalLabel" style="color: #fff !important;width: 100%;text-align-last: center;">
+        إضافة مجلس اسناد علمي
+    </h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
+
 <div class="modal-body">
     <form action="{{ route('asaneedCourses.store') }}" method="POST" id="form">
         @include('control_panel.asaneed.courses.basic.form')
@@ -10,8 +13,8 @@
 </div>
 
 <div class="modal-footer">
-    <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">إلغاء</button>
-    <button type="submit" form="form" class="btn btn-primary waves-effect waves-light">حفظ</button>
+    <button type="button" class="btn btn-secondary waves-effect btn-lg" data-bs-dismiss="modal">إلغاء</button>
+    <button type="submit" form="form" class="btn btn-primary waves-effect waves-light btn-lg">حفظ</button>
 </div>
 
     <script src="{{asset('control_panel/assets/js/pages/form-advanced.init.js')}}"></script>

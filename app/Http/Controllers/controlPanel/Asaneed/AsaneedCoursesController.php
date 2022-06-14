@@ -164,7 +164,9 @@ class AsaneedCoursesController extends Controller
     public function store(newAsaneedCourseRequest $request)
     {
 //        dd($request->all());
-        AsaneedCourse::create($request->all());
+        $sanad = AsaneedCourse::create($request->all());
+        $sanad->exam()->create($request->all());
+
         return response()->json(['msg'=>'تم اضافة دورة أسانيد جديدة','title'=>'اضافة','type'=>'success']);
     }
 

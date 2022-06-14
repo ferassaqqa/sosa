@@ -1,8 +1,11 @@
 
+
 <div class="modal-header">
-    <h5 class="modal-title" id="myLargeModalLabel" style="color: #000 !important;">تعديل  بيانات دورة علمية </h5>
+    <h5 class="modal-title" id="myLargeModalLabel" style="color: #000 !important;">تعديل مجلس اسناد علمي
+    </h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
+
 <div class="modal-body">
     <form action="{{ route('asaneedCourses.update',$asaneedCourse->id) }}" method="POST" id="form">
         <input type="hidden" name="_method" value="PUT">
@@ -11,8 +14,8 @@
 </div>
 
 <div class="modal-footer">
-    <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">إلغاء</button>
-    <button type="submit" form="form" class="btn btn-primary waves-effect waves-light">تعديل</button>
+    <button type="button" class="btn btn-secondary waves-effect btn-lg" data-bs-dismiss="modal">إلغاء</button>
+    <button type="submit" form="form" class="btn btn-primary waves-effect waves-light btn-lg">تعديل</button>
 </div>
 <script src="{{asset('control_panel/assets/js/pages/form-advanced.init.js')}}"></script>
 

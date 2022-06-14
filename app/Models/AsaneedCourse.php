@@ -9,7 +9,7 @@ class AsaneedCourse extends Model
 {
     use HasFactory;
     public static $counter=0;
-    protected $fillable = ['start_date','place_id','course_type','included_in_plan','book_id','teacher_id','hours','status','note'];
+    protected $fillable = ['start_date','place_id','course_type','book_id','teacher_id','hours','status','note'];
     public function getCourseDisplayDataAttribute(){
         self::$counter++;
         $addStudent = $this->status != 'منتهية' ? '<button type="button" class="btn btn-info btn-sm" title="اضافة طالب"  onclick="createNewCourseStudents('.$this->id.')"><i class="mdi mdi-account-plus"></i></button>' : '';
@@ -29,7 +29,7 @@ class AsaneedCourse extends Model
             'status'=>$this->status != 'منتهية' ? $this->status_select : $this->status,
             'tools'=>$addStudent.' '.$addExcelStudent.'
                         <button type="button" class="btn btn-success btn-sm" title="عرض الطلاب" data-url="'.route('asaneedCourseStudents.ShowCourseStudents',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')"><i class="mdi mdi-account-multiple"></i></button>
-                        <button type="button" class="btn btn-warning btn-sm" title="تعديل بيانات الدورة" data-url="'.route('asaneedCourses.edit',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-center" onclick="callApi(this,\'modal_content\')"><i class="mdi mdi-comment-edit"></i></button>
+                        <button type="button" class="btn btn-warning btn-sm" title="تعديل بيانات الدورة" data-url="'.route('asaneedCourses.edit',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-x2" onclick="callApi(this,\'user_modal_content_new\')"><i class="mdi mdi-comment-edit"></i></button>
                         <button type="button" class="btn btn-danger btn-sm" title="حذف بيانات الدورة" data-url="'.route('asaneedCourses.destroy',$this->id).'" onclick="deleteItem(this)"><i class="mdi mdi-trash-can"></i></button>
                     '
         ];

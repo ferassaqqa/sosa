@@ -71,7 +71,7 @@
 
                 @if (hasPermissionHelper('فلترة الدورات العلمية'))
                 <div class="col-md-3">
-                    <select class="form-control select2" onchange="getSubAreas(this)" id="areas_select">
+                    <select class="form-control " onchange="getSubAreas(this)" id="areas_select">
                         <option value="0">اختر المنطقة الكبرى</option>
                         @foreach ($areas as $area)
                             <option value="{{ $area->id }}">{{ $area->name }}</option>
@@ -82,20 +82,20 @@
 
 
                 <div class="col-md-3">
-                    <select class="form-control select2" id="sub_areas_select"
+                    <select class="form-control " id="sub_areas_select"
                         onchange="getSubAreaTeachers(this)">
                         <option value="0">اختر المنطقة المحلية</option>
                     </select>
                 </div>
 
                 <div class="col-md-3">
-                    <select class="form-control select2" id="teachers_select">
+                    <select class="form-control " id="teachers_select">
                         <option value="0">اختر الشيخ</option>
                     </select>
                 </div>
 
                 <div class="col-md-3">
-                    <select class="form-control select2" id="books_select">
+                    <select class="form-control " id="books_select">
                         <option value="0">اختر الكتاب</option>
                         @foreach ($books as $book)
                             <option value="{{ $book->id }}">{{ $book->name }}</option>
@@ -108,7 +108,7 @@
         <div class="row mb-3">
 
             <div class="col-md-3">
-                <select class="form-control select2" id="place_area">
+                <select class="form-control " id="place_area">
                     <option value="0">اختر مكان المجلس</option>
                 </select>
             </div>
@@ -139,12 +139,16 @@
             <div class="card-body">
                 <div class="row mb-3">
                     <div class="col-md-3">
-                        <button type="button" class="btn btn-success btn-block call-user-modal"
-                        data-url="{{route('asaneedCourses.create')}}" style="background-color:#00937C;width: 100%;"
-                                data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" >
-                            <i class="mdi mdi-plus"></i>
-                            اضافة مجلس اسناد
-                        </button>
+
+
+                        <button type="button" onclick="callApi(this,'user_modal_content_new')"
+                        class="btn btn-success btn-block" data-url="{{ route('asaneedCourses.create') }}"
+                        style="background-color:#00937C;width: 100%;" data-bs-toggle="modal"
+                        data-bs-target=".bs-example-modal-x2">
+                        <i class="mdi mdi-plus"></i>
+                        اضافة مجلس اسناد
+
+                    </button>
 
 
                     </div>

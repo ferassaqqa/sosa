@@ -19,24 +19,48 @@ class Exam extends Model
     protected function getExamTypeAttribute()
     {
         if($this->examable_type == 'App\Models\Course'){
-            return 'دورة علمية';
+            return 'دورات علمية';
+        }else if($this->examable_type == 'App\Models\AsaneedCourse'){
+            return 'مجالس أسانيد';
         }else{
-            return 'حلقة تحفيظ';
+            return 'حلقات تحفيظ';
         }
     }
     public function examable(){
         return $this->morphTo()->withoutGlobalScope('relatedCourses');
     }
+
+
     public function getCourseAttribute(){
         if($this->examable_type == 'App\Models\Course'){
             return $this->examable;
         }
     }
+
+    public function getAsaneedAttribute(){
+        if($this->examable_type == 'App\Models\AsaneedCourse'){
+            return $this->examable;
+        }
+    }
+
+
     public function getCourseNameAttribute(){
-        return $this->course ? $this->course->name : '';
+
+        if($this->examable_type == 'App\Models\Course'){
+            return $this->course ? $this->course->name : '';
+        }elseif($this->examable_type == 'App\Models\AsaneedCourse'){
+            return $this->asaneed ?$this->asaneed->teacher_name : '';
+        }
+
     }
     public function getCourseBookNameAttribute(){
-        return $this->course ? $this->course->book_name : '';
+
+        if($this->examable_type == 'App\Models\Course'){
+            return $this->course ? $this->course->book_name : '';
+        }else if($this->examable_type == 'App\Models\AsaneedCourse'){
+            return $this->asaneed ?$this->asaneed->book->name : '';
+        }
+
     }
     public function getCoursePlaceNameAttribute(){
         return $this->course ? $this->course->place_name : '';
@@ -45,12 +69,22 @@ class Exam extends Model
         return $this->course ? $this->course->start_date : '';
     }
     public function getSubAreaSupervisorNameAttribute(){
-        return $this->course ? $this->course->sub_area_supervisor_name : '';
+
+        if($this->examable_type == 'App\Models\Course'){
+            return $this->course ? $this->course->sub_area_supervisor_name : '';
+        }else if($this->examable_type == 'App\Models\AsaneedCourse'){
+            return $this->asaneed ?$this->asaneed->sub_area_supervisor_name : '';
+        }
+
     }
     public function getTeacherMobileAttribute(){
-//        dd($this->teacher);
-        return $this->course ?
-            $this->course->teacher_mobile : '';
+
+        if($this->examable_type == 'App\Models\Course'){
+            return $this->course ? $this->course->teacher_mobile : '';
+        }else if($this->examable_type == 'App\Models\AsaneedCourse'){
+            return $this->asaneed ?$this->asaneed->teacher_mobile : '';
+        }
+
     }
     public function placeForPermissions(){
         return $this->belongsTo(Place::class,'place_id','id')->withoutGlobalScope('relatedExams');
@@ -62,13 +96,31 @@ class Exam extends Model
         return $this->place ? $this->place->name : '';
     }
     public function getCourseAreaFatherNameAttribute(){
-        return $this->course ? $this->course->area_father_name : '';
+
+        if($this->examable_type == 'App\Models\Course'){
+            return $this->course ? $this->course->area_father_name : '';
+        }else if($this->examable_type == 'App\Models\AsaneedCourse'){
+            return $this->asaneed ?$this->asaneed->area_father_name : '';
+        }
+
     }
     public function getCourseAreaNameAttribute(){
-        return $this->course ? $this->course->area_name : '';
+
+        if($this->examable_type == 'App\Models\Course'){
+            return $this->course ? $this->course->area_name : '';
+        }else if($this->examable_type == 'App\Models\AsaneedCourse'){
+            return $this->asaneed ?$this->asaneed->area_name : '';
+        }
     }
     public function getStudentsCountAttribute(){
-        return $this->course ? ( $this->course->studentsForPermissions->count() ? $this->course->studentsForPermissions->count() : 0) : 0;
+
+
+        if($this->examable_type == 'App\Models\Course'){
+            return $this->course ? ( $this->course->studentsForPermissions->count() ? $this->course->studentsForPermissions->count() : 0) : 0;
+        }else if($this->examable_type == 'App\Models\AsaneedCourse'){
+            return $this->asaneed ?$this->asaneed->students->count() : 0;
+        }
+
     }
     public function getPassedStudentsCountAttribute(){
         return $this->course ?
@@ -176,7 +228,7 @@ class Exam extends Model
         return $this->quality_supervisor_id ? (array)json_decode($this->quality_supervisor_id) : [];
     }
     public function getQualitySupervisorsStringAttribute(){
-//        dd(55);
+
         $QualitySupervisorsStr = '';
         foreach ($this->quality_supervisors_array as $key => $value){
             $user = User::withoutGlobalScope('relatedUsers')->find($value);
@@ -357,6 +409,15 @@ class Exam extends Model
 
         if($place_id) {
                 return $query->where('place_id',$place_id);
+            }else{
+                return $query;
+            }
+    }
+
+    public function scopeExamType($query,$exam_type){
+
+        if($exam_type) {
+                return $query->where('examable_type',$exam_type);
             }else{
                 return $query;
             }

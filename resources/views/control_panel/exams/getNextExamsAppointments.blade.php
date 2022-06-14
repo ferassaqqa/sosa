@@ -4,13 +4,11 @@
     <link href="{{ asset('control_panel/assets/css/datatable.css') }}" rel="stylesheet" type="text/css" />
 
     <style>
-        .dataTables_filter{
+        .dataTables_filter {
             float: left !important;
             margin-left: 45px;
         }
     </style>
-
-
 @endsection
 @section('title')
     <title>برنامج السنة | مواعيد الاختبارات</title>
@@ -40,7 +38,7 @@
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <select id="moallem_id"  class="form-control select2">
+                                <select id="moallem_id" class="form-control select2">
                                     <option value="0">المعلم</option>
                                     @foreach ($moallems as $key => $moallem)
                                         <option value="{{ $moallem->id }}">{{ $moallem->name }}</option>
@@ -48,7 +46,7 @@
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <select class="form-control select2" id="place_area" >
+                                <select class="form-control select2" id="place_area">
                                     <option value="0">اختر مكان الدورة</option>
                                 </select>
                             </div>
@@ -59,7 +57,7 @@
                         <div class=" row" style="margin-top: 15px; ">
 
                             <div class="col-md-3">
-                                <select id="book_id"  class="form-control select2">
+                                <select id="book_id" class="form-control ">
                                     <option value="0">الكتاب</option>
                                     @foreach ($books as $key => $book)
                                         <option value="{{ $book->id }}">{{ $book->name }}</option>
@@ -68,30 +66,46 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="input-group" id="datepicker2">
-                                    <input autocomplete="off"  type="text"
-                                        class="form-control" placeholder="من تاريخ" name="start_date" value=""
-                                        id="start_date" data-date-format="yyyy-mm-dd" data-date-container='#datepicker2'
-                                        data-provide="datepicker" data-date-autoclose="true">
+                                    <input autocomplete="off" type="text" class="form-control" placeholder="من تاريخ"
+                                        name="start_date" value="" id="start_date" data-date-format="yyyy-mm-dd"
+                                        data-date-container='#datepicker2' data-provide="datepicker"
+                                        data-date-autoclose="true">
                                     <span class="input-group-text"><i class="mdi mdi-calendar"></i></span>
                                 </div>
                             </div>
 
                             <div class="col-md-3">
                                 <div class="input-group" id="datepicker3">
-                                    <input autocomplete="off"  type="text"
-                                        class="form-control" placeholder="الى تاريخ" name="end_date" value=""
-                                        id="end_date" data-date-format="yyyy-mm-dd" data-date-container='#datepicker3'
-                                        data-provide="datepicker" data-date-autoclose="true">
+                                    <input autocomplete="off" type="text" class="form-control" placeholder="الى تاريخ"
+                                        name="end_date" value="" id="end_date" data-date-format="yyyy-mm-dd"
+                                        data-date-container='#datepicker3' data-provide="datepicker"
+                                        data-date-autoclose="true">
                                     <span class="input-group-text"><i class="mdi mdi-calendar"></i></span>
                                 </div>
                             </div>
 
+
                             <div class="col-md-3">
-                                <button type="button" style="width:100%" onclick="changeExams()" class="btn btn-primary btn-block">
+                                <select id="exam_type" class="form-control ">
+                                    <option value="0">نوع الإختبار</option>
+                                    <option value="App\Models\Course">دورات علمية</option>
+                                    <option value="App\Models\AsaneedCourse">مجالس اسانيد</option>
+                                </select>
+                            </div>
+
+
+
+                        </div>
+                        <div class=" row" style="margin-top: 15px; ">
+
+                            <div class="col-md-3 offset-md-9" >
+                                <button type="button" style="width:100%" onclick="changeExams()"
+                                    class="btn btn-primary btn-block">
                                     <i class="mdi mdi-magnify" aria-hidden="true"></i>
-                                    بحث
+                                    ابحث
                                 </button>
                             </div>
+
                         </div>
                     @endif
 
@@ -107,11 +121,12 @@
                     <table class="table table-responsive" id="dataTable1">
                         <thead>
                             <th>#</th>
-                            <th>نوع الدورة</th>
+                            <th>عنوان الدورة\المجلس</th>
+                            <th>نوع الإختبار</th>
                             <th>عدد الطلاب</th>
-                            <th>المعلم\المحفظ</th>
-                            <th>رقم المعلم</th>
-                            <th>المنطقة</th>
+                            <th>المعلم\الشيخ</th>
+                            <th>رقم الهاتف</th>
+                            <th>العنوان</th>
                             {{-- <th>المنطقة الكبرى</th>
                             <th>المنطقة المحلية</th> --}}
                             <th>مشرف الجودة</th>
@@ -160,7 +175,7 @@
                 "ajax": "{{ route('exams.getNextExamsAppointmentsData') }}",
                 language: {
                     search: "",
-                    searchPlaceholder:'بحث سريع',
+                    searchPlaceholder: 'بحث سريع',
                     processing: "جاري معالجة البيانات",
                     lengthMenu: " _MENU_ ",
                     info: "من _START_ الى _END_ من أصل _TOTAL_ صفحة",
@@ -190,6 +205,9 @@
                     },
                     {
                         "mData": "course_book_name"
+                    },
+                    {
+                        "mData": "exam_type"
                     },
                     {
                         "mData": "students_count"
@@ -330,10 +348,14 @@
 
             function changeExams() {
 
-                var filters = '?area_id=' + $('#area_id').val() + '&sub_area_id=' + $('#pending_exams_sub_areas_select').val() +
+                var filters = '?area_id=' + $('#area_id').val() + '&sub_area_id=' + $('#pending_exams_sub_areas_select')
+                    .val() +
                     '&moallem_id=' + $('#moallem_id').val() + '&book_id=' + $('#book_id').val() + '&start_date=' + $(
                         '#start_date').val() + '&end_date=' + $('#end_date').val() + '&place_area=' + $('#place_area')
-                .val();
+                    .val()+ '&exam_type=' + $('#exam_type').val();
+
+
+
                 table.ajax.url(
                     "/getNextExamsAppointmentsData" + filters
                 ).load();

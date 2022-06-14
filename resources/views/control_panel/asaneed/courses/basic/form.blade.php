@@ -1,4 +1,21 @@
 @csrf
+
+<style>
+
+    .col-form-label{
+        text-align: right;
+        font-size: 18px;
+    }
+    .modal-content{
+        border: unset;
+    }
+
+    .modal-body,.modal-footer{
+            padding: 20px 100px 20px 20px;
+    }
+    </style>
+
+
 <div class="mb-3 row">
     <label for="start_date" class="col-md-3 col-form-label">بداية المجلس</label>
     <div class="col-md-9">
@@ -38,7 +55,7 @@
 
 <div class="mb-3 row">
     <label for="included_in_plan" class="col-md-3 col-form-label">المسجد:</label>
-    <div class="col-md-3">
+    <div class="col-md-9">
         <select class="form-control" name="place_id" id="place_id">
             @if(isset($places))
                 @foreach($places as $key => $place)
@@ -47,14 +64,14 @@
             @endif
         </select>
     </div>
-    <label for="included_in_plan" class="col-md-2 col-form-label">النوع:</label>
+    {{-- <label for="included_in_plan" class="col-md-2 col-form-label">النوع:</label>
     <div class="col-md-4">
         <select class="form-control" name="included_in_plan" id="included_in_plan" onchange="planChanged(this)">
             <option value="0">-- تحديد --</option>
             <option value="داخل الخطة" @if($asaneedCourse->included_in_plan == 'داخل الخطة') selected @endif>داخل الخطة</option>
             <option value="خارج الخطة" @if($asaneedCourse->included_in_plan == 'خارج الخطة') selected @endif>خارج الخطة</option>
         </select>
-    </div>
+    </div> --}}
 </div>
 
 <div class="mb-3 row">
@@ -130,6 +147,18 @@
         $.get('/getPlaceAsaneedTeachers/'+place_id+'/{{ $asaneedCourse->teacher_id ? $asaneedCourse->teacher_id : 0 }}',function(data){
             $('#teacher_id').empty().html(data);
         });
+
+        $.get('/getYearBooksForNewAsaneedCourse/'+start_date.value+'/داخل الخطة',function(data){
+                        $('#book_select').empty().html(data);
+                        $('#book_id').on('change', function() {
+                            var book_id = $(this).val();
+                            $.get('/getAsaneedBookStudentCategory/'+book_id,function(data){
+                                $('#student_category').empty().html(data[1]);
+                                $('#hours_count').empty().html(data[0]);
+                            });
+                        });
+                    });
+                    
     });
     $('#book_id').on('change', function() {
         var book_id = $(this).val();

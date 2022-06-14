@@ -283,6 +283,9 @@ class ExamsController extends Controller
 
         $place_area = $request->place_area ? $request->place_area : 0;
 
+        $exam_type = $request->exam_type ? $request->exam_type : 0;
+
+
         // echo $sub_area_id; exit;
 
 
@@ -292,6 +295,7 @@ class ExamsController extends Controller
             $count = Exam::where('status', 1)
                 ->orWhere('status', 0)
                 ->subarea($sub_area_id, $area_id)
+                ->examtype($exam_type)
                 ->placearea($place_area)
                 ->search($search)
                 ->fromDate($startDate)
@@ -303,6 +307,7 @@ class ExamsController extends Controller
             $exams = Exam::where('status', 1)
                 ->orWhere('status', 0)
                 ->subarea($sub_area_id, $area_id)
+                ->examtype($exam_type)
                 ->placearea($place_area)
                 ->fromDate($startDate)
                 ->toDate($endDate)
@@ -314,6 +319,7 @@ class ExamsController extends Controller
         } else {
             $count = Exam::where('status', 1)
                 ->subarea($sub_area_id, $area_id)
+                ->examtype($exam_type)
                 ->fromDate($startDate)
                 ->placearea($place_area)
                 ->toDate($endDate)
@@ -329,6 +335,7 @@ class ExamsController extends Controller
                 ->moallem($moallem_id)
                 ->book($book_id)
                 ->subarea($sub_area_id, $area_id)
+                ->examtype($exam_type)
                 ->orderBy('id', 'DESC')
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                 ->get();
@@ -345,6 +352,7 @@ class ExamsController extends Controller
                 [
                     'id'=>Exam::$counter,
                     'course_book_name'=>$item->course_book_name,
+                    'exam_type'=>$item->exam_type,
                     'students_count'=>$item->students_count,
                     'course_name'=>$item->course_name,
                     'teacher_mobile'=>$item->teacher_mobile,
@@ -591,7 +599,10 @@ class ExamsController extends Controller
             });
         })->where('year',Carbon::now()->format('Y'))->get();
         $exams = Exam::where('status', 1)->where('date', '<=', Carbon::now()->format('Y-m-d'))->get();
-        return view('control_panel.exams.getEligibleCoursesForMarkEnter', compact('exams','areas', 'books'));
+
+        $moallems = User::department(2)->get();
+
+        return view('control_panel.exams.getEligibleCoursesForMarkEnter', compact('exams','areas', 'books','moallems'));
     }
     public function getEligibleCoursesForMarkEnterData(Request $request){
         if(hasPermissionHelper('ادخال الدرجات')){
@@ -616,8 +627,44 @@ class ExamsController extends Controller
             $columns[$order]["db"] = 'updated_at';
             $direction = $columns[$order]["db"]=='created_at' ? 'DESC' : $direction ;
 
+            $sub_area_id = (int)$request->sub_area_id ? (int)$request->sub_area_id : 0;
             $area_id = (int)$request->area_id ? (int)$request->area_id : 0;
+            $moallem_id = (int)$request->moallem_id ? (int)$request->moallem_id : 0;
             $book_id = (int)$request->book_id ? (int)$request->book_id : 0;
+
+            $startDate = $request->start_date ? $request->start_date : '';
+            $endDate = $request->end_date ? $request->end_date : '';
+
+            $place_area = $request->place_area ? $request->place_area : 0;
+
+            $exam_type = $request->exam_type ? $request->exam_type : 0;
+
+
+
+            $count = Exam::where('status', 1)
+            ->subarea($sub_area_id, $area_id)
+            ->examtype($exam_type)
+            ->fromDate($startDate)
+            ->placearea($place_area)
+            ->toDate($endDate)
+            ->orWhere('status', 0)
+            ->moallem($moallem_id)
+            ->book($book_id)
+            ->count();
+        $exams = Exam::where('status', 1)
+            ->orWhere('status', 0)
+            ->fromDate($startDate)
+            ->placearea($place_area)
+            ->toDate($endDate)
+            ->moallem($moallem_id)
+            ->book($book_id)
+            ->subarea($sub_area_id, $area_id)
+            ->examtype($exam_type)
+            ->orderBy('id', 'DESC')
+            ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
+            ->get();
+
+
 
             $value = array();
 
@@ -632,6 +679,7 @@ class ExamsController extends Controller
                     // ->where('date','<=',Carbon::now()->format('Y-m-d'))
                     ->area($area_id,0)->coursebook($book_id)
                     ->search($search)
+                    ->orderBy('id', 'DESC')
                     ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                     ->get();
             } else {
@@ -644,6 +692,7 @@ class ExamsController extends Controller
                     // ->where('date','<=',Carbon::now()->format('Y-m-d'))
                     ->area($area_id,0)->coursebook($book_id)
                     ->search($search)
+                    ->orderBy('id', 'DESC')
                     ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                     ->get();
             }
@@ -661,10 +710,13 @@ class ExamsController extends Controller
                     [
                         'id'=>Exam::$counter,
                         'course_book_name'=>$item->course_book_name,
+                        'exam_type'=>$item->exam_type,
+                        'course_place_name'=>$item->place_name,
+
                         'course_name'=>$item->course_name,
                         'course_area_father_name'=>$item->course_area_father_name,
                         'course_area_name'=>$item->course_area_name,
-                        'course_place_name'=>$item->course_place_name,
+                        // 'course_place_name'=>$item->course_place_name,
                         'students_count'=>$item->students_count,
                         // 'course_start_date'=>$item->course_start_date,
                         'course_start_date'=>$item->date? GetFormatedDate($item->date) . ' الساعة '. Carbon::parse($item->time)->isoFormat('h:mm a'):'',
