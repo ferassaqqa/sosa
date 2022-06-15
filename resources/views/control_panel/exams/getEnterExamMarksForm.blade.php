@@ -39,7 +39,7 @@
         </thead>
         <tbody>
             @php $i=1; @endphp
-            @foreach($course->studentsForPermissions as $key => $student)
+            @foreach($students as $key => $student)
                 <tr>
                     <td>{{ $i }}</td>
                     <td>{{ $student->name }}</td>
@@ -56,10 +56,17 @@
             @endforeach
         </tbody>
     </table>
-
+    @if ($course->exam->examable_type == 'App\Models\Course')
     <form action="{{ route('courseExam.enterMarks',$course->id) }}" method="POST" id="form">
         @csrf
     </form>
+    @endif
+    @if ($course->exam->examable_type == 'App\Models\AsaneedCourse')
+    <form action="{{ route('asaneedExam.enterMarks',$course->id) }}" method="POST" id="form">
+        @csrf
+    </form>
+    @endif
+ 
 </div>
 
 <div class="modal-footer">

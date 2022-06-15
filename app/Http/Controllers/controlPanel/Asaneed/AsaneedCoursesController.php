@@ -28,6 +28,8 @@ class AsaneedCoursesController extends Controller
                         <option value="انتظار الموافقة">انتظار الموافقة</option>
                         <option value="قائمة">قائمة</option>
                         <option value="منتهية">منتهية</option>
+                        <option value="بانتظار اعتماد الدرجات">بانتظار اعتماد الدرجات</option>
+
                         <option value="معلقة">معلقة</option>
                    </select>';
 

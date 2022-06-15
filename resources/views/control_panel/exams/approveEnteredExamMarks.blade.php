@@ -39,7 +39,7 @@
         </thead>
         <tbody>
             @php $i=1; @endphp
-            @foreach($course->students as $key => $student)
+            @foreach($students as $key => $student)
                     <tr>
                         <td>{{ $i }}</td>
                         <td>{{ $student->name }}</td>

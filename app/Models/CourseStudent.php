@@ -69,7 +69,7 @@ class CourseStudent extends Model
         switch($fillable){
             case 'id': {return 'المعرف';}break;
             case 'user_id': {return 'اسم اطالب رباعياّ';}break;
-            case 'course_id': {return 'الدورة';}break;
+            case 'course_name': {return 'الدورة';}break;
             case 'mark': {return 'الدرجة';}break;
         }
     }

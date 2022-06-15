@@ -483,6 +483,7 @@ Route::get('examsDeptManagerApprovement/{exam}', [\App\Http\Controllers\controlP
 Route::get('qualityDeptManagerApprovement/{exam}', [\App\Http\Controllers\controlPanel\ExamsController::class,'qualityDeptManagerApprovement']);
 Route::get('sunnaManagerApprovement/{exam}', [\App\Http\Controllers\controlPanel\ExamsController::class,'sunnaManagerApprovement']);
 Route::get('exportExam/{exam}', [\App\Http\Controllers\controlPanel\ExamsController::class,'exportExam'])->name('exportExam');
+Route::post('asaneedExamEnterMarks/{asaneedCourse}', [\App\Http\Controllers\controlPanel\ExamsController::class,'asaneedExamEnterMarks'])->name('asaneedExam.enterMarks');
 
 /**
  *  End Exams Operations

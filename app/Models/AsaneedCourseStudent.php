@@ -20,6 +20,23 @@ class AsaneedCourseStudent extends Model
         else{
             return '<span style="color:red">لا يجاز</span>';
         }
+
+        // public function getFillableArabic($fillable){
+        //     switch($fillable){
+        //         case 'id': {return 'المعرف';}break;
+        //         case 'user_id': {return 'اسم اطالب رباعياّ';}break;
+        //         case 'course_name': {return 'الدورة';}break;
+        //         case 'mark': {return 'الدرجة';}break;
+        //     }
+        // }
+        // public function getFillableRelationData($fillable){
+        //     switch($fillable){
+        //         case 'id': {return $this->id;}break;
+        //         case 'user_id': {return $this->user_name;}break;
+        //         case 'course_id': {return $this->course_name;}break;
+        //         case 'mark': {return $this->mark;}break;
+        //     }
+        // }
 //        switch ($mark){
 //            case (60<=$mark && $mark<70) : { return '<span style="color:#b3b300">ضعيف</span>'; }break;
 //            case (70<=$mark && $mark<75) : { return '<span style="color:lawngreen">جيد</span>'; }break;

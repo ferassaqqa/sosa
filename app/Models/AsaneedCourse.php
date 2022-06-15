@@ -101,6 +101,11 @@ class AsaneedCourse extends Model
         return $this->book ?
             $this->book->name : '';
     }
+
+    public function manyStudentsForPermissions(){
+        return $this->hasMany(AsaneedCourseStudent::class)->withoutGlobalScope('relatedCourseStudents');
+    }
+
     public function getBookStudentsCategoryStringAttribute(){
         return $this->book ? '<span style="color: #2ca02c;">'.$this->book->student_category_string.'</span>' : '';
     }
@@ -115,17 +120,24 @@ class AsaneedCourse extends Model
         $selected2 = '';
         $selected3 = '';
         $selected4 = '';
+        $selected5 = '';
+
         switch ($this->status){
             case 'انتظار الموافقة' : {$selected1 = 'selected';}break;
             case 'قائمة' : {$selected2 = 'selected';}break;
 //            case 'منتهية' : {$selected3 = 'selected';}break;
             case 'معلقة' : {$selected4 = 'selected';}break;
+            case 'بانتظار اعتماد الدرجات' : {$selected5 = 'selected';}break;
+
         }
         $select = '<select onchange="changeCourseStatus('.$this->id.',this.value)" class="form-control">
                         <option '.$selected1.' value="انتظار الموافقة">انتظار الموافقة</option>
                         <option '.$selected2.' value="قائمة">قائمة</option>
                         <!--<option '.$selected3.' value="منتهية">منتهية</option>-->
                         <option '.$selected4.' value="معلقة">معلقة</option>
+                        <option '.$selected5.' value="بانتظار اعتماد الدرجات">بانتظار اعتماد الدرجات</option>
+
+
                    </select>';
         return $select;
     }

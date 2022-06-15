@@ -58,15 +58,27 @@ class Exam extends Model
         if($this->examable_type == 'App\Models\Course'){
             return $this->course ? $this->course->book_name : '';
         }else if($this->examable_type == 'App\Models\AsaneedCourse'){
-            return $this->asaneed ?$this->asaneed->book->name : '';
+            return $this->asaneed ?$this->asaneed->book_name : '';
         }
 
     }
     public function getCoursePlaceNameAttribute(){
-        return $this->course ? $this->course->place_name : '';
+
+        if($this->examable_type == 'App\Models\Course'){
+            return $this->course ? $this->course->place_name : '';
+        }else if($this->examable_type == 'App\Models\AsaneedCourse'){
+            return $this->asaneed ?$this->asaneed->place->name : '';
+        }
+
     }
     public function getCourseStartDateAttribute(){
-        return $this->course ? $this->course->start_date : '';
+
+        if($this->examable_type == 'App\Models\Course'){
+            return $this->course ? GetFormatedDate($this->course->start_date) : '';
+        }else if($this->examable_type == 'App\Models\AsaneedCourse'){
+            return $this->asaneed ?GetFormatedDate($this->asaneed->start_date) : '';
+        }
+
     }
     public function getSubAreaSupervisorNameAttribute(){
 
@@ -123,9 +135,19 @@ class Exam extends Model
 
     }
     public function getPassedStudentsCountAttribute(){
-        return $this->course ?
-            ( $this->course->manyStudentsForPermissions->where('mark','>=',60)->count()
-                ? $this->course->manyStudentsForPermissions->where('mark','>=',60)->count() : 0) : 0;
+  
+
+
+                if($this->examable_type == 'App\Models\Course'){
+                    return $this->course ?
+                    ( $this->course->manyStudentsForPermissions->where('mark','>=',60)->count()
+                        ? $this->course->manyStudentsForPermissions->where('mark','>=',60)->count() : 0) : 0;
+                }else if($this->examable_type == 'App\Models\AsaneedCourse'){
+                    return $this->asaneed ?
+                    ( $this->asaneed->manyStudentsForPermissions->where('mark','>=',60)->count()
+                        ? $this->asaneed->manyStudentsForPermissions->where('mark','>=',60)->count() : 0) : 0;
+                }
+
     }
     public function getRowAttribute(){
         $approveButton = hasPermissionHelper('تأكيد طلبات الحجز') ? '<button class="btn btn-success" onclick="approveExamAppointment(this,'.$this->id .')"><i class="mdi mdi-table"></i></button>' : '';

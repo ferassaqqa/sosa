@@ -76,13 +76,13 @@
                                 </thead>
                                 <tbody>
                                 @php $i=1; @endphp
-                                    @foreach($course->manyStudentsForPermissions as $key => $student)
+                                    @foreach($students as $key => $student)
 {{--                                        @if($student->mark >= 60)--}}
                                             <tr>
                                                 <td>{{ $i }}</td>
                                                 <td>{{ $student->user_name }}</td>
                                                 <td>{{ $student->user_dob }}</td>
-                                                <td>{{ $student->course_id }}</td>
+                                                <td>{{ $student->user_pob }}</td>
                                                 <td>
                                                     {{ $student->mark }}
                                                 </td>

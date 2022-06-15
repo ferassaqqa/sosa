@@ -361,15 +361,23 @@ $('.select2').select2({
         }
     @endif
     @if(hasPermissionHelper('فلترة ادخال الدرجات'))
-        function changeCourses() {
-            var area_id = document.getElementById('marks_area_id') ? document.getElementById('marks_area_id').value : 0;
-            var book_id = document.getElementById('marks_book_id') ? document.getElementById('marks_book_id').value : 0;
-            var filters = '/?area_id='+area_id+'&book_id='+book_id;
-            {{--console.log( "{{route('exams.getExamEligibleCoursesData')}}"+filters);--}}
+
+
+        function changeExams() {
+
+            var filters = '?area_id=' + $('#area_id').val() + '&sub_area_id=' + $('#pending_exams_sub_areas_select')
+                .val() +
+                '&moallem_id=' + $('#moallem_id').val() + '&book_id=' + $('#book_id').val() + '&start_date=' + $(
+                    '#start_date').val() + '&end_date=' + $('#end_date').val() + '&place_area=' + $('#place_area')
+                .val()+ '&exam_type=' + $('#exam_type').val();
+
+
+
             table.ajax.url(
-                "/getEligibleCoursesForMarkEnterData"+filters
+                "/getEligibleCoursesForMarkEnterData" + filters
             ).load();
-        }
+            }
+
     @endif
 </script>
 

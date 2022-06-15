@@ -4,9 +4,11 @@ namespace App\Http\Controllers\controlPanel;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\controlPanel\exams\newCourseExamRequest;
+use App\Http\Requests\controlPanel\exams\newAsaneedExamRequest;
 use App\Models\Area;
 use App\Models\Book;
 use App\Models\Course;
+use App\Models\AsaneedCourse;
 use App\Models\CourseStudent;
 use App\Models\Exam;
 use App\Models\User;
@@ -380,8 +382,14 @@ class ExamsController extends Controller
     public function getExamsAppointmentsArchive(){
         checkPermissionHelper('ارشيف مواعيد الاختبارات');
         $areas = Area::whereNull('area_id')->get();
+        $moallems = User::department(2)->get();
+        $books = Book::whereHas('courses', function ($query) {
+            $query->whereHas('exam', function ($query) {
+                $query->where('status', 1)->where('date', '<=', Carbon::now()->format('Y-m-d'));
+            });
+        })->where('year',Carbon::now()->format('Y'))->get();
         $exams = Exam::where('status', 5)->where('date', '<', Carbon::now()->format('Y-m-d'))->get();
-        return view('control_panel.exams.getExamsAppointmentsArchive', compact('exams', 'areas'));
+        return view('control_panel.exams.getExamsAppointmentsArchive', compact('exams', 'areas', 'books','moallems'));
 
     }
     public function getMoallemsList($area_id){
@@ -408,6 +416,14 @@ class ExamsController extends Controller
         $area_id = (int)$request->area_id ? (int)$request->area_id : 0;
         $moallem_id = (int)$request->moallem_id ? (int)$request->moallem_id : 0;
         $book_id = (int)$request->book_id ? (int)$request->book_id : 0;
+
+        $startDate = $request->start_date ? $request->start_date : '';
+        $endDate = $request->end_date ? $request->end_date : '';
+
+        $place_area = $request->place_area ? $request->place_area : 0;
+
+        $exam_type = $request->exam_type ? $request->exam_type : 0;
+
         $value = array();
 
         if (!empty($search)) {
@@ -425,14 +441,34 @@ class ExamsController extends Controller
         } else {
             $count = Exam::where('status', 5)
                 ->area($area_id,$sub_area_id)
+                ->fromDate($startDate)
+                ->placearea($place_area)
+                ->toDate($endDate)
                 ->moallem($moallem_id)
+                ->book($book_id)
+                ->subarea($sub_area_id, $area_id)
+                ->examtype($exam_type)
+                ->moallem($moallem_id)
+                ->orderBy('id', 'DESC')
+
                 ->count();
             $exams = Exam::where('status', 5)
                 ->area($area_id,$sub_area_id)
+                ->fromDate($startDate)
+                ->placearea($place_area)
+                ->toDate($endDate)
                 ->moallem($moallem_id)
+                ->book($book_id)
+                ->subarea($sub_area_id, $area_id)
+                ->examtype($exam_type)
+                ->moallem($moallem_id)
+                ->orderBy('id', 'DESC')
+
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                 ->get();
         }
+        Carbon::setLocale('ar');
+
         Exam::$counter = $start;
         foreach ($exams as $index => $item) {
             Exam::$counter++;
@@ -441,6 +477,7 @@ class ExamsController extends Controller
                 [
                     'id'=>Exam::$counter,
                     'course_book_name'=>$item->course_book_name,
+                    'exam_type'=>$item->exam_type,
                     'students_count'=>$item->students_count,
                     'passed_students_count'=>$item->passed_students_count,
                     'course_name'=>$item->course_name,
@@ -449,7 +486,9 @@ class ExamsController extends Controller
                     'course_area_name'=>$item->course_area_name,
                     'place_name'=>$item->place_name,
                     'quality_supervisors_string'=>$item->quality_supervisors_string,
-                    'date'=>$item->date . ' || '. Carbon::parse($item->time)->isoFormat('h:mm a'),
+                    // 'date'=>$item->date . ' || '. Carbon::parse($item->time)->isoFormat('h:mm a'),
+                    'course_start_date'=>$item->date? GetFormatedDate($item->date) . ' الساعة '. Carbon::parse($item->time)->isoFormat('h:mm a'):'',
+
                     'tools'=>hasPermissionHelper('استخراج كشف درجات معتمد')
                         ? '<a class="btn btn-success" target="_blank" href="'.route('exportExam',$item->id).'">كشف درجات</a>'
                         : ''
@@ -469,9 +508,16 @@ class ExamsController extends Controller
         checkPermissionHelper('اعتماد الدرجات');
 //        dd(Carbon::now()->format('Y-m-d'));
         $areas = Area::whereNull('area_id')->get();
+        $books = Book::whereHas('courses', function ($query) {
+            $query->whereHas('exam', function ($query) {
+                $query->where('status', 1)->where('date', '<=', Carbon::now()->format('Y-m-d'));
+            });
+        })->where('year',Carbon::now()->format('Y'))->get();
         $exams = Exam::where('status', '>=', 2)->where('status', '<=', 4)->where('date', '<', Carbon::now()->format('Y-m-d'))->get();
+        $moallems = User::department(2)->get();
 
-        return view('control_panel.exams.getExamsWaitingApproveMarks', compact('exams', 'areas'));
+
+        return view('control_panel.exams.getExamsWaitingApproveMarks', compact('exams', 'areas', 'books','moallems'));
     }
     public function getExamsWaitingApproveMarksData(Request $request){
 
@@ -488,28 +534,64 @@ class ExamsController extends Controller
         $area_id = (int)$request->area_id ? (int)$request->area_id : 0;
         $moallem_id = (int)$request->moallem_id ? (int)$request->moallem_id : 0;
         $book_id = (int)$request->book_id ? (int)$request->book_id : 0;
+
+        $startDate = $request->start_date ? $request->start_date : '';
+        $endDate = $request->end_date ? $request->end_date : '';
+
+        $place_area = $request->place_area ? $request->place_area : 0;
+
+        $exam_type = $request->exam_type ? $request->exam_type : 0;
+
+
         $value = array();
 //        var_dump($area_id);
         if (!empty($search)) {
             $count = Exam::where('status', '>=',2)->where('status', '<=',4)
-                ->area($area_id)
+                ->subarea($sub_area_id, $area_id)
+                ->examtype($exam_type)
+                ->placearea($place_area)
                 ->search($search)
+                ->fromDate($startDate)
+                ->toDate($endDate)
+                ->moallem($moallem_id)
+                ->book($book_id)
                 ->count();
 
             $exams = Exam::where('status', '>=',2)->where('status', '<=',4)
-                ->area($area_id)
+                ->subarea($sub_area_id, $area_id)
+                ->examtype($exam_type)
+                ->placearea($place_area)
+                ->search($search)
+                ->fromDate($startDate)
+                ->toDate($endDate)
+                ->moallem($moallem_id)
+                ->book($book_id)
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                 ->get();
         } else {
             $count = Exam::where('status', '>=',2)->where('status', '<=',4)
-                ->area($area_id)
+                ->subarea($sub_area_id, $area_id)
+                ->examtype($exam_type)
+                ->placearea($place_area)
+                ->fromDate($startDate)
+                ->toDate($endDate)
+                ->moallem($moallem_id)
+                ->book($book_id)
                 ->count();
             $exams = Exam::where('status', '>=',2)->where('status', '<=',4)
-                ->area($area_id)
+                ->subarea($sub_area_id, $area_id)
+                ->examtype($exam_type)
+                ->placearea($place_area)
+                ->fromDate($startDate)
+                ->toDate($endDate)
+                ->moallem($moallem_id)
+                ->book($book_id)
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                 ->get();
         }
         Exam::$counter = $start;
+        Carbon::setLocale('ar');
+
         foreach ($exams as $index => $item) {
             Exam::$counter++;
             array_push(
@@ -517,12 +599,17 @@ class ExamsController extends Controller
                 [
                     'id'=>Exam::$counter,
                     'course_book_name'=>$item->course_book_name,
-                    'course_name'=>$item->course_name,
-                    'course_area_father_name'=>$item->course_area_father_name,
-                    'course_area_name'=>$item->course_area_name,
-                    'course_place_name'=>$item->course_place_name,
+                    'exam_type'=>$item->exam_type,
                     'students_count'=>$item->students_count,
-                    'course_start_date'=>$item->course_start_date,
+                    'course_name'=>$item->course_name,
+                    'teacher_mobile'=>$item->teacher_mobile,
+                    // 'course_area_father_name'=>$item->course_area_father_name,
+                    // 'course_area_name'=>$item->course_area_name,
+                    'area' => $item->course_area_father_name.' - '.$item->course_area_name,
+                    'quality_supervisors_string'=>$item->quality_supervisors_string,
+                    'place_name'=>$item->place_name,
+
+                    'date'=> $item->date? GetFormatedDate($item->date) . ' الساعة '. Carbon::parse($item->time)->isoFormat('h:mm a'):'',
                     'tools'=>hasPermissionHelper('اعتماد نتائج الاختبارات') ?
                         '<button class="btn btn-success" onclick="approveEnteredExamMarks('.$item->id .')">اعتماد الدرجات</button>'
                         :''
@@ -578,17 +665,45 @@ class ExamsController extends Controller
     public function getEnterExamMarksForm(Exam $exam){
         checkPermissionHelper('انهاء الدورة و ادخال الدرجات');
 //        dd($exam);
+
+if($exam->examable_type == 'App\Models\Course'){
         $course = $exam->course;
         $course->load(['studentsForPermissions'=>function($query){
             $query->orderBy('name','Asc');
         }]);
+        $students = $course->studentsForPermissions;
+    } 
+if($exam->examable_type == 'App\Models\AsaneedCourse'){
+        
+        $course = $exam->asaneed;
+        $course->load(['students'=>function($query){
+            $query->orderBy('name','Asc');
+        }]);
+        $students = $course->students;
+
+    }
 //        dd($exam,$course->studentsForPermissions->toArray());
-        return view('control_panel.exams.getEnterExamMarksForm',compact('exam','course'));
+        return view('control_panel.exams.getEnterExamMarksForm',compact('exam','course','students'));
     }
     public function approveEnteredExamMarks(Exam $exam){
-//        dd($exam);
-        $course = $exam->course;
-        return view('control_panel.exams.approveEnteredExamMarks',compact('exam','course'));
+
+        if($exam->examable_type == 'App\Models\Course'){
+            $course = $exam->course;
+            $course->load(['studentsForPermissions'=>function($query){
+                $query->orderBy('name','Asc');
+            }]);
+            $students = $course->studentsForPermissions;
+        } 
+        if($exam->examable_type == 'App\Models\AsaneedCourse'){
+                
+                $course = $exam->asaneed;
+                $course->load(['students'=>function($query){
+                    $query->orderBy('name','Asc');
+                }]);
+                $students = $course->students;
+        
+            }
+        return view('control_panel.exams.approveEnteredExamMarks',compact('exam','course','students'));
     }
     public function getEligibleCoursesForMarkEnter(){
         checkPermissionHelper('ادخال الدرجات');
@@ -638,7 +753,6 @@ class ExamsController extends Controller
             $place_area = $request->place_area ? $request->place_area : 0;
 
             $exam_type = $request->exam_type ? $request->exam_type : 0;
-
 
 
             $count = Exam::where('status', 1)
@@ -753,6 +867,27 @@ class ExamsController extends Controller
             return response()->json(['msg'=>'الدورة لا تحتوي على طلاب','title'=>'خطأ!','type'=>'danger']);
         }
     }
+
+    public function asaneedExamEnterMarks(newAsaneedExamRequest $request,AsaneedCourse $asaneedCourse){
+
+        if($asaneedCourse->manyStudentsForPermissions->count()){
+            $asaneedCourse->manyStudentsForPermissions->each(function($student) use ($request){
+            if(isset($request->mark[$student->user_id])&&!empty($request->mark[$student->user_id])) {
+                    $student->update(['mark' => $request->mark[$student->user_id]]);
+                }
+            });
+            $asaneedCourse->update([
+                'status' => 'بانتظار اعتماد الدرجات'
+            ]);
+            $asaneedCourse->exam->update([
+                'status' => 2
+            ]);
+            return response()->json(['msg'=>'تم ادخال درجات الطلاب بنجاح','title'=>'تعديل','type'=>'success']);
+        }else{
+            return response()->json(['msg'=>'الدورة لا تحتوي على طلاب','title'=>'خطأ!','type'=>'danger']);
+        }
+    }
+
     public function approveMarks(Course $course){
         $course->update([
             'status' => 'منتهية'
@@ -808,12 +943,24 @@ class ExamsController extends Controller
         }
     }
     public function exportExam(Exam $exam){
-        $course = $exam->course;
+        // $course = $exam->course;
 //        foreach ($course->manyStudentsForPermissions as $manyStudentsForPermission){
 //            echo $manyStudentsForPermission->user_name."||".$manyStudentsForPermission->mark.'<br>';
 //        }
 //        dd($course->manyStudentsForPermissions,$course->passedStudentCoursesForPermissions,$course->failedStudentCourses,$course->students);
-        return view('control_panel.exams.exportExam',compact('exam','course'));
+
+
+    if($exam->examable_type == 'App\Models\Course'){
+        $course = $exam->course;
+    $students = $course->manyStudentsForPermissions;
+
+    } 
+    if($exam->examable_type == 'App\Models\AsaneedCourse'){    
+            $course = $exam->asaneed;
+            $students = $course->manyStudentsForPermissions;
+
+        }
+        return view('control_panel.exams.exportExam',compact('exam','course','students'));
 
     }
 }
