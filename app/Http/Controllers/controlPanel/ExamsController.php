@@ -282,9 +282,7 @@ class ExamsController extends Controller
 
         $startDate = $request->start_date ? $request->start_date : '';
         $endDate = $request->end_date ? $request->end_date : '';
-
         $place_area = $request->place_area ? $request->place_area : 0;
-
         $exam_type = $request->exam_type ? $request->exam_type : 0;
 
 
@@ -294,43 +292,72 @@ class ExamsController extends Controller
         $value = array();
 
         if (!empty($search)) {
-            $count = Exam::where('status', 1)
-                ->orWhere('status', 0)
+            // $count = Exam::where('status', 1)
+            //     ->orWhere('status', 0)
+            //     ->subarea($sub_area_id, $area_id)
+            //     ->examtype($exam_type)
+            //     ->placearea($place_area)
+            //     ->search($search)
+            //     ->fromDate($startDate)
+            //     ->toDate($endDate)
+            //     ->moallem($moallem_id)
+            //     ->book($book_id)
+            //     ->count();
+
+            // $exams = Exam::where('status', 1)
+            //     ->orWhere('status', 0)
+            //     ->subarea($sub_area_id, $area_id)
+            //     ->examtype($exam_type)
+            //     ->placearea($place_area)
+            //     ->fromDate($startDate)
+            //     ->toDate($endDate)
+            //     ->moallem($moallem_id)
+            //     ->book($book_id)
+            //     ->orderBy('id', 'DESC')
+            //     ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
+            //     ->get();
+
+        $count = Exam::whereNull('date')->orWhere('date',0)
+            ->subarea($sub_area_id, $area_id)
+            ->examtype($exam_type)
+            ->placearea($place_area)
+            ->search($search)
+            ->fromDate($startDate)
+            ->toDate($endDate)
+            ->moallem($moallem_id)
+            ->book($book_id)
+            ->count();
+
+        $exams = Exam::whereNull('date')->orWhere('date',0)
+            ->subarea($sub_area_id, $area_id)
+            ->examtype($exam_type)
+            ->placearea($place_area)
+            ->fromDate($startDate)
+            ->toDate($endDate)
+            ->moallem($moallem_id)
+            ->book($book_id)
+            ->orderBy('id', 'DESC')
+            ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
+            ->get();
+
+        } else {
+
+            // where('status', 1)
+            //     ->orWhere('status', 0)
+
+            $count = Exam::
+                whereNull('date')->orWhere('date',0)
                 ->subarea($sub_area_id, $area_id)
                 ->examtype($exam_type)
-                ->placearea($place_area)
-                ->search($search)
                 ->fromDate($startDate)
+                ->placearea($place_area)
                 ->toDate($endDate)
                 ->moallem($moallem_id)
                 ->book($book_id)
                 ->count();
 
-            $exams = Exam::where('status', 1)
-                ->orWhere('status', 0)
-                ->subarea($sub_area_id, $area_id)
-                ->examtype($exam_type)
-                ->placearea($place_area)
-                ->fromDate($startDate)
-                ->toDate($endDate)
-                ->moallem($moallem_id)
-                ->book($book_id)
-                ->orderBy('id', 'DESC')
-                ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
-                ->get();
-        } else {
-            $count = Exam::where('status', 1)
-                ->subarea($sub_area_id, $area_id)
-                ->examtype($exam_type)
-                ->fromDate($startDate)
-                ->placearea($place_area)
-                ->toDate($endDate)
-                ->orWhere('status', 0)
-                ->moallem($moallem_id)
-                ->book($book_id)
-                ->count();
-            $exams = Exam::where('status', 1)
-                ->orWhere('status', 0)
+            $exams = Exam::
+                whereNull('date')->orWhere('date',0)
                 ->fromDate($startDate)
                 ->placearea($place_area)
                 ->toDate($endDate)
@@ -672,9 +699,9 @@ if($exam->examable_type == 'App\Models\Course'){
             $query->orderBy('name','Asc');
         }]);
         $students = $course->studentsForPermissions;
-    } 
+    }
 if($exam->examable_type == 'App\Models\AsaneedCourse'){
-        
+
         $course = $exam->asaneed;
         $course->load(['students'=>function($query){
             $query->orderBy('name','Asc');
@@ -693,15 +720,15 @@ if($exam->examable_type == 'App\Models\AsaneedCourse'){
                 $query->orderBy('name','Asc');
             }]);
             $students = $course->studentsForPermissions;
-        } 
+        }
         if($exam->examable_type == 'App\Models\AsaneedCourse'){
-                
+
                 $course = $exam->asaneed;
                 $course->load(['students'=>function($query){
                     $query->orderBy('name','Asc');
                 }]);
                 $students = $course->students;
-        
+
             }
         return view('control_panel.exams.approveEnteredExamMarks',compact('exam','course','students'));
     }
@@ -755,57 +782,50 @@ if($exam->examable_type == 'App\Models\AsaneedCourse'){
             $exam_type = $request->exam_type ? $request->exam_type : 0;
 
 
-            $count = Exam::where('status', 1)
-            ->subarea($sub_area_id, $area_id)
-            ->examtype($exam_type)
-            ->fromDate($startDate)
-            ->placearea($place_area)
-            ->toDate($endDate)
-            ->orWhere('status', 0)
-            ->moallem($moallem_id)
-            ->book($book_id)
-            ->count();
-        $exams = Exam::where('status', 1)
-            ->orWhere('status', 0)
-            ->fromDate($startDate)
-            ->placearea($place_area)
-            ->toDate($endDate)
-            ->moallem($moallem_id)
-            ->book($book_id)
-            ->subarea($sub_area_id, $area_id)
-            ->examtype($exam_type)
-            ->orderBy('id', 'DESC')
-            ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
-            ->get();
-
-
-
             $value = array();
 
             if (!empty($search)) {
                 $count = Exam::where('status',1)
-                    // ->where('date','<=',Carbon::now()->format('Y-m-d'))
-                    ->area($area_id,0)->coursebook($book_id)
+                    ->fromDate($startDate)
+                    ->placearea($place_area)
+                    ->toDate($endDate)
+                    ->moallem($moallem_id)
+                    ->book($book_id)
+                    ->subarea($sub_area_id, $area_id)
+                    ->examtype($exam_type)
                     ->search($search)
                     ->count();
 
                 $exams = Exam::where('status',1)
-                    // ->where('date','<=',Carbon::now()->format('Y-m-d'))
-                    ->area($area_id,0)->coursebook($book_id)
+                    ->fromDate($startDate)
+                    ->placearea($place_area)
+                    ->toDate($endDate)
+                    ->moallem($moallem_id)
+                    ->book($book_id)
+                    ->subarea($sub_area_id, $area_id)
+                    ->examtype($exam_type)
                     ->search($search)
                     ->orderBy('id', 'DESC')
                     ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                     ->get();
             } else {
                 $count = Exam::where('status',1)
-                    // ->where('date','<=',Carbon::now()->format('Y-m-d'))
-                    ->area($area_id,0)->coursebook($book_id)
-                    ->search($search)
+                    ->fromDate($startDate)
+                    ->placearea($place_area)
+                    ->toDate($endDate)
+                    ->moallem($moallem_id)
+                    ->book($book_id)
+                    ->subarea($sub_area_id, $area_id)
+                    ->examtype($exam_type)
                     ->count();
                 $exams = Exam::where('status',1)
-                    // ->where('date','<=',Carbon::now()->format('Y-m-d'))
-                    ->area($area_id,0)->coursebook($book_id)
-                    ->search($search)
+                    ->fromDate($startDate)
+                    ->placearea($place_area)
+                    ->toDate($endDate)
+                    ->moallem($moallem_id)
+                    ->book($book_id)
+                    ->subarea($sub_area_id, $area_id)
+                    ->examtype($exam_type)
                     ->orderBy('id', 'DESC')
                     ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                     ->get();
@@ -954,8 +974,8 @@ if($exam->examable_type == 'App\Models\AsaneedCourse'){
         $course = $exam->course;
     $students = $course->manyStudentsForPermissions;
 
-    } 
-    if($exam->examable_type == 'App\Models\AsaneedCourse'){    
+    }
+    if($exam->examable_type == 'App\Models\AsaneedCourse'){
             $course = $exam->asaneed;
             $students = $course->manyStudentsForPermissions;
 

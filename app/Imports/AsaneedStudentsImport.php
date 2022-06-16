@@ -30,7 +30,7 @@ class AsaneedStudentsImport implements ToModel,WithUpserts,WithValidation,WithHe
 
     public function model(array $row)
     {
-//        dd((int)$row['rkm_alhoy']);
+
         $asaneedCourse = Self::$asaneedCourse;
         $id_num = (int)$row['rkm_alhoy'];
         if($asaneedCourse->teacher_id_num == $id_num){
@@ -104,6 +104,7 @@ class AsaneedStudentsImport implements ToModel,WithUpserts,WithValidation,WithHe
                         if (!$old_user->hasRole('طالب دورات أسانيد وإجازات')) {
                             $old_user->assignRole('طالب دورات أسانيد وإجازات');
                         }
+
                         Auth::user()->sendFCM(
                             [
                                 'title'=>'
@@ -160,12 +161,12 @@ class AsaneedStudentsImport implements ToModel,WithUpserts,WithValidation,WithHe
     {
         return [
             'rkm_alhoy.required' => 'رقم الهوية مطلوب',
-            'rkm_alhoy.numeric' => 'رقم الهوية من نوع عدد',
-            'almsgd.required' => 'المسجد مطلوب',
-            'almsgd.string' => 'المسجد من نوع نص',
-            'almsgd.exists' => 'المسجد غير موجود في المساجد',
-            'rkm_algoal.required' => 'رقم الجوال مطلوب',
-            'rkm_algoal.numeric' => 'رقم الجوال من نوع عدد',
+            // 'rkm_alhoy.numeric' => 'رقم الهوية من نوع عدد',
+            // 'almsgd.required' => 'المسجد مطلوب',
+            // 'almsgd.string' => 'المسجد من نوع نص',
+            // 'almsgd.exists' => 'المسجد غير موجود في المساجد',
+            // 'rkm_algoal.required' => 'رقم الجوال مطلوب',
+            // 'rkm_algoal.numeric' => 'رقم الجوال من نوع عدد',
         ];
     }
 }

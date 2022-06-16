@@ -88,7 +88,7 @@ class User extends Authenticatable
         curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
 
         $response = curl_exec($ch);
-//        dd($response);
+    //    dd($response);
     }
     public function updateFields(){
         return [

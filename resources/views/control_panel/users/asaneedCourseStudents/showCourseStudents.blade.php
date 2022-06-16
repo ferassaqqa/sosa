@@ -1,5 +1,7 @@
 <div class="modal-header">
     <h5 class="modal-title" id="myLargeModalLabel" style="color: #000 !important;"> طلاب دورة كتاب - {{ $asaneedCourse->book_name }} - المعلم {{ $asaneedCourse->teacher_name }}</h5>
+
+
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <div class="modal-body">
@@ -30,4 +32,57 @@
 <div class="modal-footer">
     {{--<button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">إلغاء</button>--}}
     {{--<button type="submit" form="form" class="btn btn-primary waves-effect waves-light">حفظ</button>--}}
+
+    <button  type="button" class="btn btn-info" title="اضافة طالب"  onclick="createNewCourseStudents({{$asaneedCourse->id}})"><i class="mdi mdi-account-plus"></i>اضافة طالب جديد</button>
 </div>
+
+
+<script>
+
+function createNewCourseStudents(course_id){
+            Swal.fire({
+                customClass: 'swal-wide',
+                title: 'ادخل رقم الهوية',
+                input: 'text',
+                inputAttributes: {
+                    autocapitalize: 'off'
+                },
+                showCancelButton: true,
+                confirmButtonText: 'اضافة',
+                cancelButtonText: 'الغاء',
+                showLoaderOnConfirm: true,
+                preConfirm: function(value){
+                    return fetch('/asaneedCourseStudents/create/'+value+'/'+course_id)
+                        .then(function(response){
+                            return response.json();
+                        }).then(function(responseJson) {
+                            if (responseJson.errors){
+                                Swal.showValidationMessage(
+                                    responseJson.msg
+                                );
+                            }else{
+                                Swal.close();
+                                $('.bs-example-modal-xl').modal('show');
+                                $('#user_modal_content').html(responseJson.view);
+                            }
+                            // Do something with the response
+                        })
+                        .catch(function (errors) {
+                            // Swal.showValidationMessage(
+                            //     'لا يوجد اتصال بالشبكة'
+                            // )
+                        });
+                },
+                allowOutsideClick: function(){!Swal.isLoading();}
+            }).then(function(result){
+                // console.log(result);
+                if (result.isConfirmed) {
+                    // if(result.value.errors == 0) {
+                    // $('.bs-example-modal-xl').modal('show');
+                    // $('#user_modal_content').html(result.value.view);
+                    // }
+                }
+            })
+        }
+
+</script>

@@ -242,11 +242,14 @@ $(document).ready(function() {
             $('#excelStudentsImport').change(function(e) {
 
                 $('div[class="student_excel_import_loading"]').css('display','block');
+
                 // $.get('/showLoadingAsaneedStudents/' + asaneed_id, function(data) {
                 //     $('.bs-example-modal-xl').modal('show');
                 //     $('#user_modal_content')
                 //         .html(data);
                 // });
+
+
                 var fd = new FormData();
                 var files = $(this)[0].files;
                 fd.append('file', files[0]);
@@ -471,6 +474,12 @@ $(document).ready(function() {
 
             ).load();
         }
+
+        $('.bs-example-modal-xl').on('hidden.bs.modal', function (e) {
+            // updateDateTable();
+            $('#dataTable').DataTable().ajax.reload();
+
+            });
     </script>
 
 @endsection
