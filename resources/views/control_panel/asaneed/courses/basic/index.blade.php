@@ -62,14 +62,15 @@
 </div>
 <!-- end page title -->
 
+@if (hasPermissionHelper('فلترة الاسانيد'))
 
 <div class="row">
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
+
                 <div class="row mb-3">
 
-                @if (hasPermissionHelper('فلترة الدورات العلمية'))
                 <div class="col-md-3">
                     <select class="form-control " onchange="getSubAreas(this)" id="areas_select">
                         <option value="0">اختر المنطقة الكبرى</option>
@@ -126,12 +127,15 @@
             </div>
 
         </div>
-        @endif
             </div>
+
             </div>
         </div>
     </div>
 </div>
+@endif
+
+
 
 <div class="row">
     <div class="col-lg-12">
@@ -140,15 +144,16 @@
                 <div class="row mb-3">
                     <div class="col-md-3">
 
-
-                        <button type="button" onclick="callApi(this,'user_modal_content_new')"
+                @if (hasPermissionHelper('اضافة دورة سند'))
+                    <button type="button" onclick="callApi(this,'user_modal_content_new')"
                         class="btn btn-success btn-block" data-url="{{ route('asaneedCourses.create') }}"
                         style="background-color:#00937C;width: 100%;" data-bs-toggle="modal"
                         data-bs-target=".bs-example-modal-x2">
                         <i class="mdi mdi-plus"></i>
                         اضافة مجلس اسناد
-
                     </button>
+                @endif
+                
 
 
                     </div>
@@ -168,7 +173,10 @@
                                 <th scope="col">مكان المجلس</th>
                                 <th scope="col">المشرف</th>
                                 <th scope="col">حالة المجلس </th>
+
                                 <th scope="col">أدوات</th>
+                                
+
                             </tr>
                         </thead>
                         <tbody>

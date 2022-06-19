@@ -26,7 +26,7 @@
             <th>مكان الميلاد</th>
             <th>الفئة العمرية للطالب</th>
             <th>ضمن الفئة العمرية</th>
-            @if(hasPermissionHelper('حذف طالب من دورة علمية'))
+            @if(hasPermissionHelper('حذف بيانات الاسانيد'))
                 <th>حذف</th>
             @endif
         </thead>

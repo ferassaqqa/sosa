@@ -419,70 +419,101 @@
                     </div>
                 @endif
                 @if(hasPermissionHelper('قسم الأسانيد والإجازات'))
-                    <div class="app-search d-block d-lg-block" style="border-left: 1px solid #7cb7ae;">
-                        <div class="dropdown d-inline-block user-dropdown">
-                            <button style="border: none !important;" type="button" class="btn btn-hover text-white"
-                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                قسم الأسانيد والإجازات
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-end">
-                                <a class="dropdown-item" href="{{route('asaneedCourses.index')}}">
-                                    دورات الأسانيد
-                                    <span
-                                        style="    position: relative;
-                                                right: 20px;
-                                                padding: 1px 5px;
-                                                border-radius: 100px;
-                                                color: black;"
-                                    >{{\App\Models\AsaneedCourse::count()}}</span>
-                                </a>
-                                <!-- item-->
-                                <a class="dropdown-item" href="{{route('asaneedMoallem.index')}}">
-                                    شيوخ الأسانيد
-                                    <span
-                                        style="    position: relative;
-                                                right: 20px;
-                                                padding: 1px 5px;
-                                                border-radius: 100px;
-                                                color: black;"
-                                    >{{ \App\Models\User::department(7)->count()}}</span>
+                <div class="app-search d-block d-lg-block" style="border-left: 1px solid #7cb7ae;">
+                    <div class="dropdown d-inline-block user-dropdown">
+                        <button style="border: none !important;" type="button" class="btn btn-hover text-white"
+                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            قسم الأسانيد والإجازات
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end">
 
-                                </a>
-                                <!-- item-->
-                                <a class="dropdown-item" href="{{route('asaneedCourseStudents.index')}}">
-                                    طلاب دورات الاسانيد
+                            @if (hasPermissionHelper('قسم الأسانيد والإجازات'))
+                                
+                            <a class="dropdown-item" href="{{route('asaneedCourses.index')}}">
+                                دورات الأسانيد
+                                <span
+                                    style="    position: relative;
+                                            right: 20px;
+                                            padding: 1px 5px;
+                                            border-radius: 100px;
+                                            color: black;"
+                                >{{\App\Models\AsaneedCourse::count()}}</span>
+                            </a>
 
-                                    <span
-                                        style="    position: relative;
-                                                right: 20px;
-                                                padding: 1px 5px;
-                                                border-radius: 100px;
-                                                color: black;"
-                                    >{{ \App\Models\AsaneedCourseStudent::count()}}</span>
-                                </a>
-                                <!-- item-->
-                                <a class="dropdown-item" href="{{route('asaneedBooks.index')}}">
-                                    كتب دورات الأسانيد
-                                    <span
-                                        style="    position: relative;
-                                                right: 20px;
-                                                padding: 1px 5px;
-                                                border-radius: 100px;
-                                                color: black;"
-                                    >{{ \App\Models\AsaneedBook::count()}}</span>
-                                </a>
-                                <!-- item-->
-                                <a class="dropdown-item" href="{{route('asaneedBookCategories.index')}}">
-                                    تصنيفات كتب الأسانيد
-                                </a>
-                                <!-- item-->
-                                <a class="dropdown-item" href="{{route('asaneedPlans.index')}}">
-                                    خطة الأسانيد
-                                </a>
-                            </div>
+                            @endif
+
+                            <!-- item-->
+                            @if (hasPermissionHelper('شيوخ الاسانيد'))
+                                
+                            <a class="dropdown-item" href="{{route('asaneedMoallem.index')}}">
+                                شيوخ الأسانيد
+                                <span
+                                    style="    position: relative;
+                                            right: 20px;
+                                            padding: 1px 5px;
+                                            border-radius: 100px;
+                                            color: black;"
+                                >{{ \App\Models\User::department(7)->count()}}</span>
+
+                            </a>
+
+                            @endif
+
+                            <!-- item-->
+                            @if (hasPermissionHelper('طلاب الأسانيد والإجازات'))
+
+                            <a class="dropdown-item" href="{{route('asaneedCourseStudents.index')}}">
+                                طلاب دورات الاسانيد
+
+                                <span
+                                    style="    position: relative;
+                                            right: 20px;
+                                            padding: 1px 5px;
+                                            border-radius: 100px;
+                                            color: black;"
+                                >{{ \App\Models\AsaneedCourseStudent::count()}}</span>
+                            </a>
+                            @endif
+
+                            <!-- item-->
+                            @if (hasPermissionHelper('كتب دورات الاسانيد'))
+
+                            <a class="dropdown-item" href="{{route('asaneedBooks.index')}}">
+                                كتب دورات الأسانيد
+                                <span
+                                    style="    position: relative;
+                                            right: 20px;
+                                            padding: 1px 5px;
+                                            border-radius: 100px;
+                                            color: black;"
+                                >{{ \App\Models\AsaneedBook::count()}}</span>
+                            </a>
+                            @endif
+
+
+                            @if (hasPermissionHelper('تصنيفات كتب الاسانيد'))
+
+                            <!-- item-->
+                            <a class="dropdown-item" href="{{route('asaneedBookCategories.index')}}">
+                                تصنيفات كتب الأسانيد
+                            </a>
+
+                            @endif
+
+
+                            @if (hasPermissionHelper('خطة دورات الاسانيد'))
+
+                            <!-- item-->
+                            <a class="dropdown-item" href="{{route('asaneedPlans.index')}}">
+                                خطة الأسانيد
+                            </a>
+
+                            @endif
+
                         </div>
                     </div>
-                @endif
+                </div>
+            @endif
                 @if(hasPermissionHelper('قسم الجودة والإختبارات'))
                     <div class="app-search d-block d-lg-block" style=" border-left: 1px solid #7cb7ae;">
                         <div class="dropdown d-inline-block user-dropdown">

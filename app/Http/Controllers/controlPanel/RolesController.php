@@ -236,11 +236,13 @@ class RolesController extends Controller
         return response()->json(['msg' => 'تم استرجاع بيانات الدور بنجاح.', 'title' => 'استرجاع', 'type' => 'success']);
     }
     public function permissions(Role $role){
+
+        // dd($role);
         //checkPermissionHelper('تصفح صلاحيات الدور');
         $permissionsBag = Permission::withCount(['roles'=>function($query) use($role){
             $query->where('id',$role->id);
         }])->get()->groupBy(['department','title']);
-//        dd($permissionsBag);
+    //    dd($permissionsBag);
         return view('control_panel.settings.users.roles.rolePermissions',compact('role','permissionsBag'));
     }
     public function updatePermissions(Request $request,Role $role){

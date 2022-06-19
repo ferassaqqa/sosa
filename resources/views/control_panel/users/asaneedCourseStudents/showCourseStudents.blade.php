@@ -12,7 +12,11 @@
             <th>تاريخ الميلاد</th>
             <th>مكان الميلاد</th>
             <th>ضمن الفئة العمرية</th>
+@if (hasPermissionHelper('حذف طالب الأسانيد والإجازات'))
+
             <th>حذف</th>
+@endif
+
         </thead>
         <tbody>
             @foreach($users as $key => $user)
@@ -22,7 +26,11 @@
                     <td>{{ $user->dob }}</td>
                     <td>{{ $user->pob }}</td>
                     <td>{!! in_array($user->student_category,$asaneedCourse->student_categories) ? '<i class="mdi mdi-checkbox-marked-circle-outline" style="color:green"></i>' : '<i class="mdi mdi-close-circle-outline" style="color:red"></i>' !!}</td>
+@if (hasPermissionHelper('حذف طالب الأسانيد والإجازات'))
+                   
                     <td>{!! $user->deleteAsaneedCourseStudent($user->id, $asaneedCourse->id) !!}</td>
+@endif
+
                 </tr>
             @endforeach
         </tbody>
@@ -32,8 +40,10 @@
 <div class="modal-footer">
     {{--<button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">إلغاء</button>--}}
     {{--<button type="submit" form="form" class="btn btn-primary waves-effect waves-light">حفظ</button>--}}
-
-    <button  type="button" class="btn btn-info" title="اضافة طالب"  onclick="createNewCourseStudents({{$asaneedCourse->id}})"><i class="mdi mdi-account-plus"></i>اضافة طالب جديد</button>
+@if (hasPermissionHelper('اضافة طالب جديد الأسانيد والإجازات'))
+<button  type="button" class="btn btn-info" title="اضافة طالب"  onclick="createNewCourseStudents({{$asaneedCourse->id}})"><i class="mdi mdi-account-plus"></i>اضافة طالب جديد</button>
+    
+@endif
 </div>
 
 
