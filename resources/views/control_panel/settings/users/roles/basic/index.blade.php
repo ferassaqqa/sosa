@@ -51,6 +51,26 @@
                             </tr>
                         </thead>
                         <tbody>
+
+                            @php $i=1; @endphp
+                            @foreach($roles as $key => $role)
+                                    <tr>
+                                        <td>{{ $i }}</td>
+                                        <td>{{ $role->name }}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-primary btn-sm"
+                                            data-url="{{route('roles.permissions',['role'=>$role->id])}}" 
+                                            data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,'user_modal_content')">الصلاحيات</button>
+                                        </td>
+
+           
+                       
+                                    </tr>
+                                @php $i++; @endphp
+                                @endforeach
+                        </tbody>
+
+                      
                         </tbody>
                     </table>
                 </div>
@@ -67,66 +87,66 @@
 @section('script')
 
     <script>
-        $(document).ready(function() {
-            var table = $('#dataTable').DataTable( {
-                "processing": true,
-                "serverSide": true,
-                "ajax": "{{ route('roles.getData') }}",
-                language: {
-                    search: "بحث",
-                    processing:     "جاري معالجة البيانات" ,
-                    lengthMenu:    "عدد _MENU_ الصفوف",
-                    info:           "من _START_ الى _END_ من أصل _TOTAL_ صفحة",
-                    infoEmpty: "لا يوجد بيانات",
-                    loadingRecords: "يتم تحميل البيانات",
-                    zeroRecords:    "<p style='text-align: center'>لا يوجد بيانات</p>",
-                    emptyTable:     "<p style='text-align: center'>لا يوجد بيانات</p>",
-                    paginate: {
-                        first:      "الأول",
-                        previous:   "السابق",
-                        next:       "التالي",
-                        last:       "الأخير"
-                    },
-                    aria: {
-                        sortAscending:  ": ترتيب تصاعدي",
-                        sortDescending: ": ترتيب تنازلي"
-                    }
-                },
-                "columnDefs": [
-                    { "sortable": false, "targets": [2] }
-                ],
-                "aoColumns": [
-                    { "mData": "id" },
-                    { "mData": "name" },
-                    { "mData": "tools" }
-                ]
-            } );
-            table.on( 'draw', function () {
-                var elements = $('.ellipsis').nextAll();
-                if(elements.length == 1){
-                    var elements = $('.ellipsis').prevAll();
-                    elements[1].before(elements[4]);
-                    elements[3].after(elements[0]);
-                    elements[2].after(elements[1]);
-                    elements[2].before(elements[3]);
-                }else if(elements.length == 5){
-                    elements[1].before(elements[4]);
-                    elements[3].after(elements[0]);
-                    elements[2].after(elements[1]);
-                    elements[2].before(elements[3]);
-                }else{
-                    // var paginate_buttons = $('.paginate_button');
-                    // if(paginate_buttons.length > 3) {
-                    //     paginate_buttons.css('cursor', 'pointer');
-                    //     paginate_buttons[5].after(paginate_buttons[4]);
-                    //     paginate_buttons[4].after(paginate_buttons[3]);
-                    //     paginate_buttons[3].after(paginate_buttons[2]);
-                    //     paginate_buttons[2].after(paginate_buttons[1]);
-                    // }
+        // $(document).ready(function() {
+        //     var table = $('#dataTable').DataTable( {
+        //         "processing": true,
+        //         "serverSide": true,
+        //         "ajax": "{{ route('roles.getData') }}",
+        //         language: {
+        //             search: "بحث",
+        //             processing:     "جاري معالجة البيانات" ,
+        //             lengthMenu:    "عدد _MENU_ الصفوف",
+        //             info:           "من _START_ الى _END_ من أصل _TOTAL_ صفحة",
+        //             infoEmpty: "لا يوجد بيانات",
+        //             loadingRecords: "يتم تحميل البيانات",
+        //             zeroRecords:    "<p style='text-align: center'>لا يوجد بيانات</p>",
+        //             emptyTable:     "<p style='text-align: center'>لا يوجد بيانات</p>",
+        //             paginate: {
+        //                 first:      "الأول",
+        //                 previous:   "السابق",
+        //                 next:       "التالي",
+        //                 last:       "الأخير"
+        //             },
+        //             aria: {
+        //                 sortAscending:  ": ترتيب تصاعدي",
+        //                 sortDescending: ": ترتيب تنازلي"
+        //             }
+        //         },
+        //         "columnDefs": [
+        //             { "sortable": false, "targets": [2] }
+        //         ],
+        //         "aoColumns": [
+        //             { "mData": "id" },
+        //             { "mData": "name" },
+        //             { "mData": "tools" }
+        //         ]
+        //     } );
+        //     table.on( 'draw', function () {
+        //         var elements = $('.ellipsis').nextAll();
+        //         if(elements.length == 1){
+        //             var elements = $('.ellipsis').prevAll();
+        //             elements[1].before(elements[4]);
+        //             elements[3].after(elements[0]);
+        //             elements[2].after(elements[1]);
+        //             elements[2].before(elements[3]);
+        //         }else if(elements.length == 5){
+        //             elements[1].before(elements[4]);
+        //             elements[3].after(elements[0]);
+        //             elements[2].after(elements[1]);
+        //             elements[2].before(elements[3]);
+        //         }else{
+        //             // var paginate_buttons = $('.paginate_button');
+        //             // if(paginate_buttons.length > 3) {
+        //             //     paginate_buttons.css('cursor', 'pointer');
+        //             //     paginate_buttons[5].after(paginate_buttons[4]);
+        //             //     paginate_buttons[4].after(paginate_buttons[3]);
+        //             //     paginate_buttons[3].after(paginate_buttons[2]);
+        //             //     paginate_buttons[2].after(paginate_buttons[1]);
+        //             // }
 
-                }
-            } );
-        });
+        //         }
+        //     } );
+        // });
 
     </script>
 

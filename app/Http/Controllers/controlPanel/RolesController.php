@@ -23,8 +23,10 @@ class RolesController extends Controller
      */
     public function index()
     {
-        //checkPermissionHelper('تصفح جميع الادوار');
-        return view('control_panel.settings.users.roles.basic.index');
+
+            $roles = Role::all();
+        
+        return view('control_panel.settings.users.roles.basic.index',compact('roles'));
     }
     public function getData(Request $request)
     {
@@ -65,7 +67,9 @@ class RolesController extends Controller
 
             if($item->role_display_data){
             // array_push($value , $item->role_display_data);
-            array_push($value , array('id'=>$item->id,'name'=>$item->name,'tools'=>'<button type="button" class="btn btn-primary btn-sm" data-url='.route('roles.permissions',['role'=>$item->id]).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')">الصلاحيات</button>'));
+            array_push($value , array('id'=>$item->id,'name'=>$item->name,'tools'=>
+            '<button type="button" class="btn btn-primary btn-sm" data-url='.route('roles.permissions',['role'=>$item->id]).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')">الصلاحيات</button>'
+        ));
             }
         }
 
