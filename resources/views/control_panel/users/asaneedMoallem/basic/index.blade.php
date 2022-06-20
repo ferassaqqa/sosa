@@ -55,6 +55,9 @@
 </div>
 <!-- end page title -->
 
+
+@if (hasPermissionHelper('فلترة بيانات شيوخ الاسانيد'))
+
 <div class="col-lg-12">
     <div class="card">
         <div class="card-body">
@@ -88,6 +91,7 @@
         </div>
     </div>
 </div>
+@endif
 
 <div class="row">
     <div class="col-lg-12">
@@ -95,12 +99,16 @@
             <div class="card-body">
                 {{--<h4 class="card-title mb-4" style="display: inline-block;">مشايخ الاسناد</h4>--}}
                 <div class="row mb-3">
+
+                    @if (hasPermissionHelper('إضافة شيخ جديد'))
+
                     <div class="col-md-2">
                         <button class="btn btn-primary create-new-user" onclick="createNewmoallem()" style="width:207px;">
                             <i class="mdi mdi-plus"></i>
                             اضافة شيخ جديد
                         </button>
                     </div>
+                    @endif
 
                 </div>
                 <div class="">

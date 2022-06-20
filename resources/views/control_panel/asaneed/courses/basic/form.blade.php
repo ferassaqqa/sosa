@@ -135,6 +135,12 @@
         $.get('/getSubAreas/'+area_id,function(data){
             $('#sub_area_id').empty().html(data);
         });
+
+        $.get('/getSubAreaAsaneedTeachers/' + area_id, function(data) {
+                            $('#teacher_id').empty().html(data[0]);
+                            $('#place_id').empty().html(data[1]);
+        });
+
     });
     $('#sub_area_id').on('change', function() {
         var sub_area_id = $(this).val();
@@ -144,9 +150,9 @@
     });
     $('#place_id').on('change', function() {
         var place_id = $(this).val();
-        $.get('/getPlaceAsaneedTeachers/'+place_id+'/{{ $asaneedCourse->teacher_id ? $asaneedCourse->teacher_id : 0 }}',function(data){
-            $('#teacher_id').empty().html(data);
-        });
+        // $.get('/getPlaceAsaneedTeachers/'+place_id+'/{{ $asaneedCourse->teacher_id ? $asaneedCourse->teacher_id : 0 }}',function(data){
+        //     $('#teacher_id').empty().html(data);
+        // });
 
         $.get('/getYearBooksForNewAsaneedCourse/'+start_date.value+'/داخل الخطة',function(data){
                         $('#book_select').empty().html(data);
@@ -158,7 +164,7 @@
                             });
                         });
                     });
-                    
+
     });
     $('#book_id').on('change', function() {
         var book_id = $(this).val();

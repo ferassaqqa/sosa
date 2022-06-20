@@ -40,7 +40,8 @@ class CoursesController extends Controller
 
 
         $result = array();
-        $moallems = User::department(2)->subarea($area_id,0)->get();
+        $moallems = User::department(2)->area($area_id)->get();
+        // $moallems = User::department(2)->subarea($area_id,0)->get();
         $moallem_list = '<option value="0">اختر المعلم</option>';
         foreach ($moallems as $moallem) {
             $moallem_list .= '<option value="'.$moallem->id.'">'.$moallem->name.'</option>';
@@ -120,6 +121,7 @@ class CoursesController extends Controller
                 ->teacher($teacher_id)
                 ->book($book_id)
                 ->placearea($place_area)
+                ->orderBy('id', 'DESC')
                 ->count();
             $courses = Course::subarea($sub_area_id,$area_id)
                 ->wherestatus($status)
@@ -127,7 +129,9 @@ class CoursesController extends Controller
                 ->teacher($teacher_id)
                 ->book($book_id)
                 ->placearea($place_area)
-                ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
+                ->orderBy('id', 'DESC')
+                ->limit($length)->offset($start)
+                // ->orderBy($columns[$order]["db"], $direction)
                 ->get();
         } else {
             $count = Course::subarea($sub_area_id,$area_id)
@@ -135,12 +139,15 @@ class CoursesController extends Controller
                 ->teacher($teacher_id)
                 ->book($book_id)
                 ->placearea($place_area)
+                ->orderBy('id', 'DESC')
                 ->count();
             $courses = Course::subarea($sub_area_id,$area_id)
                 ->wherestatus($status)
-                ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
+                ->limit($length)->offset($start)
+                // ->orderBy($columns[$order]["db"], $direction)
                 ->teacher($teacher_id)
                 ->book($book_id)
+                ->orderBy('id', 'DESC')
                 ->placearea($place_area)
                 ->get();
         }
@@ -218,6 +225,17 @@ class CoursesController extends Controller
         checkPermissionHelper('تصفح بيانات دورة العلمية');
     }
 
+
+    private function getAreaTeacher($area_id,$teacher_id){
+        $moallems = User::department(2)->area($area_id)->get();
+        $moallem_list = '<option value="0">اختر المعلم</option>';
+        foreach ($moallems as $moallem) {
+            $selected = $teacher_id == $moallem->id ? 'selected' : '';
+            $moallem_list .= '<option value="' . $moallem->id . '" '.$selected.'>' . $moallem->name . '</option>';
+        }
+        return $moallem_list;
+    }
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -242,7 +260,9 @@ class CoursesController extends Controller
             $books .= '<option value="'.$book->id.'" '.$selected.'>'.$book->name.'</option>';
         }
         $place = Place::findOrFail($course->place_id);
-        $teachers = getPlaceTeachersForCourses($place->area_id,$course->teacher_id);
+        // $teachers = getPlaceTeachersForCourses($place->area_id,$course->teacher_id);
+
+        $teachers = $this->getAreaTeacher($place->area_father_id,$course->teacher_id);
         return view('control_panel.courses.basic.update',compact('course','sub_areas','places','books','teachers','areas'));
     }
     public function getPlaceTeachersForCourses($place_id,$teacher_id){

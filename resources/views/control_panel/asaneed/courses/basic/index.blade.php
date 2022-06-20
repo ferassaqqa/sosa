@@ -153,7 +153,7 @@
                         اضافة مجلس اسناد
                     </button>
                 @endif
-                
+
 
 
                     </div>
@@ -175,7 +175,7 @@
                                 <th scope="col">حالة المجلس </th>
 
                                 <th scope="col">أدوات</th>
-                                
+
 
                             </tr>
                         </thead>
@@ -213,18 +213,35 @@
             }
 
             function getSubAreaTeachers(obj) {
-                    if (obj.value != 0) {
-                        $.get('/getSubAreaAsaneedTeachers/' + obj.value, function(data) {
+                    // if (obj.value != 0) {
+                    //     $.get('/getSubAreaAsaneedTeachers/' + obj.value, function(data) {
+                    //         $('#teachers_select').empty().html(data[0]);
+                    //         $('#place_area').empty().html(data[1]);
+                    //     });
+
+                    // } else {
+                    //     $('#teachers_select').empty().html('<option value="0">اختر الشيخ</option>');
+                    //     $('#place_area').empty().html('<option value="0">اختر مكان المجلس</option>');
+
+                    // }
+                }
+
+        function getSubAreas(obj) {
+            if(obj.value != 0) {
+                $.get('/getSubAreas/'+obj.value, function (data) {
+                    $('#sub_areas_select').empty().html(data);
+                });
+
+            $.get('/getSubAreaAsaneedTeachers/' + obj.value, function(data) {
                             $('#teachers_select').empty().html(data[0]);
                             $('#place_area').empty().html(data[1]);
-                        });
-
-                    } else {
-                        $('#teachers_select').empty().html('<option value="0">اختر الشيخ</option>');
-                        $('#place_area').empty().html('<option value="0">اختر مكان المجلس</option>');
-
-                    }
-                }
+            });
+                // updateDateTable();
+            }else{
+                $('#sub_areas_select').empty().html('<option value="0">اختر المنطقة المحلية</option>');
+                // updateDateTable();
+            }
+        }
 
 
             function ShowAsaneedStudents(asaneed_id) {
@@ -458,17 +475,7 @@ $(document).ready(function() {
             })
         }
 
-        function getSubAreas(obj) {
-            if(obj.value != 0) {
-                $.get('/getSubAreas/'+obj.value, function (data) {
-                    $('#sub_areas_select').empty().html(data);
-                });
-                // updateDateTable();
-            }else{
-                $('#sub_areas_select').empty().html('<option value="0">اختر المنطقة المحلية</option>');
-                // updateDateTable();
-            }
-        }
+
 
         function updateDateTable() {
             table.ajax.url(

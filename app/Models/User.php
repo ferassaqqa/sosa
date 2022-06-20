@@ -214,7 +214,26 @@ class User extends Authenticatable
     }
     public function getAsaneedStudentsDisplayDataAttribute(){
         self::$counter++;
-    $allCoursesBtn = $this->studentAsaneedCourses->count()?'<button type="button" class="btn btn-info"  title="جميع الدورات" data-url="' . route('asaneedCourseStudents.getCourses',$this->id) . '" onclick="callApi(this,\'user_modal_content\')" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl"><i class="mdi mdi-account-details"></i></button>':'<button disabled type="button" class="btn btn-default"><i class="mdi mdi-account-details"></i></button>';
+        $allCoursesBtn = '';
+        $total = '';
+        if(hasPermissionHelper('عرض جميع الأسانيد للطالب')){
+             $allCoursesBtn = $this->studentAsaneedCourses->count()?'<button type="button" class="btn btn-info"  title="جميع الدورات" data-url="' . route('asaneedCourseStudents.getCourses',$this->id) . '" onclick="callApi(this,\'user_modal_content\')" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl"><i class="mdi mdi-account-details"></i></button>':'<button disabled type="button" class="btn btn-default"><i class="mdi mdi-account-details"></i></button>';
+             $total = $this->studentAsaneedCourses->count();
+        }
+
+        $passedCourses = '';
+        if(hasPermissionHelper('الأسانيد المجاز فيها')){
+            $passedCourses = $this->passedAsaneedStudentCourses->count() ?
+            '<a href="#!" data-url="' . route('asaneedCourseStudents.getPassedCourses',$this->id) . '" onclick="callApi(this,\'user_modal_content\')" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl">'.$this->passedStudentCourses->count().'</a>'
+            : 0;
+        }
+        $failedCourses = '';
+        if(hasPermissionHelper('الأسانيد الغير مجاز فيها')){
+            $failedCourses = $this->failedAsaneedStudentCourses->count() ?
+            '<a href="#!" data-url="' . route('asaneedCourseStudents.getFailedCourses',$this->id) . '" onclick="callApi(this,\'user_modal_content\')" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl">'.$this->failedStudentCourses->count().'</a>'
+            : 0;
+        }
+
 
         return [
             'id' => self::$counter,
@@ -227,13 +246,9 @@ class User extends Authenticatable
             'area_supervisor'=>areaSupervisor($this->area_father_id_for_permissions),
             'sub_area_supervisor'=>subAreaSupervisor($this->area_id_for_permissions),
 
-            'passedCourses' => $this->passedAsaneedStudentCourses->count() ?
-                '<a href="#!" data-url="' . route('asaneedCourseStudents.getPassedCourses',$this->id) . '" onclick="callApi(this,\'user_modal_content\')" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl">'.$this->passedStudentCourses->count().'</a>'
-                : 0,
-            'failedCourses' => $this->failedAsaneedStudentCourses->count() ?
-                '<a href="#!" data-url="' . route('asaneedCourseStudents.getFailedCourses',$this->id) . '" onclick="callApi(this,\'user_modal_content\')" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl">'.$this->failedStudentCourses->count().'</a>'
-                : 0,
-            'courses' => $this->studentAsaneedCourses->count(),
+            'passedCourses' => $passedCourses,
+            'failedCourses' => $failedCourses,
+            'courses' => $total,
             'tools' => $allCoursesBtn
             // '
             //         <button type="button" class="btn btn-warning btn-sm" data-url="' . route('asaneedCourseStudents.edit',$this->id) . '" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')"><i class="mdi mdi-comment-edit"></i></button>
@@ -358,12 +373,12 @@ class User extends Authenticatable
     public function getAsaneedMoallemDisplayDataAttribute(){
         self::$counter++;
 //        dd($this->area_father_id);
-        $moallemPermission = hasPermissionHelper('نسخ بيانات المعلم لمحفظ او شيخ أسانيد') ?
+        $moallemPermission = hasPermissionHelper('إضافة صلاحيات لشيوخ الإسناد') ?
             '<button type="button" class="btn btn-primary" title="صلاحيات المستخدم" onclick="updateRoles(this,'.$this->id.')"><i class="mdi mdi-rotate-left"></i></button>' : '';
-        $moallemUpdate = hasPermissionHelper('تعديل بيانات معلمو الدورات') ?
+        $moallemUpdate = hasPermissionHelper('تعديل بيانات شيوخ الاسانيد') ?
             '<button type="button" class="btn btn-warning" title="تعديل بيانات المعلم" data-url="' . route('asaneedMoallem.edit',$this->id) . '" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')"><i class="mdi mdi-comment-edit"></i></button><br>' : '';
-        $moallemDelete = hasPermissionHelper('حذف بيانات معلمو الدورات') ?
-            '<button type="button" class="btn btn-danger" title="حذف بيانات المعلم" data-url="' . route('asaneedMoallem.destroy',$this->id) . '" onclick="deleteItem(this)" style="margin-top: 4px;"><i class="mdi mdi-trash-can"></i></button>' : '';
+        $moallemDelete = hasPermissionHelper('حذف بيانات شيوخ الاسانيد') ?
+            '<button type="button" class="btn btn-danger" title="حذف بيانات شيوخ الاسانيد" data-url="' . route('asaneedMoallem.destroy',$this->id) . '" onclick="deleteItem(this)" style="margin-top: 4px;"><i class="mdi mdi-trash-can"></i></button>' : '';
         return [
             'id' => self::$counter,
             'name' => $this->name,
@@ -565,7 +580,7 @@ class User extends Authenticatable
     }
     public function scopeAreaScope($query,$area_id)
     {
-//        dd($searchWord);
+    //    dd($area_id);
         return $query->WhereHas('placeForPermissions',function($query) use ($area_id){
                 $query->where('area_id',$area_id);
             });
@@ -594,6 +609,18 @@ class User extends Authenticatable
         }
     }
 
+    public function scopeArea($query,$area_id){
+        if($area_id){
+            return $query->whereHas('placeForPermissions', function ($query) use ($area_id) {
+                $query->whereHas('areaForPermissions', function ($query) use ($area_id) {
+                    $query->where('area_id', $area_id);
+                });
+            });
+        }else{
+            return $query;
+        }
+    }
+
     public function scopeSubArea($query,$sub_area_id,$area_id)
     {
 //        dd($sub_area_id,$area_id);
@@ -601,7 +628,8 @@ class User extends Authenticatable
             return $query->whereHas('placeForPermissions', function ($query) use ($sub_area_id) {
                 $query->where('area_id', $sub_area_id);
             });
-        } else if($area_id){
+        } else
+        if($area_id){
             return $query->whereHas('placeForPermissions', function ($query) use ($area_id) {
                 $query->whereHas('areaForPermissions', function ($query) use ($area_id) {
                     $query->where('area_id', $area_id);

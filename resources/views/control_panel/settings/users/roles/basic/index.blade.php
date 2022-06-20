@@ -40,7 +40,7 @@
                     {{--@endif--}}
                 {{--</div>--}}
                 <div class="">
-                    <table class="table table-centered table-nowrap mb-0" id="dataTable">
+                    <table class="table table-centered table-nowrap mb-0" >
                         <thead>
                             <tr>
                                 <th scope="col"  style="width: 50px;">
@@ -59,18 +59,18 @@
                                         <td>{{ $role->name }}</td>
                                         <td>
                                             <button type="button" class="btn btn-primary btn-sm"
-                                            data-url="{{route('roles.permissions',['role'=>$role->id])}}" 
+                                            data-url="{{route('roles.permissions',['role'=>$role->id])}}"
                                             data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,'user_modal_content')">الصلاحيات</button>
                                         </td>
 
-           
-                       
+
+
                                     </tr>
                                 @php $i++; @endphp
                                 @endforeach
                         </tbody>
 
-                      
+
                         </tbody>
                     </table>
                 </div>

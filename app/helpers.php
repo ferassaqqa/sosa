@@ -350,6 +350,9 @@ function getPlaceTeachersForCourses($area_id,$teacher_id){
         return $teachers;
     }
 }
+
+
+
 function getPlaceTeachersForAsaneed($area_id,$teacher_id){
     if($area_id) {
         $teachers_data = \App\Models\User::areascope($area_id)->whereHas('user_roles', function ($query) {

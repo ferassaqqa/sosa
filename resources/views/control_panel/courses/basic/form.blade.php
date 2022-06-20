@@ -78,7 +78,7 @@
     <label for="teacher_id" class="col-md-2 col-form-label" >المعلم:</label>
     <div class="col-md-9">
         <select class="form-control select2" name="teacher_id" id="teacher_id">
-            <option value="">-- تحديد --</option>
+            {{-- <option value="">-- تحديد --</option> --}}
             @if(isset($teachers)) {!! $teachers !!} @endif
         </select>
     </div>
@@ -144,19 +144,27 @@
         $.get('/getSubAreas/'+area_id,function(data){
             $('#sub_area_id').empty().html(data);
         });
+
+        $.get('/getSubAreaTeachers/' + area_id, function(data) {
+                            $('#teacher_id').empty().html(data[0]);
+                            $('#place_id').empty().html(data[1]);
+        });
     });
+
+
+
     $('#sub_area_id').on('change', function() {
         var sub_area_id = $(this).val();
         $.get('/getSubAreaPlaces/'+sub_area_id,function(data){
             $('#place_id').empty().html(data);
         });
     });
-    $('#place_id').on('change', function() {
-        var place_id = $(this).val();
-        $.get('/getPlaceTeachers/'+place_id+'/{{ $course->teacher_id ? $course->teacher_id : 0 }}',function(data){
-            $('#teacher_id').empty().html(data);
-        });
-    });
+    // $('#place_id').on('change', function() {
+    //     var place_id = $(this).val();
+    //     $.get('/getPlaceTeachers/'+place_id+'/{{ $course->teacher_id ? $course->teacher_id : 0 }}',function(data){
+    //         $('#teacher_id').empty().html(data);
+    //     });
+    // });
     $('#book_id').on('change', function() {
         var book_id = $(this).val();
         $.get('/getBookStudentCategory/'+book_id,function(data){

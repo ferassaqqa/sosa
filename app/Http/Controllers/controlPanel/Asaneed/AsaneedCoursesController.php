@@ -38,12 +38,22 @@ class AsaneedCoursesController extends Controller
     }
 
 
+    private function getAreaTeacher($area_id,$teacher_id){
+        $moallems = User::department(7)->area($area_id)->get();
+        $moallem_list = '<option value="0">اختر الشيخ</option>';
+        foreach ($moallems as $moallem) {
+            $selected = $teacher_id == $moallem->id ? 'selected' : '';
+            $moallem_list .= '<option value="' . $moallem->id . '" '.$selected.'>' . $moallem->name . '</option>';
+        }
+        return $moallem_list;
+    }
+
     public function getSubAreaAsaneedTeachers($area_id)
     {
 
 
         $result = array();
-        $moallems = User::department(7)->subarea($area_id,0)->get();
+        $moallems = User::department(7)->area($area_id)->get();
         $moallem_list = '<option value="0">اختر الشيخ</option>';
         foreach ($moallems as $moallem) {
             $moallem_list .= '<option value="'.$moallem->id.'">'.$moallem->name.'</option>';
@@ -205,7 +215,7 @@ class AsaneedCoursesController extends Controller
             $books .= '<option value="'.$book->id.'" '.$selected.'>'.$book->name.'</option>';
         }
         $place = Place::findOrFail($asaneedCourse->place_id);
-        $teachers = getPlaceTeachersForAsaneed($place->area_id,$asaneedCourse->teacher_id);
+        $teachers = $this->getAreaTeacher($place->area_father_id,$asaneedCourse->teacher_id);
         return view('control_panel.asaneed.courses.basic.update',compact('asaneedCourse','sub_areas','places','books','teachers','areas'));
     }
     public function getPlaceTeachersForCourses(Place $place,$teacher_id){

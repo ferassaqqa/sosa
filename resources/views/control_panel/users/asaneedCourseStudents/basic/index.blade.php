@@ -28,6 +28,10 @@
     <!-- end page title -->
 
     <div class="col-lg-12">
+
+        @if (hasPermissionHelper('فلترة طلاب الأسانيد والإجازات'))
+
+
         <div class="card">
             <div class="card-body">
 
@@ -132,6 +136,8 @@
 
             </div>
         </div>
+
+        @endif
     </div>
 
 

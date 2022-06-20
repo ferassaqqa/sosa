@@ -542,25 +542,30 @@
                         $.get('/getSubAreas/' + obj.value, function(data) {
                             $('#sub_areas_select').empty().html(data);
                         });
-                        // updateDateTable();
-                    } else {
-                        $('#sub_areas_select').empty().html('<option value="0">اختر المنطقة المحلية</option>');
-                        // updateDateTable();
-                    }
-                }
-
-                function getSubAreaTeachers(obj) {
-                    if (obj.value != 0) {
                         $.get('/getSubAreaTeachers/' + obj.value, function(data) {
                             $('#teachers_select').empty().html(data[0]);
                             $('#place_area').empty().html(data[1]);
                         });
                         // updateDateTable();
                     } else {
+                        $('#sub_areas_select').empty().html('<option value="0">اختر المنطقة المحلية</option>');
                         $('#teachers_select').empty().html('<option value="0">اختر المعلم</option>');
-                        $('#place_area').empty().html('<option value="0">اختر مكان الدورة</option>');
                         // updateDateTable();
                     }
+                }
+
+                function getSubAreaTeachers(obj) {
+                    // if (obj.value != 0) {
+                    //     $.get('/getSubAreaTeachers/' + obj.value, function(data) {
+                    //         $('#teachers_select').empty().html(data[0]);
+                    //         $('#place_area').empty().html(data[0]);
+                    //     });
+                    //     // updateDateTable();
+                    // } else {
+
+                    //     $('#place_area').empty().html('<option value="0">اختر مكان الدورة</option>');
+                    //     // updateDateTable();
+                    // }
                 }
 
 
