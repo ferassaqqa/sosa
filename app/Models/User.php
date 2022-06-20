@@ -442,43 +442,83 @@ class User extends Authenticatable
         ];
     }
     public function getGetDataFromIdentityNumAttribute(){
+        // $curl = curl_init();
+        // curl_setopt_array($curl, array(
+        //     CURLOPT_URL => 'https://eservices.gedco.ps/solor/index.php/solar/solar/public_get_detaild_NAME',
+        //     CURLOPT_RETURNTRANSFER => true,
+        //     CURLOPT_ENCODING => '',
+        //     CURLOPT_MAXREDIRS => 10,
+        //     CURLOPT_TIMEOUT => 0,
+        //     CURLOPT_SSL_VERIFYHOST => 0,
+        //     CURLOPT_SSL_VERIFYPEER => 0,
+        //     CURLOPT_FOLLOWLOCATION => true,
+        //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        //     CURLOPT_CUSTOMREQUEST => 'POST',
+        //     CURLOPT_POSTFIELDS => 'id=' . $this->id_num,
+        //     CURLOPT_HTTPHEADER => array(
+        //         'Content-Type: application/x-www-form-urlencoded',
+        //     ),
+        // ));
+        // $response = curl_exec($curl);
+        // curl_close($curl);
+        // $response = preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $response);
+        // return json_decode($response);
+
+
+
         $curl = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://eservices.gedco.ps/solor/index.php/solar/solar/public_get_detaild_NAME',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_SSL_VERIFYHOST => 0,
-            CURLOPT_SSL_VERIFYPEER => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => 'id=' . $this->id_num,
-            CURLOPT_HTTPHEADER => array(
-                'Content-Type: application/x-www-form-urlencoded',
-            ),
+        CURLOPT_URL => 'http://eservices.mtit.gov.ps/ws/gov-services/ws/getData',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 30,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS =>'{
+            "WB_USER_NAME_IN": "DAR_QURAAN",
+            "WB_USER_PASS_IN": "9ACA19A79194s6d5fe8r54fDB80FD18E9",
+            "DATA_IN": {
+                "package": "MOI_GENERAL_NEW_PKG",
+                "procedure": "CITZN_MAIN_INFO_PR",
+                "ID": '.$this->id_num.'
+            },
+            "WB_AUDIT_IN": {
+                "ip": "10.12.0.32",
+                "pc": "feras-iMac"
+            }
+        }',
+        CURLOPT_HTTPHEADER => array(
+            'Content-Type: application/json'
+        ),
         ));
+
         $response = curl_exec($curl);
         curl_close($curl);
-        $response = preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $response);
+
+        // $response = preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $response);
         return json_decode($response);
+
+
     }
     public function getUserBasicDataAttribute(){
 
+
+        // dd($this->get_data_from_identity_num->DATA[0]);
 //        return $this->get_data_from_identity_num;
         if(!empty($this->get_data_from_identity_num->DATA)) {
             $data = $this->get_data_from_identity_num->DATA[0];
-            $this->name = $data->FNAME_ARB . ' ' .
-                $data->SNAME_ARB . ' ' .
-                $data->TNAME_ARB . ' ' .
-                $data->LNAME_ARB;
+            $this->name = $data->CI_FIRST_ARB . ' ' .
+                $data->CI_FATHER_ARB . ' ' .
+                $data->CI_GRAND_FATHER_ARB . ' ' .
+                $data->CI_FAMILY_ARB;
 
-            $this->dob = $data->BIRTH_DT;
+            $this->dob = $data->CI_BIRTH_DT;
 
-            $this->role = $data->SEX_CD;
+            $this->role = $data->SEX;
 
-            $this->pob = $data->BIRTH_PMAIN . ' ' . $data->BIRTH_PSUB;
+            $this->pob = $data->CI_BIRTH_COUNTRY_AR;
 
             $this->material_status = $data->SOCIAL_STATUS;
             return true;

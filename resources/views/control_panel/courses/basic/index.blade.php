@@ -544,7 +544,7 @@
                         });
                         $.get('/getSubAreaTeachers/' + obj.value, function(data) {
                             $('#teachers_select').empty().html(data[0]);
-                            $('#place_area').empty().html(data[1]);
+                            // $('#place_area').empty().html(data[1]);
                         });
                         // updateDateTable();
                     } else {
@@ -555,6 +555,10 @@
                 }
 
                 function getSubAreaTeachers(obj) {
+                    $.get('/getSubAreaTeachers/' + obj.value, function(data) {
+                            // $('#teachers_select').empty().html(data[0]);
+                            $('#place_area').empty().html(data[1]);
+                        });
                     // if (obj.value != 0) {
                     //     $.get('/getSubAreaTeachers/' + obj.value, function(data) {
                     //         $('#teachers_select').empty().html(data[0]);

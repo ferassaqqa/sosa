@@ -221,12 +221,15 @@ class courseStudentsController extends Controller
      */
     public function create($id_num, Course $course)
     {
+        // $user = new User();
+        // $user->id_num = $id_num;
+        // dd($user->user_basic_data);
+
         checkPermissionHelper('اضافة طالب جديد - دورات علمية');
         if ($course->teacher_id_num == $id_num) {
             return response()->json(['view' => '', 'errors' => 1, 'msg' => ' لا يمكن اضافة المعلم ' . $course->teacher_name . ' كطالب في دورته '], 404);
         } else {
             $old_user = User::withoutGlobalScope('relatedUsers')->where('id_num', $id_num)->first();
-            //            dd($old_user);
             if (!$old_user) {
 
                 $user = new User();
