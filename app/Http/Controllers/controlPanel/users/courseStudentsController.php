@@ -246,7 +246,9 @@ class courseStudentsController extends Controller
                     return response()->json(['view' => 0, 'errors' => 1, 'msg' => 'رقم الهوية خطأ'], 404);
                 }
             } else {
-                //                dd(in_array($old_user->student_category,$course->student_categories));
+
+                // dd('55555');
+                            //    dd(in_array($old_user->student_category,$course->student_categories));
                 if (!in_array($old_user->student_category, $course->student_categories)) {
                     $excludeButton = hasPermissionHelper('استثناء طالب خارج الخطة') ? '<button type="button" class="btn btn-primary" onclick="excludeStudent(' . $id_num . ',' . $course->id . ')">استثناء</button>' : '';
                     return response()->json(['view' => 0, 'errors' => 1, 'msg' => ' الطالب خارج الفئة المستهدفة | ' . $excludeButton], 202);
@@ -265,9 +267,9 @@ class courseStudentsController extends Controller
                         'course_id' => $course->id
                     ]);
                 }
-                $users = User::whereHas('courses', function ($query) use ($course) {
-                    $query->where('course_id', $course->id);
-                })->get();
+                // $users = User::whereHas('courses', function ($query) use ($course) {
+                //     $query->where('course_id', $course->id);
+                // })->get();
                 return response()->json(['view' => 0, 'errors' => 0, 'msg' => 'تم اضافة الطالب بنجاح ' . $old_user->name . ' لدورة المعلم ' . $course->teacher_name . ' كتاب ' . $course->book_name], 404);
                 //                return response()->json(['view' => view('control_panel.users.courseStudents.showCourseStudents',compact('users','course'))->render(), 'errors' => 0]);
             }
