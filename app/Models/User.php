@@ -1067,7 +1067,9 @@ class User extends Authenticatable
                     if ($user->hasRole('رئيس الدائرة')) {
                         return $builder;
                     } elseif ($user->hasRole('مدير الدائرة') || $user->hasRole('مساعد اداري')) {
-                        $builder->genderdepartment($user->role);
+                        // $builder->genderdepartment($user->role);
+                        return $builder;
+
                     } else {
 //                        $builder->whereHas('user_roles',function($query){
 //                            $query->where('name','!=','مشرف جودة');

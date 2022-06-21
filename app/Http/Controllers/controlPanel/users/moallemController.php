@@ -157,7 +157,7 @@ class moallemController extends Controller
                     'dob' => $old_user->dob,
                     'pob' => $old_user->pob,
                 ]));
-                $old_user->userExtraData ? $old_user->userExtraData()->create($request->all()) : $old_user->userExtraData->update($request->all());
+                !$old_user->userExtraData ? $old_user->userExtraData()->create($request->all()) : $old_user->userExtraData->update($request->all());
 
                 if (
                     (isset($request->course_name) && isset($request->course_teacher_name) && isset($request->course_year)) &&
@@ -295,7 +295,6 @@ class moallemController extends Controller
     {
         checkPermissionHelper('تعديل بيانات معلمو الدورات');
         $user = User::with(['userExtraData'])->find($id);
-//        dd($user);
         if($user){
             $avatar = $user->avatar;
             if ($request->user_profile) {
@@ -307,7 +306,8 @@ class moallemController extends Controller
                 'dob' => $user->dob,
                 'pob' => $user->pob,
             ]));
-            $user->userExtraData()->update($request->only($user->userExtraData->getFillable()));
+            // $user->userExtraData()->update($request->only($user->userExtraData->getFillable()));
+            $user->userExtraData ? $user->userExtraData()->update($request->only($user->userExtraData->getFillable())) : $user->userExtraData()->create($request->only($user->userExtraData->getFillable()));
 
             if (
                 (isset($request->course_name) && isset($request->course_teacher_name) && isset($request->course_year)) &&
