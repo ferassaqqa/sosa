@@ -280,7 +280,7 @@ Route::get('showAsaneedCoursePlan/{year}', [\App\Http\Controllers\controlPanel\A
  */
 Route::resource('asaneedCourseStudents', \App\Http\Controllers\controlPanel\users\AsaneedCoursesStudentsController::class)->except('create');
 Route::get('getAsaneedCourseStudentsData', [\App\Http\Controllers\controlPanel\users\AsaneedCoursesStudentsController::class,'getData'])->name('asaneedCourseStudents.getData');
-Route::get('ShowAsaneedCourseStudents/{asaneedCourse}', [\App\Http\Controllers\controlPanel\users\AsaneedCoursesStudentsController::class,'ShowCourseStudents'])->name('asaneedCourseStudents.ShowCourseStudents');
+Route::get('ShowAsaneedCourseStudents/{asaneedCourse}', [\App\Http\Controllers\controlPanel\users\AsaneedCoursesStudentsController::class,'ShowAsaneedCourseStudents'])->name('asaneedCourseStudents.ShowAsaneedCourseStudents');
 Route::get('getTeacherAsaneedCourseBooks/{user_id}', [\App\Http\Controllers\controlPanel\users\AsaneedCoursesStudentsController::class,'getTeacherCourseBooks'])->name('asaneedCourseStudents.getTeacherCourseBooks');
 Route::get('excludeAsaneedStudent/{user_id_num}/{asaneedCourse}', [\App\Http\Controllers\controlPanel\users\AsaneedCoursesStudentsController::class,'excludeStudent'])->name('asaneedCourseStudents.excludeStudent');
 Route::get('getBookAsaneedCoursePlaces/{book_id}/{teacher_id}', [\App\Http\Controllers\controlPanel\users\AsaneedCoursesStudentsController::class,'getBookCoursePlaces'])->name('asaneedCourseStudents.getBookCoursePlaces');

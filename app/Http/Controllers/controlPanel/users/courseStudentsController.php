@@ -329,8 +329,8 @@ class courseStudentsController extends Controller
             //            $users = DB::table('users')->join('course_students',function($q) use ($course){
             //                $q->on('course_students.user_id', '=', 'users.id')->where('course_id', $course->id);
             //            })->get();
-            $users = CourseStudent::with('user')->where('course_id', $course->id)->get()->pluck('user');
-            //            dd($users);
+            $users = CourseStudent::whereHas('user')->where('course_id', $course->id)->get()->pluck('user');
+                    //    dd($users);
             return view('control_panel.users.courseStudents.showCourseStudents', compact('users', 'course'));
         } else {
             abort(403);

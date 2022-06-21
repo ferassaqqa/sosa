@@ -18,18 +18,18 @@ class AsaneedCourse extends Model
 
         if(hasPermissionHelper('اضافة طالب جديد الأسانيد والإجازات')){
 
-        $addStudent = $this->status != 'منتهية' ? '<button type="button" class="btn btn-info btn-sm" title="اضافة طالب"  onclick="createNewCourseStudents('.$this->id.')"><i class="mdi mdi-account-plus"></i></button>' : '';        
+        $addStudent = $this->status != 'منتهية' ? '<button type="button" class="btn btn-info btn-sm" title="اضافة طالب"  onclick="createNewCourseStudents('.$this->id.')"><i class="mdi mdi-account-plus"></i></button>' : '';
         $addExcelStudent = ($this->status != 'منتهية') ?'<button type="button" class="btn btn-primary btn-sm" title="اضافة طلاب من ملف اكسل"  onclick="addExcelAsaneedStudents('.$this->id.')"><i class="mdi mdi-microsoft-excel"></i></button>&nbsp' : '';
-        
+
     }
 
         $options = '';
         if(hasPermissionHelper('تصفح بيانات دورةالسند')){
-            $options .=' <button type="button" class="btn btn-success btn-sm" title="عرض الطلاب" data-url="'.route('asaneedCourseStudents.ShowCourseStudents',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')"><i class="mdi mdi-account-multiple"></i></button>';
+            $options .=' <button type="button" class="btn btn-success btn-sm" title="عرض الطلاب" data-url="'.route('asaneedCourseStudents.ShowAsaneedCourseStudents',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')"><i class="mdi mdi-account-multiple"></i></button>';
         }
 
         if(hasPermissionHelper('تعديل بيانات الاسانيد')){
-            $options .= ' <button type="button" class="btn btn-warning btn-sm" title="تعديل بيانات الدورة" data-url="'.route('asaneedCourses.edit',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-x2" onclick="callApi(this,\'user_modal_content_new\')"><i class="mdi mdi-comment-edit"></i></button>';        
+            $options .= ' <button type="button" class="btn btn-warning btn-sm" title="تعديل بيانات الدورة" data-url="'.route('asaneedCourses.edit',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-x2" onclick="callApi(this,\'user_modal_content_new\')"><i class="mdi mdi-comment-edit"></i></button>';
         }
 
         if(hasPermissionHelper('حذف بيانات الاسانيد')){

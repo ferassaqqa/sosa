@@ -180,7 +180,7 @@ class AsaneedCoursesStudentsController extends Controller
             return view('control_panel.users.asaneedCourseStudents.showCourseStudents', compact('users', 'asaneedCourse'));
         }
     }
-    public function ShowCourseStudents(AsaneedCourse $asaneedCourse)
+    public function ShowAsaneedCourseStudents(AsaneedCourse $asaneedCourse)
     {
     //    dd($asaneedCourse);
         $users = User::whereHas('asaneedCourses',function($query) use ($asaneedCourse){

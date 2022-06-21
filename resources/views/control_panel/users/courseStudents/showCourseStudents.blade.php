@@ -12,7 +12,7 @@
         <tbody>
             <tr>
                 <td>{{ $course->book_name }}</td>
-                <td>{{ $course->students->count() }}</td>
+                <td>{{ $users->count() }}</td>
                 <td>{!! $course->book_students_category_string !!}</td>
             </tr>
         </tbody>

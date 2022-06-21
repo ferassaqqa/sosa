@@ -40,7 +40,7 @@ class CoursesController extends Controller
 
 
         $result = array();
-        $moallems = User::department(2)->area($area_id)->get();
+        $moallems = User::department(2)->area($area_id)->withoutGlobalScope('relatedUsers')->get();
         // $moallems = User::department(2)->subarea($area_id,0)->get();
         $moallem_list = '<option value="0">اختر المعلم</option>';
         foreach ($moallems as $moallem) {

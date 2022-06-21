@@ -258,19 +258,23 @@ class CourseStudent extends Model
                     } else if ($user->hasRole('مدير الدائرة') || $user->hasRole('مساعد اداري')) {
                         $builder->genderdepartment($user->role);
                     } else if ($user->hasRole('مشرف عام')) {
-                        $builder->genderdepartment($user->role)->permissionssubarea(0, $user->area_supervisor_area_id)
-                            ->orWhereHas('user',function($query) use($user){
-                                $query->whereHas('user_roles',function($query){
-                                    $query->where('name','مشرف جودة');
-                                });
-                            });
+                        // $builder->genderdepartment($user->role)->permissionssubarea(0, $user->area_supervisor_area_id)
+                        //     ->orWhereHas('user',function($query) use($user){
+                        //         $query->whereHas('user_roles',function($query){
+                        //             $query->where('name','مشرف جودة');
+                        //         });
+                        //     });
+                        return $builder;
+
                     } else if ($user->hasRole('مشرف ميداني')) {
-                        $builder->genderdepartment($user->role)->permissionssubarea($user->sub_area_supervisor_area_id, 0)
-                            ->orWhereHas('user',function($query) use($user){
-                                $query->whereHas('user_roles',function($query){
-                                    $query->where('name','مشرف جودة');
-                                });
-                            });
+                        // $builder->genderdepartment($user->role)->permissionssubarea($user->sub_area_supervisor_area_id, 0)
+                        //     ->orWhereHas('user',function($query) use($user){
+                        //         $query->whereHas('user_roles',function($query){
+                        //             $query->where('name','مشرف جودة');
+                        //         });
+                        //     });
+                        return $builder;
+
                     } else if ($user->hasRole('محفظ') || $user->hasRole('معلم') || $user->hasRole('شيخ اسناد')) {
                         $builder->whereHas('user',function($query) use($user){
                             $query->where('teacher_id', $user->id)->orWhere('id', $user->id);
