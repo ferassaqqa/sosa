@@ -529,12 +529,11 @@ class Course extends Model
                     }else if($user->hasRole('مشرف عام')){
 //                        dd($area_supervisor_area_id);
                         // return $builder->genderdepartment($user->role)->permissionssubarea(0,$area_supervisor_area_id);
-
-                        $builder->permissionssubarea(0, $user->area_supervisor_area_id);
-
+                        return $builder->permissionssubarea($sub_area_supervisor_area_id,0);
                     }else if($user->hasRole('مشرف ميداني')){
 //                        dd($user->sub_area_supervisor_area_id,$user);
-                        return $builder->genderdepartment($user->role)->permissionssubarea($sub_area_supervisor_area_id,0);
+                        // return $builder->permissionssubarea($user->area_supervisor_area_id,0);
+                        return $builder->permissionssubarea($sub_area_supervisor_area_id,0);
                     }else if($user->hasRole('محفظ') || $user->hasRole('معلم') || $user->hasRole('شيخ اسناد')){
                         return $builder->where('teacher_id',$user->id);
                     }else if($user->hasRole('مدير دائرة التخطيط والجودة')){

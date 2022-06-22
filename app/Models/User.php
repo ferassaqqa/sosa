@@ -1076,14 +1076,14 @@ class User extends Authenticatable
 //                        });
                          if ($user->hasRole('مشرف عام')) {
                             //  $builder->genderdepartment($user->role)->permissionssubarea(0, $user->area_supervisor_area_id);
-                        $builder->permissionssubarea(0, $user->area_supervisor_area_id);
+                       return $builder->permissionssubarea(0, $user->area_supervisor_area_id);
 
                         // return $builder;
 
 
                         } else if ($user->hasRole('مشرف ميداني')) {
                             // $builder->genderdepartment($user->role)->permissionssubarea($user->sub_area_supervisor_area_id, 0);
-                        $builder->permissionssubarea(0, $user->area_supervisor_area_id);
+                      return  $builder->permissionssubarea(0, $user->area_supervisor_area_id);
 
                         // return $builder;
 
