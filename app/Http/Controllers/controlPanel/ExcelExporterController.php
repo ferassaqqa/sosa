@@ -26,6 +26,9 @@ use Illuminate\Http\Response;
 use Maatwebsite\Excel\Excel;
 use Spatie\Permission\Models\Role;
 
+use Illuminate\Support\Facades\Storage;
+
+
 class ExcelExporterController extends Controller
 {
     public function __construct()
@@ -83,11 +86,24 @@ class ExcelExporterController extends Controller
         }
     }
     public function exportCourseStudentsMarksExcelSheet(Excel $excel,Course $course){
+
+    //    $ss = $excel->download(new courseStudentsMarksExport($course), 'public/ كشف درجات دورة ' . $course->book_name . ' للمعلم ' . $course->name . ' منطقة ' . $course->area_father_name_for_permissions . '.xlsx');
+
+
+
         $excel->store(
             new courseStudentsMarksExport($course)
-            , 'public/ كشف درجات دورة ' . $course->book_name . ' للمعلم ' . $course->name . ' منطقة ' . $course->area_father_name_for_permissions . '.xlsx');
+            , 'public/2000.xlsx');
         $course->update(['is_certifications_exported'=>1]);
-        return response()->json(['file_link' => asset('storage/ كشف درجات دورة ' . $course->book_name . ' للمعلم ' . $course->name . ' منطقة ' . $course->area_father_name_for_permissions . '.xlsx'),'msg'=>'تم استيراد الطلاب عدد '.$course->manyStudentsForPermissions->count().' بنجاح ، من أصل '.$course->manyStudentsForPermissions->count().'طالب.']);
+        $file = Storage::disk('public')->get('2000.xlsx');
+        $filepath = storage_path("app/2000.xlsx");
+
+        // $filepath = public_path('2000.xlsx');
+        return Response()->download($filepath);
+
+
+        // return Response::download(public_path('public/2000.xlsx'));
+        // return response()->json(['file_link' => asset('public/2000.xlsx'),'msg'=>'تم استيراد الطلاب عدد '.$course->manyStudentsForPermissions->count().' بنجاح ، من أصل '.$course->manyStudentsForPermissions->count().'طالب.']);
     }
     public function importCourseStudentsMarkExcel(Exam $exam,Excel $excel,ImportExcelRequest $request){
         $import = new CourseStudentsMarkImport($exam);

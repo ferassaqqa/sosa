@@ -1,5 +1,10 @@
 <div class="modal-header">
-    <h5 class="modal-title" id="myLargeModalLabel" style="color: #000 !important;"> طلاب دورة كتاب - {{ $course->book_name }} - المعلم {{ $course->teacher_name }}</h5>
+    <h5 class="modal-title" id="myLargeModalLabel" style="color: #000 !important;"> طلاب دورة كتاب - {{ $course->book_name }} - المعلم {{ $course->teacher_name }} </h5>
+
+    @if($course->status != 'منتهية' && $course->status != 'بانتظار اعتماد الدرجات' && hasPermissionHelper('اضافة طالب جديد - دورات علمية'))
+    <button  style="margin-right: 15px;" type="button" class="btn btn-info" title="اضافة طالب"  onclick="createNewCourseStudents({{$course->id}})"><i class="mdi mdi-account-plus"></i> اضافة طالب جديد </button>
+    @endif
+
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <div class="modal-body">
