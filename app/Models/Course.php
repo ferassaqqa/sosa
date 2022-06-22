@@ -528,7 +528,10 @@ class Course extends Model
                         return $builder->genderdepartment($user->role);
                     }else if($user->hasRole('مشرف عام')){
 //                        dd($area_supervisor_area_id);
-                        return $builder->genderdepartment($user->role)->permissionssubarea(0,$area_supervisor_area_id);
+                        // return $builder->genderdepartment($user->role)->permissionssubarea(0,$area_supervisor_area_id);
+
+                        $builder->permissionssubarea(0, $user->area_supervisor_area_id);
+
                     }else if($user->hasRole('مشرف ميداني')){
 //                        dd($user->sub_area_supervisor_area_id,$user);
                         return $builder->genderdepartment($user->role)->permissionssubarea($sub_area_supervisor_area_id,0);

@@ -1075,7 +1075,9 @@ class User extends Authenticatable
 //                            $query->where('name','!=','مشرف جودة');
 //                        });
                          if ($user->hasRole('مشرف عام')) {
-                            $builder->genderdepartment($user->role)->permissionssubarea(0, $user->area_supervisor_area_id);
+                             $builder->genderdepartment($user->role)->permissionssubarea(0, $user->area_supervisor_area_id);
+                        // $builder->permissionssubarea(0, $user->area_supervisor_area_id);
+
                         } else if ($user->hasRole('مشرف ميداني')) {
                             $builder->genderdepartment($user->role)->permissionssubarea($user->sub_area_supervisor_area_id, 0);
                         } else if ($user->hasRole('محفظ') || $user->hasRole('معلم') || $user->hasRole('شيخ اسناد')) {
