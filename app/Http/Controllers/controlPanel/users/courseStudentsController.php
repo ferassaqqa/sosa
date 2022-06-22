@@ -443,8 +443,9 @@ class courseStudentsController extends Controller
      */
     public function destroy(User $user, Course $course)
     {
+
         checkPermissionHelper('حذف طالب من دورة علمية');
-        //        dd($course->has_next_exam);
+
         if ($course->status != 'منتهية') {
             if (!$course->has_next_exam) {
                 $courseStudent = CourseStudent::where('user_id', $user->id)
