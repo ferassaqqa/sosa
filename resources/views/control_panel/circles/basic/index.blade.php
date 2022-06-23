@@ -253,10 +253,77 @@
         </div>
         <!-- end col -->
     </div>
+
+    <input type="file" id="excelStudentsImport" style="display: none;">
+
 @endsection
 
 @section('script')
     <script>
+
+        var circle_id = 0;
+        function addExcelCircleStudents(circle) {
+            $('#excelStudentsImport').click();
+            circle_id = circle;
+        }
+
+        $('#excelStudentsImport').change(function(e) {
+                // console.log($(this),course_id);
+                // $('div[class="student_excel_import_loading"]').css('display','block');
+                // $.get('/getCircleStudents/' + circle_id, function(data) {
+                //     $('.bs-example-modal-xl').modal('show');
+                //     $('#user_modal_content')
+                //         .html(data);
+                // });
+                var fd = new FormData();
+                var files = $(this)[0].files;
+                fd.append('file', files[0]);
+                fd.append('_token', '{{ csrf_token() }}');
+                $(this).val('');
+                $.ajax({
+                    url: '/importCircleStudentsExcel/' + circle_id,
+                    type: 'post',
+                    data: fd,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        // console.log(response);
+                        if (response.file_link) {
+                            window.open(
+                                response.file_link, "_blank");
+                        }
+                        if (response.msg) {
+                            Swal.fire(
+                                'تم استيراد الملف',
+                                response.msg,
+                                'success'
+                            ).then(function(value) {
+                                ShowCircleStudents(circle_id);
+                            });
+                        }
+                        $('.bs-example-modal-xl').modal('hide');
+                        $('#dataTable').DataTable().ajax.reload();
+                        $('#spinner').remove();
+                    },
+                    error: function(errors) {
+                        const entries = Object.entries(errors.responseJSON.errors);
+                        var errors_message = document.createElement('div');
+                        Swal.fire(entries[0][1][0]);
+                        $('div[class="student_excel_import_loading"]').css('display', 'none');
+                    }
+                });
+            });
+
+            function ShowCircleStudents(circle_id) {
+                $('.bs-example-modal-xl').modal('show');
+                $.get('/getCircleStudents/' + circle_id, function(data) {
+                    $('#user_modal_content')
+                        .html(data);
+                });
+            }
+
+
+
         var table = '';
         $(document).ready(function() {
             table = $('#dataTable').DataTable({
@@ -439,5 +506,45 @@
                 });
             }
         }
+
+
+
+
+
     </script>
+
+<script type="module">
+    var iteration = 1;
+
+    import {
+        initializeApp
+    } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+    import {
+        getAnalytics
+    } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBSi08DoXXU5rNvK7chgObzLi_l1_807VM",
+        authDomain: "sunna-b0909.firebaseapp.com",
+        projectId: "sunna-b0909",
+        storageBucket: "sunna-b0909.appspot.com",
+        messagingSenderId: "141645051731",
+        appId: "1:141645051731:web:11c4995110408f7a4993a6",
+        measurementId: "G-D7XE883R18"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+
+
+    messaging.onMessage(function(payload) {
+        iteration = parseInt($('#students_count').html());
+        iteration++;
+
+        $('#students').append(payload.notification.title);
+        $('#students_count').empty().html(iteration);
+    });
+</script>
+
 @endsection

@@ -17,6 +17,19 @@ class Circle extends Model
     use HasFactory,LogsActivity;
     protected $fillable = ['start_date','place_id','teacher_id','supervisor_id','notes','status','is_delivered','is_approved'];
     public function getCircleDisplayDataAttribute(){
+
+
+        $addExcelStudent = '<button type="button" class="btn btn-primary" title="اضافة طلاب من ملف اكسل"  onclick="addExcelCircleStudents('.$this->id.')"><i class="mdi mdi-microsoft-excel"></i></button>&nbsp';
+        $addStudent ='<button type="button" class="btn btn-info" title="اضافة طالب"  onclick="createNewCourseStudents('.$this->id.')"><i class="mdi mdi-account-plus"></i></button>&nbsp';
+        $tools = '
+        <div class="mb-1">'.$addExcelStudent.'
+        <button type="button" class="btn btn-info" title="التقارير الشهرية" data-url="'.route('circleMonthlyReports.getCircleMonthlyReports',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')"><i class="mdi mdi-file-plus"></i></button>
+        <button type="button" class="btn btn-primary" title="طلاب الحلقة" data-url="'.route('circles.students',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')"><i class="mdi mdi-account-multiple"></i></button>
+        </div>
+        <div>'.$addStudent.'<button type="button" class="btn btn-warning" title="تعديل" data-url="'.route('circles.edit',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-x2" onclick="callApi(this,\'user_modal_content_new\')"><i class="mdi mdi-comment-edit"></i></button>
+        <button type="button" class="btn btn-danger" title="حذف" data-url="'.route('circles.destroy',$this->id).'" onclick="deleteItem(this)"><i class="mdi mdi-trash-can"></i></button></div>
+    ';
+
         return [
             'id'                    =>$this->id,
             'start_date'            =>$this->start_date,
@@ -29,12 +42,7 @@ class Circle extends Model
             'supervisor_name'       =>subAreaSupervisor($this->area_id_for_permissions),
             'area_supervisor_name'  =>areaSupervisor($this->area_father_id_for_permissions),
             'StatusSelect'          =>$this->status_select,
-            'tools'                 =>'
-                        <div class="mb-1"><button type="button" class="btn btn-info" title="التقارير الشهرية" data-url="'.route('circleMonthlyReports.getCircleMonthlyReports',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')"><i class="mdi mdi-file-plus"></i></button>
-                        <button type="button" class="btn btn-primary" title="طلاب الحلقة" data-url="'.route('circles.students',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')"><i class="mdi mdi-account-multiple"></i></button></div>
-                        <div><button type="button" class="btn btn-warning" title="تعديل" data-url="'.route('circles.edit',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-x2" onclick="callApi(this,\'user_modal_content_new\')"><i class="mdi mdi-comment-edit"></i></button>
-                        <button type="button" class="btn btn-danger" title="حذف" data-url="'.route('circles.destroy',$this->id).'" onclick="deleteItem(this)"><i class="mdi mdi-trash-can"></i></button></div>
-                    '
+            'tools'                 =>'<div class="mb-1">'.$tools.'</div>'
         ];
     }
     public function placeForPermissions(){

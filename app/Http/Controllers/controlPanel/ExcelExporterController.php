@@ -20,11 +20,14 @@ use App\Models\Course;
 use App\Models\AsaneedCourse;
 use App\Imports\AsaneedStudentsImport;
 use App\Models\Exam;
+use App\Models\Circle;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Maatwebsite\Excel\Excel;
 use Spatie\Permission\Models\Role;
+use App\Imports\CircleStudentsImport;
+use App\Exports\CircleStudentsFaultsExport;
 
 use Illuminate\Support\Facades\Storage;
 
@@ -69,6 +72,22 @@ class ExcelExporterController extends Controller
         }
     }
 
+    public function importCircleStudentsExcel(Circle $circle,Excel $excel,ImportExcelRequest $request){
+        $import = new CircleStudentsImport($circle);
+        $import->import(request()->file('file'));
+        $circle->update(['status'=>'قائمة']);
+        if($import->failures()->count()) {
+            $excel->store(
+                new CircleStudentsFaultsExport($import->failures())
+                , 'public/ اخطاء استيراد الطلاب من ملف الاكسل للحلقة  للمعلم ' . $circle->teacher_name . '.xlsx');
+            return response()->json(['msg'=>'تم استيراد ملف دورة '. $circle->teacher_name . ' للمعلم ' . $circle->teacher_name.' <br><span>
+           <div class="swal2-icon swal2-error swal2-icon-show" style="display: flex;"><div class="swal2-icon-content">!</div></div>
+            ويوجد عدد '.$import->failures()->count().' طلاب لم يتم استيرادهم ، لمعرفة الارقام <a  style="color: red;" href="'.asset('storage/ اخطاء استيراد الطلاب من ملف الاكسل لدورة ' . $course->book_name . ' للمعلم ' . $course->name . '.xlsx').'">اضغط هنا</a> لتحميل الملف.</span> ']);
+        }else{
+            return response()->json(['msg'=>'تم استيراد ملف دورة '. $circle->teacher_name . ' للمعلم ' . $circle->teacher_name.' بنجاح.']);
+        }
+    }
+
 
     public function importCourseStudentsExcel(Course $course,Excel $excel,ImportExcelRequest $request){
         $import = new CourseStudentsImport($course);
@@ -85,26 +104,19 @@ class ExcelExporterController extends Controller
             return response()->json(['msg'=>'تم استيراد ملف دورة '. $course->book_name . ' للمعلم ' . $course->name.' بنجاح.']);
         }
     }
+
+
     public function exportCourseStudentsMarksExcelSheet(Excel $excel,Course $course){
-
-    //    $ss = $excel->download(new courseStudentsMarksExport($course), 'public/ كشف درجات دورة ' . $course->book_name . ' للمعلم ' . $course->name . ' منطقة ' . $course->area_father_name_for_permissions . '.xlsx');
-
-
-
         $excel->store(
             new courseStudentsMarksExport($course)
-            , 'public/2000.xlsx');
+            , 'public/ كشف درجات دورة ' . $course->book_name . ' للمعلم ' . $course->name . ' منطقة ' . $course->area_father_name_for_permissions . '.xlsx');
         $course->update(['is_certifications_exported'=>1]);
-        $file = Storage::disk('public')->get('2000.xlsx');
-        $filepath = storage_path("app/2000.xlsx");
-
-        // $filepath = public_path('2000.xlsx');
-        return Response()->download($filepath);
-
-
-        // return Response::download(public_path('public/2000.xlsx'));
-        // return response()->json(['file_link' => asset('public/2000.xlsx'),'msg'=>'تم استيراد الطلاب عدد '.$course->manyStudentsForPermissions->count().' بنجاح ، من أصل '.$course->manyStudentsForPermissions->count().'طالب.']);
+        $filepath = Storage::url('public/ كشف درجات دورة ' . $course->book_name . ' للمعلم ' . $course->name . ' منطقة ' . $course->area_father_name_for_permissions . '.xlsx');
+        return response()->json(['file_link' => $filepath,
+        'msg'=>'تم استيراد الطلاب عدد '.$course->manyStudentsForPermissions->count().' بنجاح ، من أصل '.$course->manyStudentsForPermissions->count().'طالب.']);
     }
+
+
     public function importCourseStudentsMarkExcel(Exam $exam,Excel $excel,ImportExcelRequest $request){
         $import = new CourseStudentsMarkImport($exam);
         $import->import(request()->file('file'));

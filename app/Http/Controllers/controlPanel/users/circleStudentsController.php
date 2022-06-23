@@ -132,7 +132,6 @@ class circleStudentsController extends Controller
     public function create($id_num)
     {
         $old_user = User::where('id_num',$id_num)->first();
-
         if(!$old_user){
             $user = new User();
             $user->id_num = $id_num;
@@ -144,7 +143,6 @@ class circleStudentsController extends Controller
                 return response()->json(['view' => '', 'errors' => 1, 'msg' => 'رقم الهوية خطأ'], 404);
             }
         }else{
-
 
             if(!$old_user->hasRole('طالب تحفيظ')){
                 $user = $old_user;

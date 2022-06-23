@@ -8,7 +8,6 @@
         @include('control_panel.users.circleStudents.basic.form')
     </form>
 </div>
-
 <div class="modal-footer">
     <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">إلغاء</button>
     <button type="submit" form="form" class="btn btn-primary waves-effect waves-light">حفظ</button>

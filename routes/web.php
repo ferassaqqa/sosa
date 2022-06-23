@@ -107,6 +107,7 @@ Route::get('restoreCircleFromExcel/{circle}', function(\App\Models\Circle $circl
     return response()->json(['msg' => 'تم استرجاع البيانات بنجاح.', 'title' => 'استرجاع', 'type' => 'success']);
 })->name('circles.restoreItemFromExcel');
 
+Route::post('importCircleStudentsExcel/{circle}', [\App\Http\Controllers\controlPanel\ExcelExporterController::class,'importCircleStudentsExcel'])->name('circles.importCircleStudentsExcel');
 /**
  *  End Circles Operations
  */
