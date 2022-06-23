@@ -281,7 +281,7 @@ class User extends Authenticatable
             'id' => self::$counter,
             'name' => $this->name,
             'id_num' => $this->id_num,
-            'contract_type' => $this->circleStudentTeacher->userExtraData->contract_type,
+            'contract_type' => $this->circleStudentTeacher ? $this->circleStudentTeacher->userExtraData->contract_type : '',
             'teacher_name' => $this->teacher_name,
             // 'books'=>$this->student_stored_books,
             'area_father_name' => $this->area_father_name,

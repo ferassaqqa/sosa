@@ -14,6 +14,8 @@ use App\Models\UserOldCourse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
+
 
 class circleStudentsController extends Controller
 {
@@ -50,6 +52,11 @@ class circleStudentsController extends Controller
 
         $value = array();
         User::$counter = 0;
+        $user = Auth::user();
+
+        if($user->hasRole('مشرف عام')){
+            $area_id =    $user->supervisor_area_id;
+        }
 
         $total_circlestudents_count =   User::department(3)->subarea($sub_area_id,$area_id)->count();
         $total_circlestudents_makfool =  User::department(3)
@@ -76,15 +83,23 @@ class circleStudentsController extends Controller
         if(!empty($search)){
             $count = User::search($search)
                 ->department(3)
+                ->subarea($sub_area_id,$area_id)
+
                 ->count();
             $users = User::search($search)
                 ->department(3)
+                ->subarea($sub_area_id,$area_id)
+
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                 ->get();
         } else {
             $count = User::department(3)
+            ->subarea($sub_area_id,$area_id)
+
                 ->count();
             $users = User::department(3)
+            ->subarea($sub_area_id,$area_id)
+
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                 ->get();
 //            dd($users);

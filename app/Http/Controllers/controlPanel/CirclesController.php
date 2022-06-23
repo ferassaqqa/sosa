@@ -86,6 +86,11 @@ class CirclesController extends Controller
 
 
         $value = array();
+        $user = Auth::user();
+
+        if($user->hasRole('مشرف عام')){
+            $area_id =    $user->supervisor_area_id;
+        }
 
         $mohafez_makfool = User::
                                 department(1)

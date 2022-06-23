@@ -11,6 +11,7 @@ use App\Models\AsaneedCourse;
 use App\Models\Place;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 
 class AsaneedCoursesController extends Controller
@@ -103,6 +104,11 @@ class AsaneedCoursesController extends Controller
         $status = $request->status ? $request->status : 0;
 
         $place_area = $request->place_area ? $request->place_area : 0;
+        $user = Auth::user();
+
+        if($user->hasRole('مشرف عام')){
+            $area_id =    $user->supervisor_area_id;
+        }
 
 
         $value = array();
