@@ -18,9 +18,16 @@ class Course extends Model
     protected $fillable = ['start_date','place_id','course_type','included_in_plan','book_id','teacher_id','hours','status','note','is_certifications_exported'];
     public function getCourseDisplayDataAttribute(){
         self::$counter++;
-        $exportStudentsMark = ($this->status == 'منتهية' && $this->exam_status == 5) ?
-            ($this->is_certifications_exported ?'<button type="button" class="btn btn-outline-secondary" title="دورة منتهية تم طباعة شهاداتها">
-            <i class="mdi mdi-checkbox-marked-circle-outline" ></i></button>&nbsp': '').'<button type="button" class="btn btn-primary" title="استخراج كشف درجات الدورة اكسل"  onclick="exportCourseStudentsMarksExcelSheet('.$this->id.')"><i class="mdi mdi-microsoft-excel"></i></button>&nbsp': '';
+        // $exportStudentsMark = ($this->status == 'منتهية' && $this->exam_status == 5) ?
+        //     ($this->is_certifications_exported ?'<button type="button" class="btn btn-outline-secondary" title="دورة منتهية تم طباعة شهاداتها">
+        //     <i class="mdi mdi-checkbox-marked-circle-outline" ></i></button>&nbsp': '').'<button type="button" class="btn btn-primary" title="استخراج كشف درجات الدورة اكسل"  onclick="exportCourseStudentsMarksExcelSheet('.$this->id.')"><i class="mdi mdi-microsoft-excel"></i></button>&nbsp': '';
+
+        $exportCertificate =
+        ($this->status == 'منتهية' && $this->exam_status == 5 && $this->is_certifications_exported) ?'<button type="button" class="btn btn-outline-secondary" title="دورة منتهية تم طباعة شهاداتها"><i class="mdi mdi-checkbox-marked-circle-outline" ></i></button>&nbsp': '';
+
+        $export = ($this->status == 'منتهية') ? '<button type="button" class="btn btn-primary" title="استخراج كشف درجات الدورة اكسل"  onclick="exportCourseStudentsMarksExcelSheet('.$this->id.')"><i class="mdi mdi-microsoft-excel"></i></button>&nbsp' : '';
+
+
         $addExcelStudent = ($this->status != 'منتهية' && $this->status != 'بانتظار اعتماد الدرجات' && hasPermissionHelper('اضافة طالب جديد - دورات علمية')) ?
             '<button type="button" class="btn btn-primary" title="اضافة طلاب من ملف اكسل"  onclick="addExcelCourseStudents('.$this->id.')"><i class="mdi mdi-microsoft-excel"></i></button>&nbsp' : '';
         $addStudent = ($this->status != 'منتهية' && $this->status != 'بانتظار اعتماد الدرجات' && hasPermissionHelper('اضافة طالب جديد - دورات علمية')) ?
@@ -55,7 +62,7 @@ class Course extends Model
                 ($this->status != 'بانتظار اعتماد الدرجات' ? $this->status_select :
                     '<button type="button" class="btn btn-success" title="بانتظار اعتماد الدرجات" data-url="'.route('courseExam.showCourseExamMarks',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')">بانتظار اعتماد الدرجات</button>')
                 : '<span style="background-color:green;color: white;padding: 5px;border-radius: 8%;">'.$this->status.'</span>',
-            'tools'=>'<div class="mb-1">'.$exportStudentsMark.$addExcelStudent.$addStudent.$viewStudents.'</div>'.'
+            'tools'=>'<div class="mb-1">'.$exportCertificate.$export.$addExcelStudent.$addStudent.$viewStudents.'</div>'.'
                     <div class="mb-1">'.$updateCourse.$deleteCourse.$courseDetails.'</div>'
         ];
     }

@@ -131,7 +131,9 @@ class circleStudentsController extends Controller
      */
     public function create($id_num)
     {
-        $old_user = User::where('id_num',$id_num)->first();
+        // $old_user = User::where('id_num',$id_num)->first();
+        $old_user = User::withoutGlobalScope('relatedUsers')->where('id_num', $id_num)->first();
+
         if(!$old_user){
             $user = new User();
             $user->id_num = $id_num;

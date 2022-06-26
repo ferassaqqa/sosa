@@ -266,7 +266,7 @@ $(document).ready(function() {
 
             $('#excelStudentsImport').change(function(e) {
 
-                // $('div[class="student_excel_import_loading"]').css('display','block');
+                $('div[class="student_excel_import_loading"]').css('display','block');
 
                 $.get('/showLoadingAsaneedStudents/' + asaneed_id, function(data) {
                     $('.bs-example-modal-xl').modal('show');
@@ -303,13 +303,13 @@ $(document).ready(function() {
                         }
                         // $('.bs-example-modal-xl').modal('hide');
                         $('#dataTable').DataTable().ajax.reload();
-                        // $('div[class="student_excel_import_loading"]').css('display', 'none');
+                        $('div[class="student_excel_import_loading"]').css('display', 'none');
                     },
                     error: function(errors) {
                         const entries = Object.entries(errors.responseJSON.errors);
                         var errors_message = document.createElement('div');
                         Swal.fire(entries[0][1][0]);
-                        // $('div[class="student_excel_import_loading"]').css('display', 'none');
+                        $('div[class="student_excel_import_loading"]').css('display', 'none');
                     }
                 });
             });

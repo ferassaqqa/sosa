@@ -31,11 +31,12 @@ class CircleStudentsImport implements ToModel,WithUpserts,WithValidation,WithHea
     public function model(array $row)
     {
 
+
         $circle = Self::$circle;
         $id_num = (int)$row['rkm_alhoy'];
-        // if($circle->teacher_id_num == $id_num){
-        //     return response()->json(['view' => '', 'errors' => 1, 'msg' => ' لا يمكن اضافة المعلم '.$circle->teacher_name.' كطالب في دورته '], 404);
-        // }else {
+        if($circle->teacher_id_num == $id_num){
+            return response()->json(['view' => '', 'errors' => 1, 'msg' => ' لا يمكن اضافة المعلم '.$circle->teacher_name.' كطالب في دورته '], 404);
+        }else {
             $old_user = User::withoutGlobalScope('relatedUsers')->where('id_num', $id_num)->first();
 
             $user_validity_check = getGetDataFromIdentityNum($id_num);
@@ -43,8 +44,15 @@ class CircleStudentsImport implements ToModel,WithUpserts,WithValidation,WithHea
                 $user_interior_ministry_data = array_merge(getUserBasicData($user_validity_check), ['place_id' => $circle->place_id]);
                 if (!$old_user) {
 
-                        $user_data = array_merge(['id_num' => $id_num, 'password' => Hash::make($id_num)], $user_interior_ministry_data);
+                        $user_data = array_merge(['id_num' => $id_num, 'password' => Hash::make($id_num),'teacher_id' =>$circle->teacher_id], $user_interior_ministry_data);
                         $user = User::create($user_data);
+
+
+                        if ($user->userExtraData) {
+                            $user->userExtraData->update(['mobile' => $id_num]);
+                        } else {
+                            $user->userExtraData()->create(['mobile' => $id_num]);
+                        }
 
                         Auth::user()->sendFCM(
                             [
@@ -59,16 +67,17 @@ class CircleStudentsImport implements ToModel,WithUpserts,WithValidation,WithHea
                             ]
                         );
                         $user->assignRole('طالب تحفيظ');
-                        // TODO: Implement model() method.
-                        return new CourseStudent([
-                            'user_id' => $user->id,
-                            'course_id' => $circle->id
-                        ]);
 
                 } else {
 
-                        $user_data = array_merge(['password' => Hash::make($id_num)], $user_interior_ministry_data);
+                        $user_data = array_merge(['password' => Hash::make($id_num),'teacher_id' =>$circle->teacher_id], $user_interior_ministry_data);
                         $old_user->update($user_data);
+
+                        if ($old_user->userExtraData) {
+                            $old_user->userExtraData->update(['mobile' => $id_num]);
+                        } else {
+                            $old_user->userExtraData()->create(['mobile' => $id_num]);
+                        }
 
                         if (!$old_user->hasRole('طالب تحفيظ')) {
                             $old_user->assignRole('طالب تحفيظ');
@@ -82,28 +91,17 @@ class CircleStudentsImport implements ToModel,WithUpserts,WithValidation,WithHea
                                             <td>'. $old_user->id_num .'</td>
                                             <td>'. $old_user->dob .'</td>
                                             <td>'. $old_user->pob .'</td>
-                                            
+
                                         </tr>'
                             ]
                         );
-                        $studentCourses = CourseStudent::where([
-                            'user_id' => $old_user->id,
-                            'course_id' => $circle->id
-                        ])->count();
 
-                        if (!$studentCourses) {
-                            // TODO: Implement model() method.
-                            return new CourseStudent([
-                                'user_id' => $old_user->id,
-                                'course_id' => $circle->id
-                            ]);
-                        }
 
                 }
             }else{
 
             }
-        // }
+        }
     }
     public function uniqueBy()
     {

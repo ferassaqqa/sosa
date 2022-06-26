@@ -30,12 +30,12 @@ class CircleStudentsFaultsExport implements FromCollection,WithHeadings,WithStyl
     {
         $collection = new Collection();
         foreach(Self::$faults as $key => $failure){
-//            dd($failure);
+        //    dd($failure);
             $collection[$key] = array_merge([
                 '#'=>$failure->row()
             ],$failure->values());
         }
-//        dd($collection);
+    //    dd($collection);
         return $collection;
     }
     public function headings(): array

@@ -428,7 +428,7 @@
                         <div class="dropdown-menu dropdown-menu-end">
 
                             @if (hasPermissionHelper('قسم الأسانيد والإجازات'))
-                                
+
                             <a class="dropdown-item" href="{{route('asaneedCourses.index')}}">
                                 دورات الأسانيد
                                 <span
@@ -444,7 +444,7 @@
 
                             <!-- item-->
                             @if (hasPermissionHelper('شيوخ الاسانيد'))
-                                
+
                             <a class="dropdown-item" href="{{route('asaneedMoallem.index')}}">
                                 شيوخ الأسانيد
                                 <span

@@ -86,6 +86,17 @@
                         </div>
                     </div>
                     <hr>
+
+
+                    <div class="col-md-3">
+                        <button type="button" style="width:100%" onclick="updateDateTable()"
+                            class="btn btn-primary btn-block">
+                            <i class="mdi mdi-magnify" aria-hidden="true"></i>
+                            ابحث
+                        </button>
+                    </div>
+
+                    
                     <div class="row mb-3" id="custom_filters"></div>
                     <div id="tableContainer">
 

@@ -23,6 +23,5 @@
 </div>
 
 <div class="modal-footer">
-    {{--<button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">إلغاء</button>--}}
-    {{--<button class="btn btn-primary waves-effect waves-light" data-url="{{ route('circles.restoreItem',$circle->id) }}" onclick="restoreItem(this)">استرجاع</button>--}}
+
 </div>

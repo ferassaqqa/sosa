@@ -278,6 +278,13 @@ class CirclesController extends Controller
     {
         return view('control_panel.circles.circleStudents',compact('circle'));
     }
+
+    public function showLoadingCircleStudents(Circle $circle)
+    {
+        return view('control_panel.circles.showLoadingCircleStudents',compact('circle'));
+    }
+
+
     public function getSubAreasOfAreaForCircles(Area $area)
     {
         $areas = '<option value="0">اختر المنطقة المحلية</option>';

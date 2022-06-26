@@ -82,7 +82,7 @@ class ExcelExporterController extends Controller
                 , 'public/ اخطاء استيراد الطلاب من ملف الاكسل للحلقة  للمعلم ' . $circle->teacher_name . '.xlsx');
             return response()->json(['msg'=>'تم استيراد ملف دورة '. $circle->teacher_name . ' للمعلم ' . $circle->teacher_name.' <br><span>
            <div class="swal2-icon swal2-error swal2-icon-show" style="display: flex;"><div class="swal2-icon-content">!</div></div>
-            ويوجد عدد '.$import->failures()->count().' طلاب لم يتم استيرادهم ، لمعرفة الارقام <a  style="color: red;" href="'.asset('storage/ اخطاء استيراد الطلاب من ملف الاكسل لدورة ' . $course->book_name . ' للمعلم ' . $course->name . '.xlsx').'">اضغط هنا</a> لتحميل الملف.</span> ']);
+            ويوجد عدد '.$import->failures()->count().' طلاب لم يتم استيرادهم ، لمعرفة الارقام <a  style="color: red;" href="'.asset('storage/ اخطاء استيراد الطلاب من ملف الاكسل لدورة ' . $circle->teacher_name . ' للمعلم ' . $circle->teacher_name . '.xlsx').'">اضغط هنا</a> لتحميل الملف.</span> ']);
         }else{
             return response()->json(['msg'=>'تم استيراد ملف دورة '. $circle->teacher_name . ' للمعلم ' . $circle->teacher_name.' بنجاح.']);
         }

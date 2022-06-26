@@ -269,12 +269,12 @@
 
         $('#excelStudentsImport').change(function(e) {
                 // console.log($(this),course_id);
-                // $('div[class="student_excel_import_loading"]').css('display','block');
-                // $.get('/getCircleStudents/' + circle_id, function(data) {
-                //     $('.bs-example-modal-xl').modal('show');
-                //     $('#user_modal_content')
-                //         .html(data);
-                // });
+                $('div[class="student_excel_import_loading"]').css('display','block');
+                $.get('/showLoadingCircleStudents/' + circle_id, function(data) {
+                    $('.bs-example-modal-xl').modal('show');
+                    $('#user_modal_content')
+                        .html(data);
+                });
                 var fd = new FormData();
                 var files = $(this)[0].files;
                 fd.append('file', files[0]);
@@ -301,9 +301,10 @@
                                 ShowCircleStudents(circle_id);
                             });
                         }
-                        $('.bs-example-modal-xl').modal('hide');
+                        // $('.bs-example-modal-xl').modal('hide');
                         $('#dataTable').DataTable().ajax.reload();
-                        $('#spinner').remove();
+                        $('div[class="student_excel_import_loading"]').css('display', 'none');
+
                     },
                     error: function(errors) {
                         const entries = Object.entries(errors.responseJSON.errors);
