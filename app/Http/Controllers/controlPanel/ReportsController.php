@@ -22,25 +22,14 @@ class ReportsController extends Controller
         $year = date("Y");
         $books = Book::where('year',$year)->get();
         $value = array();
-        // foreach ($books as $index => $item){
-        //     $new_item = $item->book_courses_plan_progress_display_data;
-        //     $new_item['id'] = $index+1;
-        //     array_push($value , $new_item);
-        // }
-        $required_num = 0;
-        $completed_num = 0;
-        $completed_num_percentage = 0;
-        $excess_num_percentage = 0;
-        // foreach ($value as  $item){
-        //     $required_num = $required_num + $item['required_num'];
-        //     $completed_num = $completed_num + $item['completed_num'];
-        //     $completed_num_percentage = $completed_num_percentage + $item['completed_num_percentage'];
-        //     $excess_num_percentage = $excess_num_percentage + $item['excess_num_percentage'];
-        // }
+        foreach ($books as $index => $item){
+            // $new_item = $item->book_courses_plan_progress_display_data;
+            $new_item = $item->students_reports_by_students_categories_row_data;
+            // $new_item['id'] = $index+1;
+            array_push($value , $new_item);
+        }
 
-        return view('control_panel.reports.all',compact('areas' , 'value' , 'required_num' , 'completed_num'
-        ,'completed_num_percentage' , 'excess_num_percentage'
-        ));
+        return view('control_panel.reports.all',compact('areas','value'));
     }
     public function getAnalysisView(Request $request){
         $analysis_type = $request->analysis_type;
@@ -92,7 +81,7 @@ class ReportsController extends Controller
         foreach ($bookss as $index => $item){
 
             $new_item = $item->book_courses_plan_progress_display_data;
-            $new_item['id'] = $index+1;
+            // $new_item['id'] = $index+1;
 
             array_push($value , $new_item);
         }

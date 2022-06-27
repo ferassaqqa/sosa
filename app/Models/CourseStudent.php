@@ -153,6 +153,17 @@ class CourseStudent extends Model
 
     }
 
+    public function scopeBook($query,$book_id){
+        $query =
+        $query->from('course_students')
+            ->select('course_students.user_id','mark')
+            ->whereIn('course_students.course_id', function ($query)use($book_id){
+                $query->from('courses')
+                    ->select('courses.id')
+                    ->where('courses.book_id', $book_id);
+            });
+    }
+
     public function scopeCourseBookOrTeacher($query,$teacher_id,$book_id,$place_id)
     {
 

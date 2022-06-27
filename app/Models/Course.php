@@ -219,7 +219,6 @@ class Course extends Model
         return $this->belongsToMany(User::class,CourseStudent::class)->withPivot('id','user_id','course_id','mark')->withoutGlobalScope('relatedUsers');
     }
     public function passedStudents(){
-
         return $this->belongsToMany(User::class,CourseStudent::class)->wherePivot('mark','>=','60');
     }
     public function exam(){
