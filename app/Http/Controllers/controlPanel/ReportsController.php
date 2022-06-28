@@ -29,7 +29,7 @@ class ReportsController extends Controller
             array_push($value , $new_item);
         }
 
-        return view('control_panel.reports.all',compact('areas','value'));
+        return view('control_panel.reports.all',compact('areas','value','books'));
     }
     public function getAnalysisView(Request $request){
         $analysis_type = $request->analysis_type;
@@ -64,45 +64,60 @@ class ReportsController extends Controller
     public function coursePlanProgressView(Request $request){
         $start_date = $request->start_date;
         $end_date = $request->end_date;
+        $book_id = $request->book_id;
+
         $year = Carbon::parse($request->start_date)->format('Y');
-        $books = Book::where('year',$year)->get();
-        $filters =
-            '<div class="col-md-3">
-                <select class="form-control" onchange="changeBook(this)">
-                    <option value="0">اختر الكتاب</option>';
-                    foreach($books as $book) {
-                        $filters .= '<option value="'.$book->id.'">'.$book->name.'</option>';
-                    }
-        $filters .= '</select>
-            </div>';
 
-         $bookss = Book::get();
+        if($book_id){
+             $books = Book::where('id',$book_id)->get();
+        }else{
+            $books = Book::where('year',$year)->get();
+
+        }
+
+        // dd($books);
+        // $filters =
+        //     '<div class="col-md-3">
+        //         <select class="form-control" onchange="changeBook(this)">
+        //             <option value="0">اختر الكتاب</option>';
+        //             foreach($books as $book) {
+        //                 $filters .= '<option value="'.$book->id.'">'.$book->name.'</option>';
+        //             }
+        // $filters .= '</select>
+        //     </div>';
+
+        //  $books = Book::get();
          $value = array();
-        foreach ($bookss as $index => $item){
+        foreach ($books as $index => $item){
 
-            $new_item = $item->book_courses_plan_progress_display_data;
+            // $new_item = $item->book_courses_plan_progress_display_data;
+            $new_item = $item->students_reports_by_students_categories_row_data;
+
             // $new_item['id'] = $index+1;
 
             array_push($value , $new_item);
         }
 
+        // dd($value);
+
+
 //        return $value;
-        $required_num = 0;
-        $completed_num = 0;
-        $completed_num_percentage = 0;
-        $excess_num_percentage = 0;
-        foreach ($value as  $item){
-            $required_num = $required_num + $item['required_num'];
-            $completed_num = $completed_num + $item['completed_num'];
-            $completed_num_percentage = $completed_num_percentage + $item['completed_num_percentage'];
-            $excess_num_percentage = $excess_num_percentage + $item['excess_num_percentage'];
-        }
+        // $required_num = 0;
+        // $completed_num = 0;
+        // $completed_num_percentage = 0;
+        // $excess_num_percentage = 0;
+        // foreach ($value as  $item){
+        //     $required_num = $required_num + $item['required_num'];
+        //     $completed_num = $completed_num + $item['completed_num'];
+        //     $completed_num_percentage = $completed_num_percentage + $item['completed_num_percentage'];
+        //     $excess_num_percentage = $excess_num_percentage + $item['excess_num_percentage'];
+        // }
         return [
-            'view'=>view('control_panel.reports.departments.courses.coursesPlanProgress',compact(
-                'start_date','end_date','books','year',
-                'required_num' , 'completed_num' , 'completed_num_percentage' , 'excess_num_percentage'
-            ))->render(),
-            'filters'=>$filters
+            'view'=>view('control_panel.reports.coursesPlanProgress',compact(
+                'value'
+            ))->render()
+            // ,
+            // 'filters'=>$filters
         ];
     }
     public function mostaccomplished(Request $request){

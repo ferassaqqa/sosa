@@ -168,7 +168,7 @@ class CourseStudent extends Model
     {
 
         if(!$teacher_id && !$book_id && !$place_id){
-            //return $query;
+            // return $query;
         }else {
             if ($teacher_id && !$book_id && !$place_id) {
 

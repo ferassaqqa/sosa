@@ -1,6 +1,10 @@
 <?php
 
 namespace App\Models;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
+
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -46,70 +50,116 @@ class Book extends Model
     public function getStudentsReportsByStudentsCategoriesRowDataAttribute(){
 
 
+        $sub_area_id = $_REQUEST ? $_REQUEST['sub_area_id'] : 0;
+        $area_id = $_REQUEST ? $_REQUEST['area_id'] : 0;
+        $teacher_id = $_REQUEST ? $_REQUEST['teacher_id'] : 0;
+        $book_id = $_REQUEST ? $_REQUEST['book_id'] : 0;
+        $place_id = $_REQUEST ? $_REQUEST['place_id'] : 0;
+
+        // dd($_REQUEST);
+
+
+
+
         self::$counter++;
 
-        $primary = CourseStudent::book($this->id)->course('منتهية')->whereBetween('mark', [60, 101])->count();
-        $passed_students_count = $primary;
+        $requierd_number = json_decode($this->required_students_number_array);
+        $total_pass = CourseStudent::book($this->id)
+                        ->coursebookorteacher($teacher_id,$book_id,$place_id)
+                        ->subarea($sub_area_id,$area_id)
+                        ->course('منتهية')->whereBetween('mark', [60, 101])->count();
 
+        $passed_students_count = $total_pass;
         $completed_num_percentage = $this->required_students_number? round((($passed_students_count/$this->required_students_number) * 100), 2): 0;
         $completed_num_percentage = $completed_num_percentage > 100 ? 100 : $completed_num_percentage;
         $excess_num_percentage = $completed_num_percentage > 100 ? $completed_num_percentage - 100 : 0;
 
-        
-        $middle = CourseStudent::book($this->id)->course('منتهية')->whereBetween('mark', [60, 101])->count();
+
+
+
+        $primary = CourseStudent::whereHas('user',function($query){
+            $to = Carbon::now()->subYears(7)->startOfYear()->format('d-m-Y');
+            $from = Carbon::now()->subYears(12)->startOfYear()->format('d-m-Y');
+            $query->whereBetween('dob', [$from, $to]);
+        })->book($this->id)
+        ->coursebookorteacher($teacher_id,$book_id,$place_id)
+        ->subarea($sub_area_id,$area_id)
+        ->course('منتهية')->whereBetween('mark', [60, 101])->count();
+
+        $passed_students_count_primary = $primary;
+        $completed_num_percentage_primary = $requierd_number[0]? round((($passed_students_count_primary/$requierd_number[0]) * 100), 2): 0;
+        $completed_num_percentage_primary = $completed_num_percentage_primary > 100 ? 100 : $completed_num_percentage_primary;
+        $excess_num_percentage_primary = $completed_num_percentage_primary > 100 ? $completed_num_percentage_primary - 100 : 0;
+
+
+
+        $middle = CourseStudent::whereHas('user',function($query){
+            $to = Carbon::now()->subYears(13)->startOfYear()->format('d-m-Y');
+            $from = Carbon::now()->subYears(15)->startOfYear()->format('d-m-Y');
+            $query->whereBetween('dob', [$from, $to]);
+        })->book($this->id)
+        ->coursebookorteacher($teacher_id,$book_id,$place_id)
+        ->subarea($sub_area_id,$area_id)
+        ->course('منتهية')->whereBetween('mark', [60, 101])->count();
         $passed_students_count_middle = $middle;
 
-        $completed_num_percentage_middle = $this->required_students_number? round((($passed_students_count_middle/$this->required_students_number) * 100), 2): 0;
+        $completed_num_percentage_middle = $requierd_number[1]? round((($passed_students_count_middle/$requierd_number[1]) * 100), 2): 0;
         $completed_num_percentage_middle = $completed_num_percentage_middle > 100 ? 100 : $completed_num_percentage_middle;
         $excess_num_percentage_middle = $completed_num_percentage_middle > 100 ? $completed_num_percentage_middle - 100 : 0;
 
 
-        $high = CourseStudent::book($this->id)->course('منتهية')->whereBetween('mark', [60, 101])->count();
+        $high = CourseStudent::whereHas('user',function($query){
+            $from = Carbon::now()->subYears(16)->startOfYear()->format('d-m-Y');
+            $query->where('dob','>=' ,$from);
+        })->book($this->id)
+        ->coursebookorteacher($teacher_id,$book_id,$place_id)
+        ->subarea($sub_area_id,$area_id)
+        ->course('منتهية')->whereBetween('mark', [60, 101])->count();
         $passed_students_count_high = $high;
 
-        $completed_num_percentage_high = $this->required_students_number? round((($passed_students_count_high/$this->required_students_number) * 100), 2): 0;
+        $completed_num_percentage_high = $requierd_number[2]? round((($passed_students_count_high/$requierd_number[2]) * 100), 2): 0;
         $completed_num_percentage_high = $completed_num_percentage_high > 100 ? 100 : $completed_num_percentage_high;
         $excess_num_percentage_high = $completed_num_percentage_high > 100 ? $completed_num_percentage_high - 100 : 0;
 
 
-     
+
 
 
         return '            <tr>
         <tr>
             <th rowspan="4">'.self::$counter.'</th>
-            <th rowspan="4">'.$this->name.'</th>
-            <th>ابتدائي</th>
-            <td>'.$this->required_students_number.'</td>
-            <td>'.$passed_students_count.'</td>
-            <td>'.$completed_num_percentage.'</td>
-            <td>'.$excess_num_percentage.'</td>
+            <th rowspan="4" style="background: #c8cad3">'.$this->name.'</th>
+            <th>ابتدائية ( 7 - 12 )</th>
+            <td>'.$requierd_number[0].'</td>
+            <td>'.$passed_students_count_primary.'</td>
+            <td>'.$completed_num_percentage_primary.' %</td>
+            <td>'.$excess_num_percentage_primary.' %</td>
 
         </tr>
         <tr>
-            <th>اعدادي</th>
-            <td>'.$this->required_students_number.'</td>
+            <th>اعدادية ( 13 - 15 )</th>
+            <td>'.$requierd_number[1].'</td>
             <td>'.$passed_students_count_middle.'</td>
-            <td>'.$completed_num_percentage_middle.'</td>
-            <td>'.$excess_num_percentage_middle.'</td>
+            <td>'.$completed_num_percentage_middle.' %</td>
+            <td>'.$excess_num_percentage_middle.' %</td>
         </tr>
         <tr>
-            <th>ثانوي</th>
-            <td>'.$this->required_students_number.'</td>
+            <th>ثانوية فما فوق ( 16 فما فوق )</th>
+            <td>'.$requierd_number[2].'</td>
             <td>'.$passed_students_count_high.'</td>
-            <td>'.$completed_num_percentage_high.'</td>
-            <td>'.$excess_num_percentage_high.'</td>
+            <td>'.$completed_num_percentage_high.' %</td>
+            <td>'.$excess_num_percentage_high.' %</td>
         </tr>
         <tr style="background: #c8cad3">
             <th>المجموع</th>
-            <td>1500</td>
-            <td>20</td>
-            <td>20</td>
-            <td>20</td>
+            <td>'.$this->required_students_number.'</td>
+            <td>'.$total_pass.'</td>
+            <td>'.$completed_num_percentage.' %</td>
+            <td>'.$excess_num_percentage.' %</td>
         </tr>
         </tr>';
     }
-    
+
     public function getBookDisplayDataAttribute(){
         $copyBookButton = $this->is_exists_in_all_years ? ''
             :'<button type="button" class="btn btn-primary" title="نسخ الكتاب الى خطة سنوية" onclick="copyToYear(this,'.$this->id.')"><i class="mdi mdi-check"></i></button>';
@@ -158,7 +208,7 @@ class Book extends Model
         ];
     }
     public function getBookSearchedResultForCircleAttribute(){
-        return '<li class="list-group-item"><a class="selected-book" 
+        return '<li class="list-group-item"><a class="selected-book"
                     data-id="'.$this->id.'" data-name="'.$this->name.'">'.$this->name.'</a></li>';
     }
     public function getBookOptionAttribute(){
@@ -289,37 +339,12 @@ class Book extends Model
         return $this->coursePlans->count() ? $this->coursePlans->where('year',$year)->whereIn('area_id',$area_id)->sum('value') : 0;
     }
     public function getCoursesPassedStudentsCountAttribute(){
-        // $total = 0;
-        // $finishedCourses = $this->courses->count() ? $this->courses->where('status','منتهية')->where('included_in_plan','داخل الخطة') : [];
-        // foreach($finishedCourses as $course){
-        //     $total += $course->passedStudents->count();
-        // }
-        // return $total;
-        
-        // $total = 0;
-        // $finishedCourses =  $this->courses->where('status','منتهية')->pluck('id');
-        // foreach($finishedCourses as $course){
-        //     $total += CourseStudent::where('course_id',$course)->whereBetween('mark', [60, 101])->count();
-        // }
-        // return $total;
-
-        // return CourseStudent::book($this->id)->course('منتهية')->whereBetween('mark', [60, 101])->count();
-
-        // $students = Student::whereRaw('TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) >= 20'); 
-
-        $primary = CourseStudent::whereHas('user',function($query){
-            $query->whereRaw('TIMESTAMPDIFF(YEAR, dob, CURDATE()) >= 7 and TIMESTAMPDIFF(YEAR, dob, CURDATE()) <= 12');
-        })->book($this->id)->course('منتهية')->whereBetween('mark', [60, 101])->count();
-
-        $middle = CourseStudent::whereHas('user',function($query){
-            $query->whereRaw('TIMESTAMPDIFF(YEAR, dob, CURDATE()) >= 13 and TIMESTAMPDIFF(YEAR, dob, CURDATE()) <= 15');
-        })->book($this->id)->course('منتهية')->whereBetween('mark', [60, 101])->count();
-
-        $high = CourseStudent::whereHas('user',function($query){
-            $query->whereRaw('TIMESTAMPDIFF(YEAR, dob, CURDATE()) >= 13 and TIMESTAMPDIFF(YEAR, dob, CURDATE()) <= 15');
-        })->book($this->id)->course('منتهية')->whereBetween('mark', [60, 101])->count();
-
-
+        $total = 0;
+        $finishedCourses = $this->courses->count() ? $this->courses->where('status','منتهية')->where('included_in_plan','داخل الخطة') : [];
+        foreach($finishedCourses as $course){
+            $total += $course->passedStudents->count();
+        }
+        return $total;
     }
     public function getCoursesPassedStudentsCategoriesAttribute(){
         $categories = array();

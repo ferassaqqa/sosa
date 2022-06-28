@@ -298,6 +298,22 @@ class User extends Authenticatable
         ];
     }
 
+    public function scopeAgedBetween($query, $start, $end = null)
+    {
+        // if (is_null($end)) {
+        //     $end = $start;
+        // }
+
+        // $now = $this->freshTimestamp();
+        // $start = $now->subYears($start);
+        // $end = $now->subYears($end)->addYear()->subDay(); // plus 1 year minus a day
+
+         $from = Carbon::now()->subYears(16)->format('Y-m-d');
+        $to = Carbon::now()->subYears(25)->format('Y-m-d');
+
+        return $query->whereBetween('dob', $start, $end);
+    }
+
     public function scopeContractType($query,$contract_type){
         if ($contract_type) {
             return $query->whereHas('UserExtraData', function ($query) use ($contract_type) {
