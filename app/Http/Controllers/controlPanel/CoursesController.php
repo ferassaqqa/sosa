@@ -165,12 +165,15 @@ class CoursesController extends Controller
             );
         }
 
-        $moallems_count = User::department(2)
-            ->subarea($sub_area_id,$area_id)
-            ->count();
-        $course_students_count = CourseStudent::whereHas('course')
-            ->subarea($sub_area_id,$area_id)
-            ->count();
+        $moallems_count = User::department(2)->subarea($sub_area_id,$area_id)->count();
+        $course_students_count = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_area)->subarea($sub_area_id,$area_id)->count();
+
+
+        $passed_students =  CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_area)->subarea($sub_area_id,$area_id)->course('منتهية')->whereBetween('mark', [60, 101])->count();
+        // CourseStudent::whereHas('course')->where('mark' , '>=' , 60)->subarea($sub_area_id,$area_id)->count();
+        $failed_students = CourseStudent::coursebookorteacher($teacher_id,$book_id,$place_area)->subarea($sub_area_id,$area_id)->course('منتهية')->whereBetween('mark', [0, 59])->count();
+        // CourseStudent::whereHas('course')->where('mark' , '<' , 60)->subarea($sub_area_id,$area_id)->count();
+
 
         return [
             "draw" => $draw,
@@ -181,8 +184,8 @@ class CoursesController extends Controller
             'statistics' => '
                             <td>'.$moallems_count.'</td>
                             <td>'.$course_students_count.'</td>
-                            <td>'.\App\Models\CourseStudent::whereHas('course')->where('mark' , '>=' , 60)->subarea($sub_area_id,$area_id)->count().'</td>
-                            <td>'.\App\Models\CourseStudent::whereHas('course')->where('mark' , '<' , 60)->subarea($sub_area_id,$area_id)->count().'</td>
+                            <td>'.$passed_students.'</td>
+                            <td>'.$failed_students.'</td>
                             <td>'.$count.'</td>'
         ];
     }

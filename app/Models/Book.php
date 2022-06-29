@@ -49,14 +49,16 @@ class Book extends Model
 
     public function getStudentsReportsByStudentsCategoriesRowDataAttribute(){
 
+   
 
         $sub_area_id = $_REQUEST ? $_REQUEST['sub_area_id'] : 0;
         $area_id = $_REQUEST ? $_REQUEST['area_id'] : 0;
         $teacher_id = $_REQUEST ? $_REQUEST['teacher_id'] : 0;
-        $book_id = $_REQUEST ? $_REQUEST['book_id'] : 0;
-        $place_id = $_REQUEST ? $_REQUEST['place_id'] : 0;
-
-        // dd($_REQUEST);
+        $book_id = $_REQUEST ? $_REQUEST['book_id'] : '';
+        $place_id = $_REQUEST ? $_REQUEST['place_id'] : '';
+        $start_date = $_REQUEST ? $_REQUEST['start_date'] : '';
+        $end_date = $_REQUEST ? $_REQUEST['end_date'] : '';
+   
 
 
 
@@ -67,6 +69,13 @@ class Book extends Model
         $total_pass = CourseStudent::book($this->id)
                         ->coursebookorteacher($teacher_id,$book_id,$place_id)
                         ->subarea($sub_area_id,$area_id)
+                        ->whereHas('course',function($query) use ($start_date,$end_date){
+                            if($start_date || $end_date){
+                                $query->whereHas('exam',function($query) use ($start_date,$end_date){
+                                    $query->fromDate($start_date)->toDate($end_date);                                
+                                });
+                            }
+                        })
                         ->course('منتهية')->whereBetween('mark', [60, 101])->count();
 
         $passed_students_count = $total_pass;
@@ -84,6 +93,13 @@ class Book extends Model
         })->book($this->id)
         ->coursebookorteacher($teacher_id,$book_id,$place_id)
         ->subarea($sub_area_id,$area_id)
+        ->whereHas('course',function($query) use ($start_date,$end_date){
+            if($start_date || $end_date){
+                $query->whereHas('exam',function($query) use ($start_date,$end_date){
+                    $query->fromDate($start_date)->toDate($end_date);                                
+                });
+            }
+        })
         ->course('منتهية')->whereBetween('mark', [60, 101])->count();
 
         $passed_students_count_primary = $primary;
@@ -100,6 +116,13 @@ class Book extends Model
         })->book($this->id)
         ->coursebookorteacher($teacher_id,$book_id,$place_id)
         ->subarea($sub_area_id,$area_id)
+        ->whereHas('course',function($query) use ($start_date,$end_date){
+            if($start_date || $end_date){
+                $query->whereHas('exam',function($query) use ($start_date,$end_date){
+                    $query->fromDate($start_date)->toDate($end_date);                                
+                });
+            }
+        })
         ->course('منتهية')->whereBetween('mark', [60, 101])->count();
         $passed_students_count_middle = $middle;
 
@@ -114,6 +137,13 @@ class Book extends Model
         })->book($this->id)
         ->coursebookorteacher($teacher_id,$book_id,$place_id)
         ->subarea($sub_area_id,$area_id)
+        ->whereHas('course',function($query) use ($start_date,$end_date){
+            if($start_date || $end_date){
+                $query->whereHas('exam',function($query) use ($start_date,$end_date){
+                    $query->fromDate($start_date)->toDate($end_date);                                
+                });
+            }
+        })
         ->course('منتهية')->whereBetween('mark', [60, 101])->count();
         $passed_students_count_high = $high;
 

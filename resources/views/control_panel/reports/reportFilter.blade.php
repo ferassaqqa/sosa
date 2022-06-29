@@ -188,15 +188,22 @@
 
 
         function updateDateTable() {
-            var filters = '?department_id=' + $('#reports_department_id').val() + '&analysis_type=' + $('#analysis_type').val()
-                + '&start_date=' + $('#start_date').val() + '&end_date=' + $('#end_date').val()
+            var filters = '?department_id=' + $('#reports_department_id').val() 
+                + '&analysis_type=' + $('#analysis_type').val()
+                + '&start_date=' + $('#start_date').val() 
+                + '&end_date=' + $('#end_date').val()
                 + '&sub_area_id=' + $('#report_sub_area_select').val()
                 + '&teacher_id=' + $('#teachers_select').val()
                 + '&place_id=' + $('#place_area').val()
                 + '&area_id=' + $('#report_area_select').val()
                 + '&book_id=' + $('#books_select').val();
 
-
+    $('#tableContainer')
+            .html(
+                '<div class="spinner-border text-success" role="status" style="margin:25px auto;">' +
+                '   <span class="sr-only">يرجى الانتظار ...</span>' +
+                '</div>'
+            );
 
 
             $.get('/getAnalysisView' + filters, function (data) {

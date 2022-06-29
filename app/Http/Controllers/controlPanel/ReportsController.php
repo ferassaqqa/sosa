@@ -23,9 +23,7 @@ class ReportsController extends Controller
         $books = Book::where('year',$year)->get();
         $value = array();
         foreach ($books as $index => $item){
-            // $new_item = $item->book_courses_plan_progress_display_data;
             $new_item = $item->students_reports_by_students_categories_row_data;
-            // $new_item['id'] = $index+1;
             array_push($value , $new_item);
         }
 
@@ -74,44 +72,12 @@ class ReportsController extends Controller
             $books = Book::where('year',$year)->get();
 
         }
-
-        // dd($books);
-        // $filters =
-        //     '<div class="col-md-3">
-        //         <select class="form-control" onchange="changeBook(this)">
-        //             <option value="0">اختر الكتاب</option>';
-        //             foreach($books as $book) {
-        //                 $filters .= '<option value="'.$book->id.'">'.$book->name.'</option>';
-        //             }
-        // $filters .= '</select>
-        //     </div>';
-
-        //  $books = Book::get();
          $value = array();
         foreach ($books as $index => $item){
-
-            // $new_item = $item->book_courses_plan_progress_display_data;
             $new_item = $item->students_reports_by_students_categories_row_data;
-
-            // $new_item['id'] = $index+1;
-
             array_push($value , $new_item);
         }
 
-        // dd($value);
-
-
-//        return $value;
-        // $required_num = 0;
-        // $completed_num = 0;
-        // $completed_num_percentage = 0;
-        // $excess_num_percentage = 0;
-        // foreach ($value as  $item){
-        //     $required_num = $required_num + $item['required_num'];
-        //     $completed_num = $completed_num + $item['completed_num'];
-        //     $completed_num_percentage = $completed_num_percentage + $item['completed_num_percentage'];
-        //     $excess_num_percentage = $excess_num_percentage + $item['excess_num_percentage'];
-        // }
         return [
             'view'=>view('control_panel.reports.coursesPlanProgress',compact(
                 'value'
