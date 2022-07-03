@@ -145,6 +145,14 @@
                         </div>
 
                         <div class="col-md-3">
+                            <select class="form-control" id="export_status">
+                                <option value="">اختر حالة الشهادات</option>
+                                <option value="1">تم استخراجها</option>
+                                <option value="2">لم يتم استخراجها</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
                             <button type="button" style="width:100%" onclick="updateDateTable()"
                                 class="btn btn-primary btn-block">
                                 <i class="mdi mdi-magnify" aria-hidden="true"></i>
@@ -579,7 +587,10 @@
                     table.ajax.url(
                         "/getCoursesData?teacher_id=" + $('#teachers_select').val() + "&book_id=" + $('#books_select')
                         .val() + "&sub_area_id=" + $('#sub_areas_select').val() + '&area_id=' + $('#areas_select').val() +
-                        '&status=' + $('#filterCoursesByStatus').val() + '&place_area=' + $('#place_area').val()
+                        '&status=' + $('#filterCoursesByStatus').val()
+                        + '&place_area=' + $('#place_area').val()
+                        + '&export_status=' + $('#export_status').val()
+
                     ).load();
                 }
             @endif

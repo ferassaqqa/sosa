@@ -389,13 +389,23 @@ class Course extends Model
     public function scopeWhereStatus($query,$status)
     {
         if ($status) {
-//            dd($status);
             return $query->where('status',$status);
         }else{
-//            dd(1,$status != '0',$status);
             return $query;
         }
     }
+
+    public function scopeExportStatus($query,$export_status)
+    {
+        if ($export_status) {
+                    $export_status = ($export_status == 2)?0: $export_status;
+            return $query->where('is_certifications_exported',$export_status);
+        }else{
+            return $query;
+        }
+    }
+
+
     public function scopeTeacher($query,$teacher_id)
     {
         if ($teacher_id) {

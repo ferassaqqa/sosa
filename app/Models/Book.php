@@ -49,7 +49,7 @@ class Book extends Model
 
     public function getStudentsReportsByStudentsCategoriesRowDataAttribute(){
 
-   
+
 
         $sub_area_id = $_REQUEST ? $_REQUEST['sub_area_id'] : 0;
         $area_id = $_REQUEST ? $_REQUEST['area_id'] : 0;
@@ -58,7 +58,7 @@ class Book extends Model
         $place_id = $_REQUEST ? $_REQUEST['place_id'] : '';
         $start_date = $_REQUEST ? $_REQUEST['start_date'] : '';
         $end_date = $_REQUEST ? $_REQUEST['end_date'] : '';
-   
+
 
 
 
@@ -72,7 +72,7 @@ class Book extends Model
                         ->whereHas('course',function($query) use ($start_date,$end_date){
                             if($start_date || $end_date){
                                 $query->whereHas('exam',function($query) use ($start_date,$end_date){
-                                    $query->fromDate($start_date)->toDate($end_date);                                
+                                    $query->fromDate($start_date)->toDate($end_date);
                                 });
                             }
                         })
@@ -96,7 +96,7 @@ class Book extends Model
         ->whereHas('course',function($query) use ($start_date,$end_date){
             if($start_date || $end_date){
                 $query->whereHas('exam',function($query) use ($start_date,$end_date){
-                    $query->fromDate($start_date)->toDate($end_date);                                
+                    $query->fromDate($start_date)->toDate($end_date);
                 });
             }
         })
@@ -119,7 +119,7 @@ class Book extends Model
         ->whereHas('course',function($query) use ($start_date,$end_date){
             if($start_date || $end_date){
                 $query->whereHas('exam',function($query) use ($start_date,$end_date){
-                    $query->fromDate($start_date)->toDate($end_date);                                
+                    $query->fromDate($start_date)->toDate($end_date);
                 });
             }
         })
@@ -140,7 +140,7 @@ class Book extends Model
         ->whereHas('course',function($query) use ($start_date,$end_date){
             if($start_date || $end_date){
                 $query->whereHas('exam',function($query) use ($start_date,$end_date){
-                    $query->fromDate($start_date)->toDate($end_date);                                
+                    $query->fromDate($start_date)->toDate($end_date);
                 });
             }
         })
@@ -152,7 +152,7 @@ class Book extends Model
         $excess_num_percentage_high = $completed_num_percentage_high > 100 ? $completed_num_percentage_high - 100 : 0;
 
 
-
+        Book::where('id', $this->id)->update(['total_students_passed' => $total_pass]);
 
 
         return '            <tr>

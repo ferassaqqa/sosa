@@ -10,6 +10,7 @@ use App\Models\CourseStudent;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ReportsController extends Controller
 {
@@ -22,10 +23,19 @@ class ReportsController extends Controller
         $year = date("Y");
         $books = Book::where('year',$year)->get();
         $value = array();
-        foreach ($books as $index => $item){
-            $new_item = $item->students_reports_by_students_categories_row_data;
-            array_push($value , $new_item);
+
+
+
+        if (Cache::has('course_acheivment_reports')) {
+            $value = Cache::get('course_acheivment_reports');
+        }else{
+            foreach ($books as $index => $item){
+                $new_item = $item->students_reports_by_students_categories_row_data;
+                array_push($value , $new_item);
+            }
+            Cache::put('course_acheivment_reports', $value);
         }
+
 
         return view('control_panel.reports.all',compact('areas','value','books'));
     }
@@ -73,9 +83,14 @@ class ReportsController extends Controller
 
         }
          $value = array();
-        foreach ($books as $index => $item){
-            $new_item = $item->students_reports_by_students_categories_row_data;
-            array_push($value , $new_item);
+        if (Cache::has('course_acheivment_reports')) {
+            $value = Cache::get('course_acheivment_reports');
+        }else{
+            foreach ($books as $index => $item){
+                $new_item = $item->students_reports_by_students_categories_row_data;
+                array_push($value , $new_item);
+            }
+            Cache::put('course_acheivment_reports', $value);
         }
 
         return [

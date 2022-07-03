@@ -104,7 +104,11 @@ class CoursesController extends Controller
         $book_id = (int)$request->book_id ? (int)$request->book_id : 0;
         $status = $request->status ? $request->status : 0;
 
+        $export_status = (int)$request->export_status ? (int)$request->export_status : 0;
+
         $place_area = $request->place_area ? $request->place_area : 0;
+
+
 
 
         $columns[$order]["db"] = $columns[$order]["db"]=='id' ? 'updated_at' : $columns[$order]["db"] ;
@@ -117,6 +121,7 @@ class CoursesController extends Controller
         if (!empty($search)) {
             $count = Course::subarea($sub_area_id,$area_id)
                 ->wherestatus($status)
+                ->exportstatus($export_status)
                 ->search($search)
                 ->teacher($teacher_id)
                 ->book($book_id)
@@ -125,6 +130,7 @@ class CoursesController extends Controller
                 ->count();
             $courses = Course::subarea($sub_area_id,$area_id)
                 ->wherestatus($status)
+                ->exportstatus($export_status)
                 ->search($search)
                 ->teacher($teacher_id)
                 ->book($book_id)
@@ -136,6 +142,7 @@ class CoursesController extends Controller
         } else {
             $count = Course::subarea($sub_area_id,$area_id)
                 ->wherestatus($status)
+                ->exportstatus($export_status)
                 ->teacher($teacher_id)
                 ->book($book_id)
                 ->placearea($place_area)
@@ -143,6 +150,7 @@ class CoursesController extends Controller
                 ->count();
             $courses = Course::subarea($sub_area_id,$area_id)
                 ->wherestatus($status)
+                ->exportstatus($export_status)
                 ->limit($length)->offset($start)
                 // ->orderBy($columns[$order]["db"], $direction)
                 ->teacher($teacher_id)
@@ -166,13 +174,11 @@ class CoursesController extends Controller
         }
 
         $moallems_count = User::department(2)->subarea($sub_area_id,$area_id)->coursebookorteacher($teacher_id,$book_id,$place_area)->course($status)->count();
-        $course_students_count = CourseStudent::book($book_id)->coursebookorteacher($teacher_id,$book_id,$place_area)->subarea($sub_area_id,$area_id)->course($status)->count();
+        $course_students_count = CourseStudent::book($book_id)->exportstatus($export_status)->coursebookorteacher($teacher_id,$book_id,$place_area)->subarea($sub_area_id,$area_id)->course($status)->count();
 
 
-        $passed_students =  CourseStudent::book($book_id)->coursebookorteacher($teacher_id,$book_id,$place_area)->subarea($sub_area_id,$area_id)->course('منتهية')->whereBetween('mark', [60, 101])->count();
-        // CourseStudent::whereHas('course')->where('mark' , '>=' , 60)->subarea($sub_area_id,$area_id)->count();
-        $failed_students = CourseStudent::book($book_id)->coursebookorteacher($teacher_id,$book_id,$place_area)->subarea($sub_area_id,$area_id)->course('منتهية')->whereBetween('mark', [0, 59])->count();
-        // CourseStudent::whereHas('course')->where('mark' , '<' , 60)->subarea($sub_area_id,$area_id)->count();
+        $passed_students =  CourseStudent::book($book_id)->exportstatus($export_status)->coursebookorteacher($teacher_id,$book_id,$place_area)->subarea($sub_area_id,$area_id)->course('منتهية')->whereBetween('mark', [60, 101])->count();
+        $failed_students = CourseStudent::book($book_id)->exportstatus($export_status)->coursebookorteacher($teacher_id,$book_id,$place_area)->subarea($sub_area_id,$area_id)->course('منتهية')->whereBetween('mark', [0, 59])->count();
 
 
         return [

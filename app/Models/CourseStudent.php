@@ -125,6 +125,20 @@ class CourseStudent extends Model
             return $query;
         }
     }
+
+    public function scopeExportStatus($query,$export_status)
+    {
+        if ($export_status) {
+            $export_status = ($export_status == 2)?0: $export_status;
+            return $query->whereHas('course',function($query) use ($export_status){
+                return $query->where('is_certifications_exported',$export_status);
+            });
+        }else{
+            return $query;
+        }
+    }
+
+
     public function scopeSubArea($query,$sub_area_id,$area_id)
     {
         if ($sub_area_id) {
@@ -209,7 +223,7 @@ class CourseStudent extends Model
                                 ->where('courses.place_id', $place_id)
                                 ->where('courses.book_id', $book_id);
                         });
-   
+
             }
         }
 
