@@ -112,7 +112,7 @@
                         $('#analysis_type').empty().html(
                             '<option value="0">اختر التحليل المناسب</option>' +
                             '<option value="coursePlanProgress">انجاز خطة الدورات</option>' +
-                            '<option value="الأكثر إنجازًا">الأكثر إنجازًا</option>' +
+                            '<option value="mostAccomplished">الأكثر إنجازًا</option>' +
                             '<option value="برنامج الصفوة">برنامج الصفوة</option>'
                         );
 
@@ -188,9 +188,9 @@
 
 
         function updateDateTable() {
-            var filters = '?department_id=' + $('#reports_department_id').val() 
+            var filters = '?department_id=' + $('#reports_department_id').val()
                 + '&analysis_type=' + $('#analysis_type').val()
-                + '&start_date=' + $('#start_date').val() 
+                + '&start_date=' + $('#start_date').val()
                 + '&end_date=' + $('#end_date').val()
                 + '&sub_area_id=' + $('#report_sub_area_select').val()
                 + '&teacher_id=' + $('#teachers_select').val()

@@ -13,11 +13,15 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Laravel\Sanctum\HasApiTokens;
+use PhpParser\Node\Stmt\Foreach_;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\Models\Activity;
+
+use Illuminate\Support\Facades\DB;
+
 
 class User extends Authenticatable
 {
@@ -104,6 +108,52 @@ class User extends Authenticatable
             'place_id','prefix','material_status','sons_count','address'
         ];
     }
+
+
+
+
+    public function getMostAccomplishedCourseRowDataAttribute(){
+
+        self::$counter++;
+        $total = 0;
+
+
+        $teacher_courses = $this->teacherCourses;
+        foreach ($teacher_courses as $key => $course) {
+                $total += $course->students->count();
+        }
+
+        // $Voucher = $teacher_courses::sortBy(function ($sale) {
+        //     return $sale->voucher_id->count();
+        //    }, SORT_REGULAR, true)->take(1)->get();
+
+        $most_acco = $this->teacherCourses;
+                // $query->select('id', DB::raw('count(*) as total'))->orderByRaw('count(*) DESC')->limit(1);
+
+
+        // dd($most_acco);
+
+
+
+        // $best_courses = Course::select('id', DB::raw('count(*) as total'))
+        //     ->groupBy('id')
+        //     ->orderByRaw('count(*) DESC')
+        //     ->limit(2)
+        //     ->pluck('produto_id');
+
+
+        return [
+            'id' => self::$counter,
+            'teacher_name' =>$this->name,
+            'total_accomplished_course' => $teacher_courses->count(),
+            'total_accomplished_students' => $total,
+            'most_accomplished_course' => 22,
+        ];
+
+    }
+
+
+
     public function setDobAttribute( $value ) {
         try {
             $this->attributes['dob'] = (Carbon::createFromFormat('d/m/Y', $value))->format('d-m-Y');
@@ -695,7 +745,7 @@ class User extends Authenticatable
             return $query;
         }
     }
-    
+
     public function scopeCourseBookOrTeacher($query,$teacher_id,$book_id,$place_id)
     {
 //        return $query;
