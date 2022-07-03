@@ -75,11 +75,12 @@
                     <table class="table table-centered table_bordered">
                         <thead>
                             <tr>
-                                <th>عدد المعلمين</th>
+                                <th>عدد الدورات</th>
                                 <th>عدد الطلاب</th>
                                 <th>عدد الطلاب الناجحين</th>
                                 <th>عدد الطلاب الراسبين</th>
-                                <th>عدد الدورات</th>
+                                <th>عدد المعلمين</th>
+
                             </tr>
                         </thead>
                         <tbody>

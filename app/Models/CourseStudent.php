@@ -154,6 +154,7 @@ class CourseStudent extends Model
     }
 
     public function scopeBook($query,$book_id){
+        if ($book_id) {
         $query =
         $query->from('course_students')
             ->select('course_students.user_id','mark')
@@ -162,6 +163,8 @@ class CourseStudent extends Model
                     ->select('courses.id')
                     ->where('courses.book_id', $book_id);
             });
+        }
+        return $query;
     }
 
     public function scopeCourseBookOrTeacher($query,$teacher_id,$book_id,$place_id)
@@ -206,8 +209,7 @@ class CourseStudent extends Model
                                 ->where('courses.place_id', $place_id)
                                 ->where('courses.book_id', $book_id);
                         });
-
-
+   
             }
         }
 

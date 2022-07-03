@@ -695,6 +695,7 @@ class User extends Authenticatable
             return $query;
         }
     }
+    
     public function scopeCourseBookOrTeacher($query,$teacher_id,$book_id,$place_id)
     {
 //        return $query;
