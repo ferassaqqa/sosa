@@ -152,13 +152,13 @@ class Book extends Model
         $excess_num_percentage_high = $completed_num_percentage_high > 100 ? $completed_num_percentage_high - 100 : 0;
 
 
-        Book::where('id', $this->id)->update(['total_students_passed' => $total_pass]);
+        // Book::where('id', $this->id)->update(['total_students_passed' => $total_pass]);
 
 
         return '            <tr>
         <tr>
             <th rowspan="4">'.self::$counter.'</th>
-            <th rowspan="4" style="background: #c8cad3">'.$this->name.'</th>
+            <th rowspan="4" >'.$this->name.'</th>
             <th>ابتدائية ( 7 - 12 )</th>
             <td>'.$requierd_number[0].'</td>
             <td>'.$passed_students_count_primary.'</td>

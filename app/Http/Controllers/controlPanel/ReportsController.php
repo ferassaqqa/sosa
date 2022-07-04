@@ -11,6 +11,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class ReportsController extends Controller
 {
@@ -118,6 +119,7 @@ class ReportsController extends Controller
 
     public function getAnalysisData(Request $request){
         $analysis_type = $request->analysis_type;
+
         switch($analysis_type){
             case 'coursePlanProgress':{
                 return $this->coursePlanProgressData($request);
@@ -140,11 +142,6 @@ class ReportsController extends Controller
 
                         $columns = array(
                             array( 'db' => 'id',        'dt' => 0 ),
-                            // array( 'db' => 'teacher_name',      'dt' => 1 ),
-                            // array( 'db' => 'total_courses',      'dt' => 2 ),
-                            // array( 'db' => 'total_passed_students',      'dt' => 3 ),
-                            // array( 'db' => 'most_accomplished_course',      'dt' => 4 ),
-
                         );
 
                         $draw = (int)$request->draw;
@@ -160,33 +157,45 @@ class ReportsController extends Controller
                         $teacher_id =(int)$request->teacher_id ?(int)$request->teacher_id : 0;
                         $book_id =(int)$request->book_id ?(int)$request->book_id : 0;
                         $place_id =(int)$request->place_id ?(int)$request->place_id : 0;
+
                         $start_date =(int)$request->start_date ?(int)$request->start_date : 0;
                         $end_date =(int)$request->end_date ?(int)$request->end_date : 0;
 
 
 
 
+
                         $value = array();
 
-                        // if(!empty($search)){
-                        //     $count = User::subarea($sub_area_id,$area_id)
-                        //         ->search($search)
-                        //         ->department(2)
-                        //         ->count();
-                        //     $users = User::subarea($sub_area_id,$area_id)
-                        //         ->search($search)
-                        //         ->department(2)
-                        //         ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
-                        //         ->get();
-                        // } else {
+                        if(!empty($search)){
+                            $count = User::subarea($sub_area_id,$area_id)
+                                ->search($search)
+                                ->department(2)
+                                ->book($book_id)
+                                ->place($place_id)
+                                ->count();
+                            $teachers = User::subarea($sub_area_id,$area_id)
+                                ->search($search)
+                                ->department(2)
+                                ->book($book_id)
+                                ->place($place_id)
+                                ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
+                                ->get();
+                        } else {
                             $count = User::subarea($sub_area_id,$area_id)
                                 ->department(2)
+                                ->teacher($teacher_id)
+                                ->book($book_id)
+                                ->place($place_id)
                                 ->count();
                             $teachers = User::subarea($sub_area_id,$area_id)
                                 ->department(2)
+                                ->teacher($teacher_id)
+                                ->book($book_id)
+                                ->place($place_id)
                                 ->limit($length)->offset($start)
                                 ->get();
-                        // }
+                        }
                         User::$counter = $start;
 
                         foreach ($teachers as $index => $item){

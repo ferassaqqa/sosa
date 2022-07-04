@@ -37,27 +37,7 @@
         <th scope="col">%{{$excess_num_percentage}}</th>
     </tr>
 </table>
-{{--<div>--}}
-{{--    <table class="table table-centered table-nowrap mb-0" style="font-size: 18px" >--}}
-{{--        <thead style="text-align: center !important;">--}}
-{{--        <tr>--}}
-{{--            <th scope="col" >--}}
-{{--                المجموع--}}
-{{--            </th>--}}
 
-{{--            <th scope="col" style="width: 20%"></th>--}}
-{{--            <th scope="col" style="width: 30%"></th>--}}
-{{--            <th scope="col">{{$required_num}}</th>--}}
-{{--            <th scope="col">{{$completed_num}}</th>--}}
-{{--            <th scope="col">{{$completed_num_percentage}}%</th>--}}
-{{--            <th scope="col">{{$excess_num_percentage}}%</th>--}}
-{{--        </tr>--}}
-{{--        </thead>--}}
-{{--        <tbody style="text-align: center !important;">--}}
-
-{{--        </tbody>--}}
-{{--    </table>--}}
-{{--</div>--}}
 
 <script>
     var table = '';

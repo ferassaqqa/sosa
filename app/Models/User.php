@@ -116,30 +116,24 @@ class User extends Authenticatable
 
         self::$counter++;
         $total = 0;
-
-
+       
         $teacher_courses = $this->teacherCourses;
         foreach ($teacher_courses as $key => $course) {
                 $total += $course->students->count();
         }
 
-        // $Voucher = $teacher_courses::sortBy(function ($sale) {
-        //     return $sale->voucher_id->count();
-        //    }, SORT_REGULAR, true)->take(1)->get();
+        $most_accomplished =  DB::table('course_students')
+                    ->leftJoin('courses','courses.id','=','course_students.course_id')
+                    ->leftJoin('books','books.id','=','courses.book_id')
+                    ->where('courses.teacher_id','=',$this->id)
+                    ->selectRaw('course_students.course_id,books.name, count(course_students.course_id) as times_teached')
+                    ->groupBy('courses.id','course_students.course_id')
+                    ->orderByDesc('times_teached')
+                    ->limit(1)
+                    ->get();
 
-        $most_acco = $this->teacherCourses;
-                // $query->select('id', DB::raw('count(*) as total'))->orderByRaw('count(*) DESC')->limit(1);
-
-
-        // dd($most_acco);
-
-
-
-        // $best_courses = Course::select('id', DB::raw('count(*) as total'))
-        //     ->groupBy('id')
-        //     ->orderByRaw('count(*) DESC')
-        //     ->limit(2)
-        //     ->pluck('produto_id');
+        
+        $top_course = ($total > 0) ? $most_accomplished[0]->name.' ('.$most_accomplished[0]->times_teached.')' : 0;
 
 
         return [
@@ -147,7 +141,7 @@ class User extends Authenticatable
             'teacher_name' =>$this->name,
             'total_accomplished_course' => $teacher_courses->count(),
             'total_accomplished_students' => $total,
-            'most_accomplished_course' => 22,
+            'most_accomplished_course' => $top_course,
         ];
 
     }
@@ -632,6 +626,36 @@ class User extends Authenticatable
     /**
      * Scopes
      */
+
+    public function scopeBook($query,$book_id){
+        if($book_id){
+            return $query->whereHas('teacherCourses',function($query) use ($book_id){
+                $query->where('book_id',$book_id);
+            });
+        }else{
+            return $query;
+        }
+    }
+    public function scopeplace($query, $place_id){
+        if($place_id){
+            return $query->whereHas('teacherCourses',function($query) use ($place_id){
+                $query->where('place_id',$place_id);
+            });
+        }else{
+            return $query;
+        }
+    }
+    public function scopeteacher($query, $teacher_id){
+        if($teacher_id){
+            return $query->whereHas('teacherCourses',function($query) use ($teacher_id){
+                $query->where('teacher_id',$teacher_id);
+            });
+        }else{
+            return $query;
+        }
+    }
+
+
     public function scopeSearch($query,$searchWord)
     {
         return $query->where('id', 'like', "%" . $searchWord . "%")

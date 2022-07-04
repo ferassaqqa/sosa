@@ -39,10 +39,21 @@
 
 var table = '';
         $(document).ready(function() {
+
+            var filters = '?department_id=' + $('#reports_department_id').val()
+                + '&analysis_type=' + $('#analysis_type').val()
+                + '&start_date=' + $('#start_date').val()
+                + '&end_date=' + $('#end_date').val()
+                + '&sub_area_id=' + $('#report_sub_area_select').val()
+                + '&teacher_id=' + $('#teachers_select').val()
+                + '&place_id=' + $('#place_area').val()
+                + '&area_id=' + $('#report_area_select').val()
+                + '&book_id=' + $('#books_select').val();
+                
             table = $('#dataTable').DataTable( {
                 "processing": true,
                 "serverSide": true,
-                "ajax": "{{ route('reports.getAnalysisData').'?analysis_type=mostAccomplished'}}",
+                "ajax": "{{ route('reports.getAnalysisData').'?analysis_type=mostAccomplished'}}"+ filters,
                 language: {
                     search: "بحث",
                     processing:     "جاري معالجة البيانات" ,

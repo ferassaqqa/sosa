@@ -211,6 +211,12 @@
                 // $('#custom_filters').empty().html(data.filters);
             });
         }
+
+
+        $('.select2').select2({
+            dir: "rtl",
+            dropdownAutoWidth: true,
+        });
     </script>
 
 @endsection
