@@ -68,7 +68,21 @@ class ExcelExporterController extends Controller
            <div class="swal2-icon swal2-error swal2-icon-show" style="display: flex;"><div class="swal2-icon-content">!</div></div>
             ويوجد عدد '.$import->failures()->count().' طلاب لم يتم استيرادهم ، لمعرفة الارقام <a  style="color: red;" href="'.asset('storage/ اخطاء استيراد الطلاب من ملف الاكسل لدورة ' . $asaneedCourse->book_name . ' للمعلم ' . $asaneedCourse->name . '.xlsx').'">اضغط هنا</a> لتحميل الملف.</span> ']);
         }else{
+
+            $students_count = $asaneedCourse->students->count();
+
+            if($students_count < 10 ){
+
+            return response()->json(['msg'=>'<span>
+                            <div class="swal2-icon swal2-error swal2-icon-show" style="display: flex;"><div class="swal2-icon-content">!</div></div>
+                            تم استيراد ملف الدورة بنجاح. يرجى العلم بان الحد الادنى لحجز موعد اختيار هو 10 طلاب لمجلس السند</span> ']);
+            }else{
+
+            if(!$asaneedCourse->exam) $asaneedCourse->exam()->create($request->all());
             return response()->json(['msg'=>'تم استيراد ملف دورة '. $asaneedCourse->book_name . ' للمعلم ' . $asaneedCourse->name.' بنجاح.']);
+
+            }
+
         }
     }
 

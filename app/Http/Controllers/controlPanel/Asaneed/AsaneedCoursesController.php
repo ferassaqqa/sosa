@@ -39,45 +39,6 @@ class AsaneedCoursesController extends Controller
     }
 
 
-    private function getAreaTeacher($area_id,$teacher_id){
-        $moallems = User::department(7)->area($area_id)->get();
-        $moallem_list = '<option value="0">اختر الشيخ</option>';
-        foreach ($moallems as $moallem) {
-            $selected = $teacher_id == $moallem->id ? 'selected' : '';
-            $moallem_list .= '<option value="' . $moallem->id . '" '.$selected.'>' . $moallem->name . '</option>';
-        }
-        return $moallem_list;
-    }
-
-    public function getSubAreaAsaneedTeachers($area_id)
-    {
-
-
-        $result = array();
-        $moallems = User::department(7)->area($area_id)->get();
-        $moallem_list = '<option value="0">اختر الشيخ</option>';
-        foreach ($moallems as $moallem) {
-            $moallem_list .= '<option value="'.$moallem->id.'">'.$moallem->name.'</option>';
-        }
-
-        $result[] = $moallem_list;
-
-        $places = Place::where('area_id',$area_id)->get();
-        $place_list = '<option value="0">اختر المكان</option>';
-        foreach ($places as $place) {
-            $place_list .= '<option value="'.$place->id.'">'.$place->name.'</option>';
-        }
-
-        $result[] = $place_list;
-
-        return $result;
-    }
-
-    public function showLoadingAsaneedStudents(AsaneedCourse $asaneedCourse)
-    {
-        return view('control_panel.asaneed.courses.showLoadingAsaneedStudents', compact('asaneedCourse'));
-    }
-
 
     public function getData(Request $request)
     {
@@ -162,6 +123,48 @@ class AsaneedCoursesController extends Controller
         ];
     }
 
+
+    private function getAreaTeacher($area_id,$teacher_id){
+        $moallems = User::department(7)->area($area_id)->get();
+        $moallem_list = '<option value="0">اختر الشيخ</option>';
+        foreach ($moallems as $moallem) {
+            $selected = $teacher_id == $moallem->id ? 'selected' : '';
+            $moallem_list .= '<option value="' . $moallem->id . '" '.$selected.'>' . $moallem->name . '</option>';
+        }
+        return $moallem_list;
+    }
+
+    public function getSubAreaAsaneedTeachers($area_id)
+    {
+
+
+        $result = array();
+        $moallems = User::department(7)->area($area_id)->get();
+        $moallem_list = '<option value="0">اختر الشيخ</option>';
+        foreach ($moallems as $moallem) {
+            $moallem_list .= '<option value="'.$moallem->id.'">'.$moallem->name.'</option>';
+        }
+
+        $result[] = $moallem_list;
+
+        $places = Place::where('area_id',$area_id)->get();
+        $place_list = '<option value="0">اختر المكان</option>';
+        foreach ($places as $place) {
+            $place_list .= '<option value="'.$place->id.'">'.$place->name.'</option>';
+        }
+
+        $result[] = $place_list;
+
+        return $result;
+    }
+
+    public function showLoadingAsaneedStudents(AsaneedCourse $asaneedCourse)
+    {
+        return view('control_panel.asaneed.courses.showLoadingAsaneedStudents', compact('asaneedCourse'));
+    }
+
+
+
     /**
      * Show the form for creating a new resource.
      *
@@ -183,7 +186,7 @@ class AsaneedCoursesController extends Controller
     {
 //        dd($request->all());
         $sanad = AsaneedCourse::create($request->all());
-        $sanad->exam()->create($request->all());
+        // $sanad->exam()->create($request->all());
 
         return response()->json(['msg'=>'تم اضافة دورة أسانيد جديدة','title'=>'اضافة','type'=>'success']);
     }

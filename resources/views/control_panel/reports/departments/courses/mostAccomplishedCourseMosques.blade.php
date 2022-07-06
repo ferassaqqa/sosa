@@ -20,7 +20,7 @@
         <th scope="col" style="width: 50px;">
             #
         </th>
-        <th scope="col">المعلم</th>
+        <th scope="col">اسم المسجد</th>
         <th scope="col">عدد الدورات</th>
         <th scope="col">عدد الخريجين</th>
         <th scope="col">الدورة الاكثر انجاز</th>
@@ -48,8 +48,9 @@ var table = '';
                 + '&teacher_id=' + $('#teachers_select').val()
                 + '&place_id=' + $('#place_area').val()
                 + '&area_id=' + $('#report_area_select').val()
+                + '&analysis_sub_type=' + $('#analysis_sub_type').val()
                 + '&book_id=' + $('#books_select').val();
-                
+
             table = $('#dataTable').DataTable( {
                 "processing": true,
                 "serverSide": true,
@@ -82,7 +83,7 @@ var table = '';
                 ],
                 "aoColumns": [
                     { "mData": "id" },
-                    { "mData": "teacher_name" },
+                    { "mData": "mosque_name" },
                     { "mData": "total_accomplished_course" },
                     { "mData": "total_accomplished_students" },
                     { "mData": "most_accomplished_course" },

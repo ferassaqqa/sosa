@@ -8,10 +8,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+
 
 class Area extends Model
 {
     use HasFactory;
+    public static $counter=0;
+
     protected $fillable = ['name','area_id','area_supervisor_id','sub_area_supervisor_id','percentage','student_marks_export_count','student_marks_export_year'];
     public function subArea(){
         return $this->hasMany(Area::class,'area_id','id')->withoutGlobalScope('relatedAreas');
@@ -104,7 +108,7 @@ class Area extends Model
         ];
     }
     public function getAreaSearchedResultForPlaceAttribute(){
-        return '<li class="list-group-item"><a class="selected-area" 
+        return '<li class="list-group-item"><a class="selected-area"
                     data-id="'.$this->id.'" data-name="'.$this->name.'">'.$this->name.' -> '.$this->area_father_name.'</a></li>';
     }
 
@@ -153,6 +157,73 @@ class Area extends Model
     public function getSubAreaSupervisorNameAttribute(){
         return $this->subAreaSupervisor ? $this->subAreaSupervisor->name : '';
     }
+
+    public function scopeBook($query,$book_id){
+        if($book_id){
+            return $query->whereHas('courses',function($query) use ($book_id){
+                $query->where('book_id',$book_id);
+            });
+        }else{
+            return $query;
+        }
+    }
+    public function scopeplace($query, $place_id){
+        if($place_id){
+            return $query->whereHas('courses',function($query) use ($place_id){
+                $query->where('place_id',$place_id);
+            });
+        }else{
+            return $query;
+        }
+    }
+    public function scopeteacher($query, $teacher_id){
+        if($teacher_id){
+            return $query->whereHas('courses',function($query) use ($teacher_id){
+                $query->where('teacher_id',$teacher_id);
+            });
+        }else{
+            return $query;
+        }
+    }
+
+    public function getMostAccomplishedCourseRowDataAttribute(){
+
+        self::$counter++;
+        $total = 0;
+
+
+        $sub_area_courses = $this->courses;
+
+
+        foreach ($sub_area_courses as $key => $course) {
+                $total += $course->students->count();
+        }
+
+            $most_accomplished =  DB::table('course_students')
+                        ->leftJoin('courses','courses.id','=','course_students.course_id')
+                        ->leftJoin('books','books.id','=','courses.book_id')
+                        ->leftJoin('places','places.id','=','courses.place_id')
+                        ->leftJoin('areas','areas.id','=','places.area_id')
+                        ->where('places.area_id','=',$this->id)
+                        ->selectRaw('course_students.course_id,books.name, count(course_students.course_id) as times_teached')
+                        ->groupBy('courses.id','course_students.course_id')
+                        ->orderByDesc('times_teached')
+                        ->limit(1)
+                        ->get();
+
+         $top_course = ($total > 0) ? $most_accomplished[0]->name.' ('.$most_accomplished[0]->times_teached.')' : 0;
+
+        // $top_course = 00;
+        return [
+            'id' => self::$counter,
+            'subarea_name' =>$this->name,
+            'total_accomplished_course' => $this->courses->count(),
+            'total_accomplished_students' => $total,
+            'most_accomplished_course' => $top_course,
+        ];
+
+    }
+
 
     public static function boot()
     {

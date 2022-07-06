@@ -7,11 +7,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+
 
 class Place extends Model
 {
     use HasFactory;
     protected $fillable = ['name','area_id','address'];
+    public static $counter=0;
+
     public function getPlaceDisplayDataAttribute(){
         return [
             'id'=>$this->id,
@@ -109,6 +113,80 @@ class Place extends Model
     public function users(){
 
     }
+
+
+
+    public function getMostAccomplishedCourseRowDataAttribute(){
+
+
+        $total = 0;
+
+        $place_courses = $this->courses;
+
+        // dd($place_courses);
+        foreach ($place_courses as $key => $course) {
+                $total += $course->students->count();
+        }
+
+    
+        self::$counter++;
+        $most_accomplished =  DB::table('course_students')
+                    ->leftJoin('courses','courses.id','=','course_students.course_id')
+                    ->leftJoin('books','books.id','=','courses.book_id')
+                    ->where('courses.place_id','=',$this->id)
+                    ->selectRaw('course_students.course_id,books.name, count(course_students.course_id) as times_teached')
+                    ->groupBy('courses.id','course_students.course_id')
+                    ->orderByDesc('times_teached')
+                    ->limit(1)
+                    ->get();
+
+
+        $top_course = ($total > 0) ? $most_accomplished[0]->name.' ('.$most_accomplished[0]->times_teached.')' : 0;
+
+
+            return [
+                'id' => self::$counter,
+                'mosque_name' =>$this->name,
+                'total_accomplished_course' => $place_courses->count(),
+                'total_accomplished_students' => $total,
+                'most_accomplished_course' => $top_course,
+            ];
+
+
+
+
+    }
+
+
+
+    public function scopeBook($query,$book_id){
+        if($book_id){
+            return $query->whereHas('courses',function($query) use ($book_id){
+                $query->where('book_id',$book_id);
+            });
+        }else{
+            return $query;
+        }
+    }
+    public function scopeplace($query, $place_id){
+        if($place_id){
+            return $query->whereHas('courses',function($query) use ($place_id){
+                $query->where('place_id',$place_id);
+            });
+        }else{
+            return $query;
+        }
+    }
+    public function scopeteacher($query, $teacher_id){
+        if($teacher_id){
+            return $query->whereHas('courses',function($query) use ($teacher_id){
+                $query->where('teacher_id',$teacher_id);
+            });
+        }else{
+            return $query;
+        }
+    }
+
     public static function boot(){
         parent::boot();
 
