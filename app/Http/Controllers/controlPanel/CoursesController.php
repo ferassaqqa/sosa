@@ -219,7 +219,7 @@ class CoursesController extends Controller
         checkPermissionHelper('اضافة دورة علمية');
        $course = Course::create($request->all());
 
-        $course->exam()->create($request->all());
+        // $course->exam()->create($request->all());
         return response()->json(['msg'=>'تم اضافة دورة جديدة','title'=>'اضافة','type'=>'success']);
     }
 
