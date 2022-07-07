@@ -33,12 +33,15 @@
             <div class="card-body">
                 <h4 class="card-title mb-4" style="display: inline-block;">المستخدمين</h4>
                 <div class="row mb-3">
+
+                    @if (hasPermissionHelper('اضافة مستخدم'))
                     <div class="col-md-3">
                         <button class="btn btn-primary create-new-user" onclick="createNewUser()" style="width: 100%;">
                             <i class="mdi mdi-plus"></i>
                             اضافة
                         </button>
                     </div>
+                    @endif
                     <div class="col-md-3">
                         <select class="form-control" onchange="getSubAreas(this)" id="areas_select">
                             <option value="0">اختر المنطقة الكبرى</option>

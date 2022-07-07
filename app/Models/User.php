@@ -116,7 +116,7 @@ class User extends Authenticatable
 
         self::$counter++;
         $total = 0;
-       
+
         $teacher_courses = $this->teacherCourses;
         foreach ($teacher_courses as $key => $course) {
                 $total += $course->students->count();
@@ -132,7 +132,7 @@ class User extends Authenticatable
                     ->limit(1)
                     ->get();
 
-        
+
         $top_course = ($total > 0) ? $most_accomplished[0]->name.' ('.$most_accomplished[0]->times_teached.')' : 0;
 
 
@@ -241,6 +241,11 @@ class User extends Authenticatable
             $edit_route = $tools[0];
             $delete_route = $tools[1];
 //            self::$counter++;
+
+$edit_user_btn = (hasPermissionHelper('تعديل مستخدم')) ? '<button type="button" class="btn btn-warning btn-sm" data-url="'.$edit_route.'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')"><i class="mdi mdi-comment-edit"></i></button>' : '';
+$delete_user_btn =  (hasPermissionHelper('اضافة مستخدم')) ? '<button type="button" class="btn btn-danger btn-sm" data-url="'.$delete_route.'" onclick="deleteItem(this)"><i class="mdi mdi-trash-can"></i></button>' : '';
+$tools = $edit_user_btn.' '.$delete_user_btn;
+
             return [
                 'id' => self::$counter,
                 'name' => $this->name,
@@ -249,10 +254,7 @@ class User extends Authenticatable
                 'circleReports' => $this->circles->count() ? '<a href="#!" title="التقارير الشهرية" data-url="'.route('circleMonthlyReports.getTeacherMonthlyReports',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')">'.$this->circleReports->count().'</a>': 'لا يوجد حلقات',
                 'roles' => $this->user_roles_string,
                 'supervisorArea'=>$this->supervisor_area_accessor,
-                'tools' => '
-                        <button type="button" class="btn btn-warning btn-sm" data-url="' . $edit_route . '" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')"><i class="mdi mdi-comment-edit"></i></button>
-                        <button type="button" class="btn btn-danger btn-sm" data-url="' . $delete_route . '" onclick="deleteItem(this)"><i class="mdi mdi-trash-can"></i></button>
-                    '
+                'tools' => $tools
             ];
         }
     }
@@ -491,14 +493,15 @@ class User extends Authenticatable
         $tools = $this->getTools($this->department);
         $edit_route = $tools[0];
         $delete_route = $tools[1];
+
+       $edit_user_btn = (hasPermissionHelper('تعديل مستخدم')) ? '<button type="button" class="btn btn-warning btn-sm" data-url="'.$edit_route.'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')"><i class="mdi mdi-comment-edit"></i></button>' : '';
+       $delete_user_btn =  (hasPermissionHelper('اضافة مستخدم')) ? '<button type="button" class="btn btn-danger btn-sm" data-url="'.$delete_route.'" onclick="deleteItem(this)"><i class="mdi mdi-trash-can"></i></button>' : '';
+       $tools = $edit_user_btn.' '.$delete_user_btn;
         return [
             'id'=>$this->id,
             'name'=>'<span style="background-color: #2ca02c;color: #fff;">'.$this->name.'</span>',
             'supervisorArea'=>$this->supervisor_area_accessor,
-            'tools'=>'
-                        <button type="button" class="btn btn-warning btn-sm" data-url="'.$edit_route.'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')"><i class="mdi mdi-comment-edit"></i></button>
-                        <button type="button" class="btn btn-danger btn-sm" data-url="'.$delete_route.'" onclick="deleteItem(this)"><i class="mdi mdi-trash-can"></i></button>
-                    '
+            'tools'=> $tools
         ];
     }
     public function getGetDataFromIdentityNumAttribute(){
