@@ -38,7 +38,7 @@ class ReportsController extends Controller
                 $new_item = $item->students_reports_by_students_categories_row_data;
                 array_push($value, $new_item);
             }
-            Cache::put('course_acheivment_reports', $value);
+            Cache::put('course_acheivment_reports', $value,600);
         }
 
 
@@ -91,7 +91,7 @@ class ReportsController extends Controller
                 $new_item = $item->students_reports_by_students_categories_row_data;
                 array_push($value, $new_item);
             }
-            Cache::put('course_acheivment_reports', $value);
+            Cache::put('course_acheivment_reports', $value,600);
         }
 
         return [
