@@ -158,7 +158,7 @@ class Book extends Model
         return '            <tr>
         <tr>
             <th rowspan="4">'.self::$counter.'</th>
-            <th rowspan="4" >'.$this->name.'</th>
+            <th rowspan="4" style="background: #f0f0f0">'.$this->name.'</th>
             <th>ابتدائية ( 7 - 12 )</th>
             <td>'.$requierd_number[0].'</td>
             <td>'.$passed_students_count_primary.'</td>
@@ -180,7 +180,7 @@ class Book extends Model
             <td>'.$completed_num_percentage_high.' %</td>
             <td>'.$excess_num_percentage_high.' %</td>
         </tr>
-        <tr style="background: #c8cad3">
+        <tr style="background: #f0f0f0">
             <th>المجموع</th>
             <td>'.$this->required_students_number.'</td>
             <td>'.$total_pass.'</td>

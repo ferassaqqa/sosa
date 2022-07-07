@@ -71,7 +71,7 @@
                                     <th scope="col" style="width: 50px;">
                                         #
                                     </th>
-                                    <th scope="col">الكتاب</th>
+                                    <th scope="col"  style="width: 50px;">الكتاب</th>
                                     <th scope="col">فئة الخريجين</th>
                                     <th scope="col">العدد المطلوب</th>
                                     <th scope="col">العدد المنجز</th>
