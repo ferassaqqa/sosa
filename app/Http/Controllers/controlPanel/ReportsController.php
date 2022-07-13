@@ -5,7 +5,7 @@ namespace App\Http\Controllers\controlPanel;
 use App\Http\Controllers\Controller;
 use App\Models\Area;
 use App\Models\Book;
-use App\Models\Course;
+use App\Models\AsaneedBook;
 use App\Models\CourseStudent;
 use App\Models\User;
 use Carbon\Carbon;
@@ -62,6 +62,20 @@ class ReportsController extends Controller
                     }
                 }
 
+            case 'asaneedPlanProgress': {
+                    return $this->asaneedPlanProgressView($request);
+                }
+            case 'asaneedMostAccomplished': {
+                    $analysis_sub_type = $request->analysis_sub_type;
+                    if ($analysis_sub_type == 'teachers') {
+                        return $this->mostAsaneedAccomplishedTeacherView($request);
+                    } elseif ($analysis_sub_type == 'mosques') {
+                        return $this->mostaccomplishedMosquesView($request);
+                    } elseif ($analysis_sub_type == 'local_areas') {
+                        return $this->mostaccomplishedLocalAreaView($request);
+                    }
+                }
+
                 break;
         }
     }
@@ -69,6 +83,39 @@ class ReportsController extends Controller
     /**
      * analysis Views functions
      */
+
+    public function asaneedPlanProgressView(Request $request)
+    {
+        $start_date = $request->start_date;
+        $end_date = $request->end_date;
+        $book_id = $request->book_id;
+
+        $year = Carbon::parse($request->start_date)->format('Y');
+
+        if ($book_id) {
+            $books = AsaneedBook::where('id', $book_id)->get();
+        } else {
+            $books = AsaneedBook::where('year', $year)->get();
+        }
+        $value = array();
+        if (Cache::has('asaneed_acheivment_reports')) {
+            $value = Cache::get('asaneed_acheivment_reports');
+        } else {
+            foreach ($books as $index => $item) {
+                $new_item = $item->asaneed_students_reports_by_students_categories_row_data;
+                array_push($value, $new_item);
+            }
+            Cache::put('asaneed_acheivment_reports', $value,600);
+        }
+
+        return [
+            'view' => view('control_panel.reports.coursesPlanProgress', compact(
+                'value'
+            ))->render()
+            // ,
+            // 'filters'=>$filters
+        ];
+    }
 
     public function coursePlanProgressView(Request $request)
     {
@@ -108,6 +155,13 @@ class ReportsController extends Controller
     {
         return [
             'view' => view('control_panel.reports.departments.courses.mostAccomplishedCourseTeacher')->render(),
+        ];
+    }
+
+    public function mostAsaneedAccomplishedTeacherView(Request $request)
+    {
+        return [
+            'view' => view('control_panel.reports.departments.asaneed.mostAccomplishedCourseTeacher')->render(),
         ];
     }
 
@@ -165,6 +219,17 @@ class ReportsController extends Controller
 
                 }
 
+            case 'asaneedMostAccomplished': {
+                    $analysis_sub_type = $request->analysis_sub_type;
+                    if ($analysis_sub_type == 'teachers') {
+                        return $this->mostAsaneedAccomplishedTeacherData($request);
+                    } elseif ($analysis_sub_type == 'mosques') {
+                        return $this->mostaccomplishedMosquesView($request);
+                    } elseif ($analysis_sub_type == 'local_areas') {
+                        return $this->mostaccomplishedLocalAreaView($request);
+                    }
+                }
+
                 break;
         }
     }
@@ -204,35 +269,7 @@ class ReportsController extends Controller
 
         $value = array();
 
-        // if (!empty($search)) {
-        //     $count = Place::select('id', 'name', 'area_id')
-        //         ->search($search)
-        //         ->teacher($teacher_id)
-        //         ->book($book_id)
-        //         ->place($place_id)
-        //         ->permissionssubarea($sub_area_id, $area_id)
-        //         ->count();
-        //     $places = Place::select('id', 'name', 'area_id')
-        //         ->search($search)
-        //         ->teacher($teacher_id)
-        //         ->book($book_id)
-        //         ->place($place_id)
-        //         ->permissionssubarea($sub_area_id, $area_id)
-        //         ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
-        //         ->get();
-        // } else {
-            // $count = Place::select('id', 'name', 'area_id')->teacher($teacher_id)
-            //     ->book($book_id)
-            //     ->place($place_id)
-            //     ->permissionssubarea($sub_area_id, $area_id)->count();
-            // $places = Place::select('id', 'name', 'area_id')
-            //     ->teacher($teacher_id)
-            //     ->book($book_id)
-            //     ->place($place_id)
-            //     ->permissionssubarea($sub_area_id, $area_id)
-            //     ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
-            //     ->get();
-        // }
+
 
 
         $count = Area::whereNotNull('area_id')
@@ -374,12 +411,14 @@ class ReportsController extends Controller
             $count = User::subarea($sub_area_id, $area_id)
                 ->search($search)
                 ->department(2)
+                ->has('teacherCourses')
                 ->book($book_id)
                 ->place($place_id)
                 ->count();
             $teachers = User::subarea($sub_area_id, $area_id)
                 ->search($search)
                 ->department(2)
+                ->has('teacherCourses')
                 ->book($book_id)
                 ->place($place_id)
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
@@ -387,12 +426,14 @@ class ReportsController extends Controller
         } else {
             $count = User::subarea($sub_area_id, $area_id)
                 ->department(2)
+                ->has('teacherCourses')
                 ->teacher($teacher_id)
                 ->book($book_id)
                 ->place($place_id)
                 ->count();
             $teachers = User::subarea($sub_area_id, $area_id)
                 ->department(2)
+                ->has('teacherCourses')
                 ->teacher($teacher_id)
                 ->book($book_id)
                 ->place($place_id)
@@ -415,7 +456,83 @@ class ReportsController extends Controller
     }
 
 
+    public function mostAsaneedAccomplishedTeacherData(Request $request)
+    {
 
+        $columns = array(
+            array('db' => 'id',        'dt' => 0),
+        );
+
+        $draw = (int)$request->draw;
+        $start = (int)$request->start;
+        $length = (int)$request->length;
+        $order = $request->order[0]["column"];
+        $direction = $request->order[0]["dir"];
+        $search = trim($request->search["value"]);
+
+        $sub_area_id = (int)$request->sub_area_id ? (int)$request->sub_area_id : 0;
+        $area_id = (int)$request->area_id ? (int)$request->area_id : 0;
+
+        $teacher_id = (int)$request->teacher_id ? (int)$request->teacher_id : 0;
+        $book_id = (int)$request->book_id ? (int)$request->book_id : 0;
+        $place_id = (int)$request->place_id ? (int)$request->place_id : 0;
+
+        $start_date = (int)$request->start_date ? (int)$request->start_date : 0;
+        $end_date = (int)$request->end_date ? (int)$request->end_date : 0;
+
+
+
+
+
+        $value = array();
+
+        if (!empty($search)) {
+            $count = User::subarea($sub_area_id, $area_id)
+                ->search($search)
+                ->department(7)
+                ->has('teacherAsaneedCourses')
+                ->book($book_id)
+                ->place($place_id)
+                ->count();
+            $teachers = User::subarea($sub_area_id, $area_id)
+                ->search($search)
+                ->department(7)
+                ->has('teacherAsaneedCourses')
+                ->book($book_id)
+                ->place($place_id)
+                ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
+                ->get();
+        } else {
+            $count = User::subarea($sub_area_id, $area_id)
+                ->department(7)
+                ->has('teacherAsaneedCourses')
+                ->teacher($teacher_id)
+                ->book($book_id)
+                ->place($place_id)
+                ->count();
+            $teachers = User::distinct()->subarea($sub_area_id, $area_id)
+                ->department(7)
+                ->has('teacherAsaneedCourses')
+                ->teacher($teacher_id)
+                ->book($book_id)
+                ->place($place_id)
+                ->limit($length)->offset($start)
+                ->get();
+        }
+        User::$counter = $start;
+
+        foreach ($teachers as $index => $item) {
+            array_push($value, $item->most_accomplished_asaneed_row_data);
+        }
+
+        return [
+            "draw" => $draw,
+            "recordsTotal" => $count,
+            "recordsFiltered" => $count,
+            "data" => (array)$value,
+            "order" => $columns[$order]["db"]
+        ];
+    }
 
 
 

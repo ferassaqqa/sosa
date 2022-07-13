@@ -52,6 +52,10 @@ class AsaneedCourse extends Model
             'tools'=>$addStudent.' '.$addExcelStudent.' '.$options,
         ];
     }
+
+    public function placeForPermissions(){
+        return $this->belongsTo(Place::class,'place_id','id')->withoutGlobalScope('relatedPlaces');
+    }
     public function getNameAttribute(){
         return $this->teacher_name;
     }
@@ -168,6 +172,7 @@ class AsaneedCourse extends Model
     /**
      * Scopes
      */
+
     public function scopeSearch($query,$searchWord)
     {
         return $query->where('id', 'like', "%" . $searchWord . "%")

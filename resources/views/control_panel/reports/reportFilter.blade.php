@@ -142,8 +142,8 @@
                 case 'قسم أسانيد السنة النبوية': {
                     $('#analysis_type').empty().html(
                         '<option value="0">اختر التحليل المناسب</option>' +
-                        '<option value="إنجاز خطة الاسانيد">إنجاز خطة الاسانيد</option>' +
-                        '<option value="إحصاءات">إحصاءات</option>'
+                            '<option value="asaneedPlanProgress">انجاز خطة الدورات</option>' +
+                            '<option value="asaneedMostAccomplished">الأكثر إنجازًا</option>'
                     );
 
                 }
@@ -224,7 +224,7 @@
 
         $(document).ready(function() {
             $("body").on('change', '#analysis_type', function() {
-                if ($(this).find(":selected").val() == 'mostAccomplished') {
+                if ($(this).find(":selected").val() == 'mostAccomplished' || $(this).find(":selected").val() == 'asaneedMostAccomplished') {
                     $('#analysis_sub_type').parent().css('display', 'block');
                 } else {
                     $('#analysis_sub_type').parent().css('display', 'none');
