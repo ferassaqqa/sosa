@@ -44,6 +44,31 @@ class ReportsController extends Controller
 
         return view('control_panel.reports.all', compact('areas', 'value', 'books'));
     }
+
+    public function allReviews()
+    {
+
+        
+        $areas = Area::whereNull('area_id')->get();
+        $year = date("Y");
+        $books = Book::where('year', $year)->get();
+        $value = array();
+
+
+
+        if (Cache::has('reviews_acheivment_reports')) {
+            $value = Cache::get('reviews_acheivment_reports');
+        } else {
+            foreach ($books as $index => $item) {
+                $new_item = $item->students_reports_by_students_categories_row_data;
+                array_push($value, $new_item);
+            }
+            Cache::put('reviews_acheivment_reports', $value,600);
+        }
+
+
+        return view('control_panel.reports.departments.reviews.all', compact('areas', 'value', 'books'));
+    }
     public function getAnalysisView(Request $request)
     {
         $analysis_type = $request->analysis_type;

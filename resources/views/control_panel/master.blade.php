@@ -575,7 +575,7 @@
                                     التقارير
                                 </a>
                                 <!-- item-->
-                                <a class="dropdown-item" href="{{route('moallem.index')}}">
+                                <a class="dropdown-item" href="{{route('reviews.all')}}">
                                     التقييمات
                                 </a>
                             </div>
