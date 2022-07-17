@@ -51,24 +51,64 @@ class ReportsController extends Controller
         
         $areas = Area::whereNull('area_id')->get();
         $year = date("Y");
-        $books = Book::where('year', $year)->get();
         $value = array();
 
-
-
-        if (Cache::has('reviews_acheivment_reports')) {
-            $value = Cache::get('reviews_acheivment_reports');
-        } else {
-            foreach ($books as $index => $item) {
-                $new_item = $item->students_reports_by_students_categories_row_data;
+        // if (Cache::has('reviews_acheivment_reports')) {
+        //     $value = Cache::get('reviews_acheivment_reports');
+        // } else {
+            foreach ($areas as $index => $item) {
+                $new_item = $item->all_reviews_row_data;
                 array_push($value, $new_item);
             }
-            Cache::put('reviews_acheivment_reports', $value,600);
+        //     Cache::put('reviews_acheivment_reports', $value,600);
+        // }
+
+
+        return view('control_panel.reports.departments.reviews.all', compact('areas', 'value'));
+    }
+
+    public function getReviewsAnalysisView(Request $request){
+        $analysis_type = $request->analysis_type;
+        switch ($analysis_type) {
+            case 'courses': {
+                    return $this->courseReviewDetailsView($request);
+                }
+            case 'asaneed': {    
+                    return $this->asaneedReviewDetailsView($request);                    
+                }
+                break;
+        }
+    }
+
+
+    public function courseReviewDetailsView(Request $request){
+        $areas = Area::whereNull('area_id')->get();
+        $value = array();
+
+        foreach ($areas as $index => $item) {
+            $new_item = $item->course_reviews_row_data;
+            array_push($value, $new_item);
         }
 
+        return [
+            'view' => view('control_panel.reports.departments.reviews.courseReviewsDetails', compact('areas', 'value'))->render()
+        ];
 
-        return view('control_panel.reports.departments.reviews.all', compact('areas', 'value', 'books'));
     }
+    public function asaneedReviewDetailsView(Request $request){
+        $areas = Area::whereNull('area_id')->get();
+        $value = array();
+        return [
+            'view' => view('control_panel.reports.departments.reviews.asaneedReviewsDetails', compact('areas', 'value'))->render()
+        ];
+
+    }
+
+
+
+
+
+
     public function getAnalysisView(Request $request)
     {
         $analysis_type = $request->analysis_type;

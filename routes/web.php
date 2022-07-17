@@ -542,6 +542,7 @@ Route::get('getAnalysisView', [\App\Http\Controllers\controlPanel\ReportsControl
 Route::get('getAnalysisData', [\App\Http\Controllers\controlPanel\ReportsController::class,'getAnalysisData'])->name('reports.getAnalysisData');
 
 Route::get('reports/allReviews', [\App\Http\Controllers\controlPanel\ReportsController::class,'allReviews'])->name('reviews.all');
+Route::get('getReviewsAnalysisView', [\App\Http\Controllers\controlPanel\ReportsController::class,'getReviewsAnalysisView']);
 
 Route::get('/', function () {
     return redirect(route('login'));

@@ -186,6 +186,112 @@ class Area extends Model
         }
     }
 
+    public function getAllReviewsRowDataAttribute(){
+        self::$counter++;
+        $total = 0;
+
+        $total_students_course_passed = CourseStudent::whereHas('course')
+                    ->whereBetween('mark', [60, 101])
+                    ->count();
+
+        $total_pass_by_area = CourseStudent::whereHas('course')
+                                ->subarea(0, $this->id)
+                                ->whereBetween('mark', [60, 101])
+                                ->count();
+
+        $area_percentage = $this->percentage;
+ 
+        $passed_students_count = $total_pass_by_area;
+        $completed_num_percentage = $total_students_course_passed? round((($passed_students_count/$total_students_course_passed) * 100), 2): 0;
+        $completed_num_percentage = $completed_num_percentage > 100 ? 100 : $completed_num_percentage;
+
+
+        return '
+        <tr>
+        <tr>
+        <td>'.self::$counter.'</td>
+            <td>'.$this->name.'</td>
+            <td>'.$total.'</td>
+            <td>'.$completed_num_percentage.'%</td>
+            <td>5.00%</td>
+            <th>94.00%</th>
+            <td>الاول</td>
+            <th></th>
+        </tr>
+        </tr>
+        ';
+    }
+
+    public function getCourseReviewsRowDataAttribute(){
+        self::$counter++;
+        $total = 0;
+
+
+
+
+        $requierd_number = json_decode($this->required_students_number_array);
+
+        $year = date("Y");
+        $books = Book::where('year', $year)->get();
+
+        $array = [];
+
+        foreach ($books as $key => $book) {
+            $total_pass = 0;
+            $total_pass = CourseStudent::book($book->id)
+                                        ->subarea(0,$this->id)
+                                        ->whereHas('course')
+                                        ->whereBetween('mark', [60, 101])->count();
+
+
+            // $completed_num_percentage = $book->required_students_number? round((($total_pass/$book->required_students_number) * 100), 2): 0;
+            // $completed_num_percentage = $completed_num_percentage > 100 ? 100 : $completed_num_percentage;
+
+            array_push($array,array($total_pass,( ($book->required_students_number*$this->percentage) / 100)));
+            // $excess_num_percentage = $completed_num_percentage > 100 ? $completed_num_percentage - 100 : 0;
+        }
+
+        dd($array);
+
+
+
+
+
+        // $total_students_course_passed = CourseStudent::whereHas('course')
+        //             ->whereBetween('mark', [60, 101])
+        //             ->count();
+
+        // $total_pass_by_area = CourseStudent::whereHas('course')
+        //                         ->subarea(0, $this->id)
+        //                         ->whereBetween('mark', [60, 101])
+        //                         ->count();
+
+        // $area_percentage = $this->percentage;
+ 
+        // $passed_students_count = $total_pass_by_area;
+        // $completed_num_percentage = $total_students_course_passed? round((($passed_students_count/$total_students_course_passed) * 100), 2): 0;
+        // $completed_num_percentage = $completed_num_percentage > 100 ? 100 : $completed_num_percentage;
+
+
+        return '
+
+    <tr >
+        <td>'.self::$counter.'</td>
+        <td>'.$this->name.'</td>
+
+        <td>38%</td>
+        <td>5%</td>
+        <td>2%</td>
+        <td>3%</td>
+        <td><b>50%</b></td>
+
+        <td><b>99%</b></td>
+        <td>الاول</td>
+        <td></td>
+    </tr>
+        ';
+    }
+
     public function getMostAccomplishedCourseRowDataAttribute(){
 
         self::$counter++;

@@ -5,11 +5,11 @@
 
 
     <div class="col-md-3" >
-        <select class="form-control" id="analysis_sub_type">
+        <select class="form-control" id="analysis_type">
             <option value=""> اختر اقسام الادارة </option>
-            <option value="teachers">جميع الاقسام</option>
-            <option value="mosques">قسم الدورات العلمية</option>
-            <option value="local_areas"> قسم الاسانيد و الاجازات</option>
+            <option value="all">جميع الاقسام</option>
+            <option value="courses">قسم الدورات العلمية</option>
+            <option value="asaneed"> قسم الاسانيد و الاجازات</option>
 
         </select>
     </div>
@@ -84,7 +84,7 @@
                 );
 
 
-            $.get('/getAnalysisView' + filters, function(data) {
+            $.get('/getReviewsAnalysisView' + filters, function(data) {
                 $('#tableContainer').empty().html(data.view);
                 // $('#custom_filters').empty().html(data.filters);
             });
