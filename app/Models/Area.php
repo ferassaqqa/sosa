@@ -200,7 +200,7 @@ class Area extends Model
                                 ->count();
 
         $area_percentage = $this->percentage;
- 
+
         $passed_students_count = $total_pass_by_area;
         $completed_num_percentage = $total_students_course_passed? round((($passed_students_count/$total_students_course_passed) * 100), 2): 0;
         $completed_num_percentage = $completed_num_percentage > 100 ? 100 : $completed_num_percentage;
@@ -251,7 +251,7 @@ class Area extends Model
             // $excess_num_percentage = $completed_num_percentage > 100 ? $completed_num_percentage - 100 : 0;
         }
 
-        dd($array);
+        // dd($array);
 
 
 
@@ -267,7 +267,7 @@ class Area extends Model
         //                         ->count();
 
         // $area_percentage = $this->percentage;
- 
+
         // $passed_students_count = $total_pass_by_area;
         // $completed_num_percentage = $total_students_course_passed? round((($passed_students_count/$total_students_course_passed) * 100), 2): 0;
         // $completed_num_percentage = $completed_num_percentage > 100 ? 100 : $completed_num_percentage;

@@ -46,7 +46,60 @@ class Book extends Model
     }
 
 
+    public function getCourseStudentsReportsByAreaRowDataAttribute(){
 
+        $year = date("Y");
+        $books = Book::where('year', $year)->get();
+        self::$counter++;
+
+        $areas = Area::whereNull('area_id')->get();
+
+        $data = '';
+        $total_pass = 0;
+        $total_rest = 0;
+
+
+        $rest = 0;
+
+            foreach ($areas as $key => $area) {
+
+                $pass = CourseStudent::book($this->id)
+                                    ->subarea(0,$area->id)
+                                    ->whereBetween('mark', [60, 101])->count();
+
+                $rest = $pass - floor(($area->percentage * $this->required_students_number)  / 100);
+
+                $color =  '#009933';
+                if($rest < 0){$color = '#cc0000';}
+
+                $total_pass +=$pass;
+                $total_rest +=$rest;
+
+                $data .= '<td>'.$pass.'</td>
+                              <td  style="color:'.$color.'">'.abs($rest).'</td>';
+
+            }
+
+
+            $pass_percentage =  round((($total_pass/$this->required_students_number) * 100), 2);
+
+
+            return '
+            <tr>
+            <td>'.self::$counter.'</td>
+            <td>'.$this->name.'</td>
+            <td>'.$this->required_students_number.'</td>
+
+
+           '.$data.'
+
+            <td>'.$total_pass.'</td>
+            <td>'.abs($total_rest).'</td>
+            <td>'.$pass_percentage.' %</td>
+        </tr>
+
+            ';
+    }
 
     public function getStudentsReportsByStudentsCategoriesRowDataAttribute(){
 

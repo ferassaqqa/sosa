@@ -119,6 +119,7 @@
                     case 'قسم الدورات العلمية': {
                         $('#analysis_type').empty().html(
                             '<option value="0">اختر التحليل المناسب</option>' +
+                            '<option value="courseAreaPlanProgress">انجاز المناطق الكبرى</option>' +
                             '<option value="coursePlanProgress">انجاز خطة الدورات</option>' +
                             '<option value="mostAccomplished">الأكثر إنجازًا</option>'
 

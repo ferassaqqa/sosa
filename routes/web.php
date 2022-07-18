@@ -567,9 +567,9 @@ Route::get('/newPermission/{name}/{title}/{department}', function ($name,$title,
 //    dd($_SERVER['REMOTE_ADDR']);
     \Spatie\Permission\Models\Permission::create(['name'=>$name,'title'=>$title,'department'=>$department]);
 });
-//Route::get('/linkstorage', function () {
+// Route::get('/linkstorage', function () {
 //    \Illuminate\Support\Facades\Artisan::call('storage:link');
-//});
+// });
 //Route::get('/latestActivity', function () {
 //    $lastActivity = \Spatie\Activitylog\Models\Activity::latest()->first();
 //

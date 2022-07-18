@@ -30,25 +30,39 @@ class ReportsController extends Controller
         $value = array();
 
 
-
-        if (Cache::has('course_acheivment_reports')) {
-            $value = Cache::get('course_acheivment_reports');
-        } else {
+        // if (Cache::has('course_area_acheivment_report')) {
+        //     $value = Cache::get('course_area_acheivment_report');
+        // } else {
             foreach ($books as $index => $item) {
-                $new_item = $item->students_reports_by_students_categories_row_data;
+                $new_item = $item->course_students_reports_by_area_row_data;
                 array_push($value, $new_item);
             }
-            Cache::put('course_acheivment_reports', $value,600);
-        }
+        //     Cache::put('course_area_acheivment_report', $value,600);
+        // }
 
 
-        return view('control_panel.reports.all', compact('areas', 'value', 'books'));
+        return view('control_panel.reports.courseAreaReport', compact('areas', 'value', 'books'));
+
+
+
+        // if (Cache::has('course_acheivment_reports')) {
+        //     $value = Cache::get('course_acheivment_reports');
+        // } else {
+        //     foreach ($books as $index => $item) {
+        //         $new_item = $item->students_reports_by_students_categories_row_data;
+        //         array_push($value, $new_item);
+        //     }
+        //     Cache::put('course_acheivment_reports', $value,600);
+        // }
+
+
+        // return view('control_panel.reports.all', compact('areas', 'value', 'books'));
     }
 
     public function allReviews()
     {
 
-        
+
         $areas = Area::whereNull('area_id')->get();
         $year = date("Y");
         $value = array();
@@ -73,8 +87,8 @@ class ReportsController extends Controller
             case 'courses': {
                     return $this->courseReviewDetailsView($request);
                 }
-            case 'asaneed': {    
-                    return $this->asaneedReviewDetailsView($request);                    
+            case 'asaneed': {
+                    return $this->asaneedReviewDetailsView($request);
                 }
                 break;
         }
