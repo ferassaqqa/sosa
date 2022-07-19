@@ -53,7 +53,7 @@ class AsaneedCourseStudent extends Model
                 });
             });
         }else if($area_id){
-            return $query->whereHas('course', function ($query) use ($area_id) {
+            return $query->whereHas('asaneed_courses', function ($query) use ($area_id) {
                 $query->whereHas('placeForPermissions', function ($query) use ($area_id) {
                     $query->whereHas('areaForPermissions', function ($query) use ($area_id) {
                         $query->where('area_id', $area_id);

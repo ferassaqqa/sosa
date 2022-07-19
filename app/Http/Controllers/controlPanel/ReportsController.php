@@ -8,6 +8,7 @@ use App\Models\Book;
 use App\Models\AsaneedBook;
 use App\Models\CourseStudent;
 use App\Models\User;
+use App\Models\CourseProject;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -26,37 +27,42 @@ class ReportsController extends Controller
     {
         $areas = Area::whereNull('area_id')->get();
         $year = date("Y");
-        $books = Book::where('year', $year)->get();
-        $value = array();
+
+        $course_project = CourseProject::where('year', $year)->limit(1)->pluck('books')->first(); //get safwa project
+        $course_project = json_decode($course_project);
+        $project_books_value = array();
+
+        $in_plane_books = Book::where('year', $year)->where('included_in_plan','داخل الخطة')->get();
+        $in_plane_books_value = array();
+
+        $out_plane_books = Book::where('year', $year)->where('included_in_plan','خارج الخطة')->get();
+        $out_plane_books_value = array();
 
 
-        // if (Cache::has('course_area_acheivment_report')) {
-        //     $value = Cache::get('course_area_acheivment_report');
-        // } else {
-            foreach ($books as $index => $item) {
-                $new_item = $item->course_students_reports_by_area_row_data;
-                array_push($value, $new_item);
+
+            foreach ($in_plane_books as $index => $item) {
+                if(! in_array($item->id,$course_project)){
+                    $new_item = $item->course_students_reports_by_area_row_data;
+                    array_push($in_plane_books_value, $new_item);
+                }
             }
-        //     Cache::put('course_area_acheivment_report', $value,600);
-        // }
+
+            foreach ($in_plane_books as $index => $item) {
+                if( in_array($item->id,$course_project)){
+                    $new_item = $item->course_students_reports_by_area_row_data;
+                    array_push($project_books_value, $new_item);
+                }
+            }
+
+            foreach ($out_plane_books as $index => $item) {
+                if(! in_array($item->id,$course_project)){
+                    $new_item = $item->course_students_reports_by_area_row_data;
+                    array_push($out_plane_books_value, $new_item);
+                }
+            }
 
 
-        return view('control_panel.reports.courseAreaReport', compact('areas', 'value', 'books'));
-
-
-
-        // if (Cache::has('course_acheivment_reports')) {
-        //     $value = Cache::get('course_acheivment_reports');
-        // } else {
-        //     foreach ($books as $index => $item) {
-        //         $new_item = $item->students_reports_by_students_categories_row_data;
-        //         array_push($value, $new_item);
-        //     }
-        //     Cache::put('course_acheivment_reports', $value,600);
-        // }
-
-
-        // return view('control_panel.reports.all', compact('areas', 'value', 'books'));
+        return view('control_panel.reports.courseAreaReport', compact('areas', 'in_plane_books_value', 'in_plane_books','out_plane_books_value','project_books_value'));
     }
 
     public function allReviews()
@@ -127,6 +133,9 @@ class ReportsController extends Controller
     {
         $analysis_type = $request->analysis_type;
         switch ($analysis_type) {
+            case 'courseAreaPlanProgress':{
+                return $this->courseAreaPlanProgressView($request);
+            }
             case 'coursePlanProgress': {
                     return $this->coursePlanProgressView($request);
                 }
@@ -162,6 +171,54 @@ class ReportsController extends Controller
     /**
      * analysis Views functions
      */
+    public function courseAreaPlanProgressView(Request $request){
+
+        $areas = Area::whereNull('area_id')->get();
+        $year = date("Y");
+
+        $course_project = CourseProject::where('year', $year)->limit(1)->pluck('books')->first(); //get safwa project
+        $course_project = json_decode($course_project);
+        $project_books_value = array();
+
+        $in_plane_books = Book::where('year', $year)->where('included_in_plan','داخل الخطة')->get();
+        $in_plane_books_value = array();
+
+        $out_plane_books = Book::where('year', $year)->where('included_in_plan','خارج الخطة')->get();
+        $out_plane_books_value = array();
+
+
+
+
+            foreach ($in_plane_books as $index => $item) {
+                if(! in_array($item->id,$course_project)){
+                    $new_item = $item->course_students_reports_by_area_row_data;
+                    array_push($in_plane_books_value, $new_item);
+                }
+            }
+
+            foreach ($in_plane_books as $index => $item) {
+                if( in_array($item->id,$course_project)){
+                    $new_item = $item->course_students_reports_by_area_row_data;
+                    array_push($project_books_value, $new_item);
+                }
+            }
+
+            foreach ($out_plane_books as $index => $item) {
+                if(! in_array($item->id,$course_project)){
+                    $new_item = $item->course_students_reports_by_area_row_data;
+                    array_push($out_plane_books_value, $new_item);
+                }
+            }
+
+
+
+        return [
+            'view' => view('control_panel.reports.departments.courses.courseAreaPlanProgress', compact('areas', 'in_plane_books_value', 'in_plane_books','out_plane_books_value','project_books_value'))->render()
+            // ,
+            // 'filters'=>$filters
+        ];
+    }
+
 
     public function asaneedPlanProgressView(Request $request)
     {
@@ -210,15 +267,12 @@ class ReportsController extends Controller
             $books = Book::where('year', $year)->get();
         }
         $value = array();
-        if (Cache::has('course_acheivment_reports')) {
-            $value = Cache::get('course_acheivment_reports');
-        } else {
+
             foreach ($books as $index => $item) {
                 $new_item = $item->students_reports_by_students_categories_row_data;
                 array_push($value, $new_item);
             }
-            Cache::put('course_acheivment_reports', $value,600);
-        }
+
 
         return [
             'view' => view('control_panel.reports.coursesPlanProgress', compact(
@@ -413,6 +467,7 @@ class ReportsController extends Controller
         if (!empty($search)) {
             $count = Place::select('id', 'name', 'area_id')
                 ->search($search)
+                ->has('courses')
                 ->teacher($teacher_id)
                 ->book($book_id)
                 ->place($place_id)
@@ -420,6 +475,7 @@ class ReportsController extends Controller
                 ->count();
             $places = Place::select('id', 'name', 'area_id')
                 ->search($search)
+                ->has('courses')
                 ->teacher($teacher_id)
                 ->book($book_id)
                 ->place($place_id)
@@ -429,11 +485,13 @@ class ReportsController extends Controller
         } else {
             $count = Place::select('id', 'name', 'area_id')->teacher($teacher_id)
                 ->book($book_id)
+                ->has('courses')
                 ->place($place_id)
                 ->permissionssubarea($sub_area_id, $area_id)->count();
             $places = Place::select('id', 'name', 'area_id')
                 ->teacher($teacher_id)
                 ->book($book_id)
+                ->has('courses')
                 ->place($place_id)
                 ->permissionssubarea($sub_area_id, $area_id)
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)

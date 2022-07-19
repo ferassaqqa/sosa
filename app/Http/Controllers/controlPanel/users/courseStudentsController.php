@@ -267,6 +267,8 @@ class courseStudentsController extends Controller
                         'course_id' => $course->id
                     ]);
                 }
+                $students_count = $course->students->count();
+                if($students_count >= 10 && !$course->exam){$course->exam()->create();}
                 // $users = User::whereHas('courses', function ($query) use ($course) {
                 //     $query->where('course_id', $course->id);
                 // })->get();

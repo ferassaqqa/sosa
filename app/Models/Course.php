@@ -23,7 +23,7 @@ class Course extends Model
         //     <i class="mdi mdi-checkbox-marked-circle-outline" ></i></button>&nbsp': '').'<button type="button" class="btn btn-primary" title="استخراج كشف درجات الدورة اكسل"  onclick="exportCourseStudentsMarksExcelSheet('.$this->id.')"><i class="mdi mdi-microsoft-excel"></i></button>&nbsp': '';
 
         $exportCertificate =
-        ($this->status == 'منتهية' && $this->exam_status == 5 && $this->is_certifications_exported) ?'<button type="button" class="btn btn-outline-secondary" title="دورة منتهية تم طباعة شهاداتها"><i class="mdi mdi-checkbox-marked-circle-outline" ></i></button>&nbsp': '';
+        ( ($this->status == 'منتهية' || $this->exam_status == 5) && $this->is_certifications_exported) ?'<button type="button" class="btn btn-outline-secondary" title="دورة منتهية تم طباعة شهاداتها"><i class="mdi mdi-checkbox-marked-circle-outline" ></i></button>&nbsp': '';
 
         $export = ($this->status == 'منتهية') ? '<button type="button" class="btn btn-primary" title="استخراج كشف درجات الدورة اكسل"  onclick="exportCourseStudentsMarksExcelSheet('.$this->id.')"><i class="mdi mdi-microsoft-excel"></i></button>&nbsp' : '';
 

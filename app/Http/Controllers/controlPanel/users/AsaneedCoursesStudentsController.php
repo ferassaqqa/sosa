@@ -136,6 +136,8 @@ class AsaneedCoursesStudentsController extends Controller
                         'user_id' => $old_user->id,
                         'asaneed_course_id' => $asaneedCourse->id
                     ]);
+                    $students_count = $asaneedCourse->students->count();
+                    if($students_count >= 10 && !$asaneedCourse->exam){$asaneedCourse->exam()->create();}
                 }
                 $users = User::whereHas('asaneedCourses',function($query) use ($asaneedCourse){
                     $query->where('asaneed_course_id',$asaneedCourse->id);
@@ -205,6 +207,7 @@ class AsaneedCoursesStudentsController extends Controller
     public function store(newAsaneedCourseStudentsRequest $request)
     {
         $old_user = User::where('id_num', $request->id_num)->first();
+        $asaneedCourse = AsaneedCourse::find($request->asaneed_course_id);
         if (!$old_user) {
             $user = new User();
             $user->id_num = $request->id_num;
@@ -216,7 +219,7 @@ class AsaneedCoursesStudentsController extends Controller
                     'user_id' => $user->id,
                     'asaneed_course_id' => $request->asaneed_course_id
                 ]);
-                $asaneedCourse = AsaneedCourse::find($request->asaneed_course_id);
+
                 $students_count = $asaneedCourse->students->count();
                 if($students_count >= 10 && !$asaneedCourse->exam){$asaneedCourse->exam()->create();}
                 return response()->json(['msg' => 'تم اضافة مستخدم جديد', 'title' => 'اضافة', 'type' => 'success']);
@@ -231,6 +234,8 @@ class AsaneedCoursesStudentsController extends Controller
                     'user_id' => $old_user->id,
                     'asaneed_course_id' => $request->asaneed_course_id
                 ]);
+                $students_count = $asaneedCourse->students->count();
+                if($students_count >= 10 && !$asaneedCourse->exam){$asaneedCourse->exam()->create();}
                 return response()->json(['msg' => 'تم اضافة مستخدم جديد', 'title' => 'اضافة', 'type' => 'success']);
             } else {
                 return response()->json(['msg' => ' الطالب ' . $old_user->name . ' مضاف لنفس الدورة مسبقا ', 'title' => 'خطأ !', 'type' => 'danger']);

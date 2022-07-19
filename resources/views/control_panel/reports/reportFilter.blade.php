@@ -64,7 +64,7 @@
     <div class="col-md-2">
         <select class="form-control select2" id="books_select">
             <option value="0">اختر الكتاب</option>
-            @foreach ($books as $book)
+            @foreach ($in_plane_books as $book)
                 <option value="{{ $book->id }}">{{ $book->name }}</option>
             @endforeach
         </select>
