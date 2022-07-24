@@ -223,73 +223,62 @@ class Area extends Model
     }
 
     public function getCourseReviewsRowDataAttribute(){
-        self::$counter++;
-        $total = 0;
 
-
-
-
-        $requierd_number = json_decode($this->required_students_number_array);
 
         $year = date("Y");
         $books = Book::where('year', $year)->get();
+        self::$counter++;
 
-        $array = [];
-
-        foreach ($books as $key => $book) {
-            $total_pass = 0;
-            $total_pass = CourseStudent::book($book->id)
-                                        ->subarea(0,$this->id)
-                                        ->whereHas('course')
-                                        ->whereBetween('mark', [60, 101])->count();
+   
+        $total_pass = 0;
+        $total_required  = 0;
+        
 
 
-            // $completed_num_percentage = $book->required_students_number? round((($total_pass/$book->required_students_number) * 100), 2): 0;
-            // $completed_num_percentage = $completed_num_percentage > 100 ? 100 : $completed_num_percentage;
+    
+                foreach ($books as $key => $book) {
+                    $rest = 0;
+                $pass = CourseStudent::book($book->id)
+                                    ->subarea(0,$this->id)
+                                    ->whereBetween('mark', [60, 101])->count();
 
-            array_push($array,array($total_pass,( ($book->required_students_number*$this->percentage) / 100)));
-            // $excess_num_percentage = $completed_num_percentage > 100 ? $completed_num_percentage - 100 : 0;
-        }
+                // $total_required += floor(($this->percentage * $book->required_students_number)  / 100);
 
-        // dd($array);
-
-
-
-
-
-        // $total_students_course_passed = CourseStudent::whereHas('course')
-        //             ->whereBetween('mark', [60, 101])
-        //             ->count();
-
-        // $total_pass_by_area = CourseStudent::whereHas('course')
-        //                         ->subarea(0, $this->id)
-        //                         ->whereBetween('mark', [60, 101])
-        //                         ->count();
-
-        // $area_percentage = $this->percentage;
-
-        // $passed_students_count = $total_pass_by_area;
-        // $completed_num_percentage = $total_students_course_passed? round((($passed_students_count/$total_students_course_passed) * 100), 2): 0;
-        // $completed_num_percentage = $completed_num_percentage > 100 ? 100 : $completed_num_percentage;
+                $rest =  $pass - floor(($this->percentage * $book->required_students_number)  / 100);
+                if($rest < 0){$total_required += abs($rest);}
+                $total_pass +=$pass;
+                }
+        
 
 
-        return '
+                $sucess_percentage = round($total_pass/$total_required,2) * 100 ;
 
-    <tr >
-        <td>'.self::$counter.'</td>
-        <td>'.$this->name.'</td>
+                $percentage_38 = floor(($sucess_percentage * 38) /100);
 
-        <td>38%</td>
-        <td>5%</td>
-        <td>2%</td>
-        <td>3%</td>
-        <td><b>50%</b></td>
+                $percentage_50 = $percentage_38 + 5 + 2 ;
 
-        <td><b>99%</b></td>
-        <td>الاول</td>
-        <td></td>
-    </tr>
-        ';
+
+            return '
+
+            <tr >
+                <td>'.self::$counter.'</td>
+                <td>'.$this->name.'</td>
+        
+                <td>'.$percentage_38.'%</td>
+                <td>5%</td>
+                <td>2%</td>
+                <td>3%</td>
+                <td><b>'.$percentage_50.'%</b></td>
+        
+                <td><b>'.($percentage_50 * 2).'%</b></td>
+                <td></td>
+                <td></td>
+            </tr>
+                ';    
+                
+
+
+
     }
 
     public function getMostAccomplishedCourseRowDataAttribute(){
@@ -312,7 +301,7 @@ class Area extends Model
                         ->leftJoin('areas','areas.id','=','places.area_id')
                         ->where('places.area_id','=',$this->id)
                         ->selectRaw('course_students.course_id,books.name, count(course_students.course_id) as times_teached')
-                        ->groupBy('courses.id','course_students.course_id')
+                        ->groupBy('courses.id')
                         ->orderByDesc('times_teached')
                         ->limit(1)
                         ->get();

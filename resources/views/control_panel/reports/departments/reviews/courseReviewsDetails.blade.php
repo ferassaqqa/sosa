@@ -49,11 +49,11 @@
 
 
                             <tr>
-                                <td scope="col">دورات الخطة (38%)</td>
-                                <td scope="col">جودة الاختبارات (5%)</td>
-                                <td scope="col">تمييز فائض الخريجين (2%)</td>
-                                <td scope="col">فئات الخريجين (3%)</td>
-                                <td scope="col"> <b>التقييم العام (50%)</b></td>
+                                <td scope="col1">دورات الخطة (38%)</td>
+                                <td scope="col1">جودة الاختبارات (5%)</td>
+                                <td scope="col1">تمييز فائض الخريجين (2%)</td>
+                                <td scope="col1">فئات الخريجين (3%)</td>
+                                <td scope="col1"> <b>التقييم العام (50%)</b></td>
                             </tr>
 
                         </thead>
