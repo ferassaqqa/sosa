@@ -22,7 +22,7 @@ class ReportsController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        ini_set('max_execution_time', 180); //3 minutes
+        ini_set('max_execution_time', 360); //6 minutes
 
     }
     public function allReports()
