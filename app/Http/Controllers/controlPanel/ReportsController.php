@@ -22,6 +22,8 @@ class ReportsController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        ini_set('max_execution_time', 360); //6 minutes
+
     }
     public function allReports()
     {
@@ -103,7 +105,12 @@ class ReportsController extends Controller
 
 
     public function courseReviewDetailsView(Request $request){
-        $areas = Area::whereNull('area_id')->get();
+
+        $sub_area_id = (int)$request->sub_area_id ? (int)$request->sub_area_id : 0;
+        $area_id = (int)$request->area_id ? (int)$request->area_id : 0;
+
+        $areas = Area::permissionssubarea($sub_area_id,$area_id)
+        ->whereNull('area_id')->get();
         $value = array();
 
         foreach ($areas as $index => $item) {

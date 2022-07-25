@@ -15,7 +15,7 @@
     </div>
 
     <div class="col-md-3">
-        <select class="form-control" >
+        <select class="form-control" id="report_area_select">
             <option value="0">اختر المنطقة</option>
             @foreach ($areas as $key => $area)
                 <option value="{{ $area->id }}">{{ $area->name }}</option>
@@ -65,16 +65,9 @@
 
 
         function updateDateTable() {
-            var filters = '?department_id=' + $('#reports_department_id').val() +
-                '&analysis_type=' + $('#analysis_type').val() +
-                '&start_date=' + $('#start_date').val() +
-                '&end_date=' + $('#end_date').val() +
-                '&sub_area_id=' + $('#report_sub_area_select').val() +
-                '&teacher_id=' + $('#teachers_select').val() +
-                '&place_id=' + $('#place_area').val() +
+            var filters = '?analysis_type=' + $('#analysis_type').val() +
                 '&area_id=' + $('#report_area_select').val() +
-                '&analysis_sub_type=' + $('#analysis_sub_type').val() +
-                '&book_id=' + $('#books_select').val();
+                '&analysis_sub_type=' + $('#analysis_sub_type').val();
 
             $('#tableContainer')
                 .html(
