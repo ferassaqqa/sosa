@@ -121,7 +121,8 @@
                             '<option value="0">اختر التحليل المناسب</option>' +
                             '<option value="courseAreaPlanProgress">انجاز المناطق الكبرى</option>' +
                             '<option value="coursePlanProgress">انجاز خطة الدورات</option>' +
-                            '<option value="mostAccomplished">الأكثر إنجازًا</option>'
+                            '<option value="mostAccomplished">الأكثر إنجازًا</option>'+
+                            '<option value="safwaProgram">برنامج الصفوة</option>'
 
                         );
 

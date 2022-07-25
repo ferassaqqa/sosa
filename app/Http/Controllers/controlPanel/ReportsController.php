@@ -62,6 +62,7 @@ class ReportsController extends Controller
             }
 
 
+
         return view('control_panel.reports.courseAreaReport', compact('areas', 'in_plane_books_value', 'in_plane_books','out_plane_books_value','project_books_value'));
     }
 
@@ -139,6 +140,9 @@ class ReportsController extends Controller
             case 'coursePlanProgress': {
                     return $this->coursePlanProgressView($request);
                 }
+            case 'safwaProgram' : {
+                return $this->accomplishedSafwaProgramStudentsView($request);
+            }
             case 'mostAccomplished': {
                     $analysis_sub_type = $request->analysis_sub_type;
                     if ($analysis_sub_type == 'teachers') {
@@ -313,6 +317,14 @@ class ReportsController extends Controller
         ];
     }
 
+    public function accomplishedSafwaProgramStudentsView(Request $request)
+    {
+
+        return [
+            'view' => view('control_panel.reports.departments.courses.accomplishedSafwaProgramStudents')->render(),
+        ];
+    }
+
 
 
 
@@ -338,6 +350,9 @@ class ReportsController extends Controller
             case 'coursePlanProgress': {
                     return $this->coursePlanProgressData($request);
                 }
+            case 'safwaProgram':{
+                return $this->accomplishedSafwaProgramStudentsData($request);
+            }
             case 'mostAccomplished': {
 
 
@@ -372,6 +387,81 @@ class ReportsController extends Controller
      * analysis data functions
      */
 
+    public function accomplishedSafwaProgramStudentsData(Request $request){
+        $columns = array(
+            array('db' => 'id',        'dt' => 0),
+        );
+
+        $draw = (int)$request->draw;
+        $start = (int)$request->start;
+        $length = (int)$request->length;
+        $order = $request->order[0]["column"];
+        $direction = $request->order[0]["dir"];
+        $search = trim($request->search["value"]);
+
+        $sub_area_id = (int)$request->sub_area_id ? (int)$request->sub_area_id : 0;
+        $area_id = (int)$request->area_id ? (int)$request->area_id : 1;
+
+        $teacher_id = (int)$request->teacher_id ? (int)$request->teacher_id : 0;
+        $book_id = (int)$request->book_id ? (int)$request->book_id : 0;
+        $place_id = (int)$request->place_id ? (int)$request->place_id : 0;
+
+
+
+
+
+        $value = array();
+
+
+
+        if (Cache::has('safwa_books_ids')) {
+            $books_ids = Cache::get('safwa_books_ids');
+        } else {
+            $year = date("Y");
+            $books_ids = CourseProject::where('year', $year)->limit(1)->pluck('books')->first(); //get safwa project
+            $books_ids = json_decode($books_ids);
+            Cache::put('safwa_books_ids', $books_ids,600);
+        }
+
+
+        $count = User::subarea($sub_area_id, $area_id)
+                        ->BookStudents($book_id)
+                        ->place($place_id)
+                        ->teacher($teacher_id)
+                        ->whereHas('courses', function ($query) use ($books_ids){
+                            $query->whereIn('book_id',$books_ids);
+                        })
+                        ->count();
+
+      $users =  User::subarea($sub_area_id, $area_id)
+                    ->BookStudents($book_id)
+                    ->place($place_id)
+                    ->teacher($teacher_id)
+                    ->search($search)
+                    ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
+                    ->whereHas('courses', function ($query) use ($books_ids){
+                        $query->whereIn('book_id',$books_ids);
+                    })->cursor()
+                    ->get();
+
+
+
+
+
+
+
+        foreach ($users as $index => $item) {
+            array_push($value, $item->student_safwa_project_compelation_data);
+        }
+
+        return [
+            "draw" => $draw,
+            "recordsTotal" => $count,
+            "recordsFiltered" => $count,
+            "data" => (array)$value,
+            "order" => $columns[$order]["db"]
+        ];
+    }
 
     public function mostaccomplishedLocalAreaData(Request $request)
     {

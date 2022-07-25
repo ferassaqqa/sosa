@@ -18,6 +18,7 @@ class Book extends Model
 
     public static $counter = 0;
 
+
     protected $fillable = ['name','author','author_prefix','pass_mark','hadith_count','hours_count','book_code','required_students_number_array','required_students_number','department','student_category','year','included_in_plan','category_id'];
     public function courses(){
         return $this->hasMany(Course::class);
@@ -85,7 +86,7 @@ class Book extends Model
 
 
             return '
-            <tr>
+        <tr>
             <td>'.self::$counter.'</td>
             <td>'.$this->name.'</td>
             <td>'.$this->required_students_number.'</td>

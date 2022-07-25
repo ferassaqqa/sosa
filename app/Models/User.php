@@ -19,6 +19,7 @@ use Spatie\Permission\PermissionRegistrar;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\Models\Activity;
+use Illuminate\Support\Facades\Cache;
 
 use Illuminate\Support\Facades\DB;
 
@@ -707,6 +708,21 @@ class User extends Authenticatable
      * Scopes
      */
 
+public function scopeBookStudents($query, $book_id)
+    {
+        if ($book_id) {
+            return $query->whereHas('studentCourses', function ($query) use ($book_id) {
+                $query->where('book_id', $book_id);
+            });
+
+        } else {
+            return $query;
+        }
+
+
+    }
+
+
     public function scopeBook($query, $book_id)
     {
         if ($book_id) {
@@ -1308,6 +1324,47 @@ class User extends Authenticatable
         }
         //        dd($row);
         return $row;
+    }
+
+
+    public function getStudentSafwaProjectCompelationDataAttribute(){
+       
+
+        if (Cache::has('safwa_books_ids')) {
+            $books_ids = Cache::get('safwa_books_ids');
+        } else {
+            $year = date("Y");
+            $books_ids = CourseProject::where('year', $year)->limit(1)->pluck('books')->first(); //get safwa project
+            $books_ids = json_decode($books_ids);
+            Cache::put('safwa_books_ids', $books_ids,600);
+        }
+
+
+        $completed_books =  DB::table('course_students')
+        ->leftJoin('courses', 'courses.id', '=', 'course_students.course_id')
+        ->leftJoin('books', 'books.id', '=', 'courses.book_id')
+        ->where('course_students.user_id','=',$this->id)
+        ->whereIn('courses.book_id', $books_ids)
+        ->select('books.name')
+        ->get();
+
+        $completed_books_text = '';
+        foreach ($completed_books as $key => $book) {
+            $completed_books_text .= $book->name.'+ <br>';
+        }
+
+        $rest_books_count = count($books_ids) - count($completed_books);
+
+
+        self::$counter++;
+        return [
+            'id' => self::$counter,
+            'name' => $this->name,
+            'dob' => $this->dob,
+            'place_dob' => $this->pob,
+            'completed_books' => $completed_books_text ,
+            'rest_books' => $rest_books_count,
+        ];
     }
 
 
