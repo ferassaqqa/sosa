@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-
+Route::group(['middleware' => 'auth'], function () {
 //Route::resource('dashboard', \App\Http\Controllers\controlPanel\DashboardController::class);
 
 Route::resource('dashboard', \App\Http\Controllers\controlPanel\DashboardController::class);
@@ -223,6 +223,8 @@ Route::get('restoreBookFromExcel/{book}', function(\App\Models\Book $book) {
 /**
  *  Start Asaneed Courses Operations
  */
+
+
 Route::resource('asaneedCourses', \App\Http\Controllers\controlPanel\Asaneed\AsaneedCoursesController::class);
 Route::get('getAsaneedCoursesData', [\App\Http\Controllers\controlPanel\Asaneed\AsaneedCoursesController::class,'getData'])->name('asaneedCourses.getData');
 Route::get('changeAsaneedCourseStatus/{asaneedCourse}/{status}/{note?}', [\App\Http\Controllers\controlPanel\Asaneed\AsaneedCoursesController::class,'changeCourseStatus'])->name('asaneedCourses.changeCourseStatus');
@@ -233,6 +235,7 @@ Route::get('getPlaceAsaneedTeachers/{place}/{teacher_id}', [\App\Http\Controller
 Route::get('showLoadingAsaneedStudents/{asaneedCourse}', [\App\Http\Controllers\controlPanel\Asaneed\AsaneedCoursesController::class,'showLoadingAsaneedStudents'])->name('asaneedCourses.showLoadingAsaneedStudents');
 Route::post('importAsaneedStudentsExcel/{asaneedCourse}', [\App\Http\Controllers\controlPanel\ExcelExporterController::class,'importAsaneedStudentsExcel'])->name('asaneedCourses.importAsaneedStudentsExcel');
 Route::get('getSubAreaAsaneedTeachers/{area_id}', [\App\Http\Controllers\controlPanel\Asaneed\AsaneedCoursesController::class,'getSubAreaAsaneedTeachers'])->name('asaneedCourses.getSubAreaAsaneedTeachers');
+
 
 /**
  *  End Asaneed Courses Operations
@@ -548,6 +551,10 @@ Route::get('getReviewsAnalysisView', [\App\Http\Controllers\controlPanel\Reports
 Route::get('/', function () {
     return redirect(route('login'));
 });
+
+
+});  // end of middleware group
+
 Route::post('/save-token', function (\Illuminate\Http\Request $request) {
     \Illuminate\Support\Facades\Auth::user()->update(['device_token'=>$request->token]);
 })->name('save-token')->middleware('auth');
