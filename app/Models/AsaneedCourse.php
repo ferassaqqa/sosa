@@ -1,13 +1,17 @@
 <?php
 
 namespace App\Models;
-
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Illuminate\Support\Facades\Auth;
+
+
 
 class AsaneedCourse extends Model
 {
-    use HasFactory;
+    use HasFactory,LogsActivity;
     public static $counter=0;
     protected $fillable = ['start_date','place_id','course_type','book_id','teacher_id','hours','status','note'];
     public function getCourseDisplayDataAttribute(){
@@ -242,6 +246,27 @@ class AsaneedCourse extends Model
             return $query;
         }
     }
+
+
+
+    public function scopePermissionsSubArea($query,$sub_area_id,$area_id)
+    {
+//        dd($sub_area_id,$area_id);
+        if($area_id){
+            return $query->whereHas('placeForPermissions', function ($query) use ($area_id) {
+                $query->whereHas('areaForPermissions', function ($query) use ($area_id) {
+                    $query->where('area_id', $area_id);
+                });
+            });
+        }else if ($sub_area_id){
+            return $query->whereHas('placeForPermissions', function ($query) use ($sub_area_id) {
+                $query->where('area_id', $sub_area_id);
+            });
+        } else{
+            return $query;
+        }
+    }
+
     /**
      * Scopes
      */
@@ -337,6 +362,48 @@ class AsaneedCourse extends Model
             return false;
         });
     </script>';
+    }
+
+
+    protected static function booted()
+    {
+        parent::booted();
+        if(!Auth::guest()) {
+            $user = Auth::user();
+
+            $sub_area = Area::where('sub_area_supervisor_id',$user->id)->withoutGlobalScope('relatedAreas')->first();
+            $sub_area_supervisor_area_id = $sub_area ? $sub_area->id : 0;
+            $sub_area_supervisor_area_father_id = $sub_area ? $sub_area->area_id : 0;
+            $father_area = Area::where('area_supervisor_id',$user->id)->withoutGlobalScope('relatedAreas')->first();
+            $area_supervisor_area_id = $father_area ? $father_area->id : 0;
+            static::addGlobalScope('relatedAsanneds', function (Builder $builder) use ($user,$sub_area_supervisor_area_father_id,$area_supervisor_area_id,$sub_area_supervisor_area_id) {
+                if ($user) {
+                    if ($user->hasRole('رئيس الدائرة')){
+                        return $builder;
+                    } else if($user->hasRole('مدير الدائرة') || $user->hasRole('مساعد اداري')){
+                        return $builder;
+                    }else if($user->hasRole('مشرف عام')){
+                        return $builder->permissionssubarea(0,$area_supervisor_area_id);
+                    }else if($user->hasRole('مشرف ميداني')){
+                        return $builder->permissionssubarea($sub_area_supervisor_area_id,0);
+                    }else if($user->hasRole('محفظ') || $user->hasRole('معلم') || $user->hasRole('شيخ اسناد')){
+                        return $builder->where('teacher_id',$user->id);
+                    }else if($user->hasRole('مدير دائرة التخطيط والجودة')){
+                        return $builder;
+                    }else if($user->hasRole('رئيس قسم الاختبارات')){
+                        return $builder;
+                    }else{
+                        return $builder->whereHas('teacher',function ($query) use($user){
+                            $query->whereHas('students',function($query1) use($user){
+                                $query1->where('id',$user->id);
+                            });
+                        });
+                    }
+                }else {
+                    return false;
+                }
+            });
+        }
     }
 
     public static function boot() {
