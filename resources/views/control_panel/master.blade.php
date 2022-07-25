@@ -562,7 +562,7 @@
                         </div>
                     </div>
                 @endif
-                {{-- @if(hasPermissionHelper('التقارير والتقييمات'))
+                @if(hasPermissionHelper('التقارير والتقييمات'))
                     <div class="app-search d-block d-lg-block" style=" border-left: 1px solid #7cb7ae;">
                         <div class="dropdown d-inline-block user-dropdown">
                             <button style="border: none !important;" type="button" class="btn btn-hover text-white"
@@ -581,7 +581,7 @@
                             </div>
                         </div>
                     </div>
-                @endif --}}
+                @endif
             </div>
 
             <div class="d-flex">
