@@ -161,6 +161,56 @@
             } );
         });
 
+        @if(Auth::user()->hasRole('مدير الدائرة'))
+    function changePasswordCustomUser(id) {
+        Swal.fire({
+            title: 'ادخل كلمة المرور',
+            input: 'text',
+            inputAttributes: {
+                autocapitalize: 'off'
+            },
+            showCancelButton: true,
+            confirmButtonText: 'تغيير',
+            cancelButtonText: 'الغاء',
+            showLoaderOnConfirm: true,
+            preConfirm: function (value) {
+                return fetch('/changePasswordCustomUser/' + value + '/' + id)
+                    .then(function (response) {
+                        return response.json();
+                    }).then(function (responseJson) {
+                        // console.log(responseJson);
+                        if (responseJson.errors) {
+                            Swal.showValidationMessage(
+                                responseJson.msg
+                            );
+                            // throw new Error('Something went wrong')
+                        } else {
+                            Swal.close();
+                            Swal.fire({title: "تعدبل", text: "تم تعديل كلمة المرور بنجاح.", icon: "success"});
+                        }
+                        // Do something with the response
+                    })
+                    .catch(function (errors) {
+                        // Swal.showValidationMessage(
+                        //     'لا يوجد اتصال بالشبكة'
+                        // )
+                    });
+            },
+            allowOutsideClick: function () {
+                !Swal.isLoading();
+            }
+        }).then(function (result) {
+            // console.log(result);
+            if (result.isConfirmed) {
+                // if(result.value.errors == 0) {
+                // $('.bs-example-modal-xl').modal('show');
+                // $('#user_modal_content').html(result.value.view);
+                // }
+            }
+        })
+    }
+    @endif
+
         function getSubAreas(obj) {
             if(obj.value != 0) {
                 $.get('/getSubAreas/'+obj.value, function (data) {

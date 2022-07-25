@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -549,24 +550,31 @@ Route::get('/', function () {
 });
 Route::post('/save-token', function (\Illuminate\Http\Request $request) {
     \Illuminate\Support\Facades\Auth::user()->update(['device_token'=>$request->token]);
-})->name('save-token');
+})->name('save-token')->middleware('auth');
 
 //Route::get('/send-notification', function(){\Illuminate\Support\Facades\Auth::user()->sendFCM([
 //    "title" => 'title',
 //    "body" => 'body',
 //]);})->name('send.notification');
 
+
+Route::get('/changePasswordCustomUser/{password}/{id}', function ($password,$id) {
+    User::where('id',$id)->update(['password'=>\Illuminate\Support\Facades\Hash::make($password)]);
+    return response()->json(['errors'=>0]);
+})->middleware('auth');
+
 Route::get('/changePassword/{password}', function ($password) {
     \Illuminate\Support\Facades\Auth::user()->update(['password'=>\Illuminate\Support\Facades\Hash::make($password)]);
     return response()->json(['errors'=>0]);
-});
+})->middleware('auth');
+
 Route::get('/newPermission/{name}/{title}/{department}', function ($name,$title,$department) {
 //    \App\Models\User::where('id_num','400506515')->first()->assignRole('طالب دورات علمية');
 //    dd(\App\Models\User::whereDoesntHave('user_roles')->get());
 //    dd(\App\Models\CourseStudent::wheredoesnthave('course')->get());
 //    dd($_SERVER['REMOTE_ADDR']);
     \Spatie\Permission\Models\Permission::create(['name'=>$name,'title'=>$title,'department'=>$department]);
-});
+})->middleware('auth');
 // Route::get('/linkstorage', function () {
 //    \Illuminate\Support\Facades\Artisan::call('storage:link');
 // });
@@ -619,7 +627,7 @@ Route::get('/cryptPassword/{password}', function ($password) {
 //        ]);
 //    }
     dd(\Illuminate\Support\Facades\Hash::make($password));
-});
+})->middleware('auth');
 
 //Route::get('/systemUsers/{type}', function($type) {
 //    $users = \App\Models\User::whereHas('user_roles',function($query) use ($type){

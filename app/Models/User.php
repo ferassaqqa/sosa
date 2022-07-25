@@ -292,9 +292,10 @@ class User extends Authenticatable
             $delete_route = $tools[1];
             //            self::$counter++;
 
+            $change_password = (Auth::user()->hasRole('مدير الدائرة')) ?'<button type="button"  onclick="changePasswordCustomUser('.$this->id.')"><i class="ri-lock-unlock-line align-middle me-1"></i> تغيير كلمة المرور</button>' :'';
             $edit_user_btn = (hasPermissionHelper('تعديل مستخدم')) ? '<button type="button" class="btn btn-warning btn-sm" data-url="' . $edit_route . '" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')"><i class="mdi mdi-comment-edit"></i></button>' : '';
             $delete_user_btn =  (hasPermissionHelper('حذف مستخدم')) ? '<button type="button" class="btn btn-danger btn-sm" data-url="' . $delete_route . '" onclick="deleteItem(this)"><i class="mdi mdi-trash-can"></i></button>' : '';
-            $tools = $edit_user_btn . ' ' . $delete_user_btn;
+            $tools = $edit_user_btn . ' ' . $delete_user_btn .' '.$change_password;
 
             return [
                 'id' => self::$counter,
@@ -1328,7 +1329,7 @@ public function scopeBookStudents($query, $book_id)
 
 
     public function getStudentSafwaProjectCompelationDataAttribute(){
-       
+
 
         if (Cache::has('safwa_books_ids')) {
             $books_ids = Cache::get('safwa_books_ids');
