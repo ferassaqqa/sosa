@@ -16,7 +16,7 @@ class AsaneedCourseStudent extends Model
     public function asaneedCourse(){
         return $this->belongsTo(AsaneedCourse::class);
     }
-
+    
 
     public function scopeBook($query,$book_id){
         if ($book_id) {
@@ -49,13 +49,13 @@ class AsaneedCourseStudent extends Model
     public function scopeSubArea($query,$sub_area_id,$area_id)
     {
         if ($sub_area_id) {
-            return $query->whereHas('asaneed_courses', function ($query) use ($sub_area_id) {
+            return $query->whereHas('asaneedCourse', function ($query) use ($sub_area_id) {
                 $query->whereHas('placeForPermissions', function ($query) use ($sub_area_id) {
                     $query->where('area_id', $sub_area_id);
                 });
             });
         }else if($area_id){
-            return $query->whereHas('asaneed_courses', function ($query) use ($area_id) {
+            return $query->whereHas('asaneedCourse', function ($query) use ($area_id) {
                 $query->whereHas('placeForPermissions', function ($query) use ($area_id) {
                     $query->whereHas('areaForPermissions', function ($query) use ($area_id) {
                         $query->where('area_id', $area_id);

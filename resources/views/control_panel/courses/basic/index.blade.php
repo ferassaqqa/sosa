@@ -649,6 +649,61 @@
                     );
 
             }
+
+            function addReservationOrder(obj) {
+                var url = obj.getAttribute('data-url');
+                var alert = obj.getAttribute('data-alert');
+                Swal.fire({
+                        title: "ارسال طلب حجز موعد اختبار",
+                        text: alert,
+                        icon: "warning",
+                        showCancelButton: !0,
+                        confirmButtonText: "نعم ارسال",
+                        cancelButtonText: "رجوع",
+                        confirmButtonClass: "btn btn-success mt-2",
+                        cancelButtonClass: "btn btn-danger ms-2 mt-2",
+                        buttonsStyling: !1
+                    })
+                    .then(
+                        function(t) {
+                            if (t.value) {
+                                $.ajax({
+                                    url: url,
+                                    type: 'GET',
+                                    data: {
+                                        // _method: 'GET',
+                                        _token: '{{ csrf_token() }}'
+                                    },
+                                    success: function(result) {
+                                        // $.notify('&nbsp;&nbsp;&nbsp;&nbsp; <strong>' + result.title +
+                                        //     ' </strong> | ' + result.msg, {
+                                        //         allow_dismiss: true,
+                                        //         type: result.type
+                                        //     }
+                                        // );
+                                        result.type = result.type == 'danger' ? 'error' : result.type;
+                                        Swal.fire({
+                                            title: result.title,
+                                            text: result.msg,
+                                            icon: result.type
+                                        });
+                                        if (result.type == 'success') {
+                                            // $('#dataTable').DataTable().ajax.reload();
+                                            // $('.modal').modal('hide');
+                                        }
+                                    }
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: "لم يتم الارسال!",
+                                    text: "البيانات لم ترسل.",
+                                    icon: "error"
+                                });
+                            }
+                        }
+                    );
+
+            }
         </script>
         <script type="module">
             var iteration = 1;

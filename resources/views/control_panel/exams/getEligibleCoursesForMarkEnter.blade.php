@@ -274,6 +274,51 @@ $('.select2').select2({
         }
     @endif
 
+    @if (hasPermissionHelper('حذف طلبات مواعيد الاختبارات'))
+            function deleteExamAppointment(obj, exam_id) {
+                var button = $(obj);
+                // console.log(button.closest('tr'));
+                // $('#user_modal_content')
+                //     .html(
+                //         '<div class="spinner-border text-success" role="status" style="margin:25px auto;">' +
+                //         '   <span class="sr-only">يرجى الانتظار ...</span>' +
+                //         '</div>'
+                //     );
+                Swal.fire({
+                        title: "هل انت متأكد",
+                        text: "لن تتمكن من استرجاع البيانات لاحقاً",
+                        icon: "warning",
+                        showCancelButton: !0,
+                        confirmButtonText: "نعم إحذف البيانات",
+                        cancelButtonText: "إلغاء",
+                        confirmButtonClass: "btn btn-success mt-2",
+                        cancelButtonClass: "btn btn-danger ms-2 mt-2",
+                        buttonsStyling: !1
+                    })
+                    .then(
+                        function(t) {
+                            if (t.value) {
+
+                                $.get('/deleteExamAppointment/' + exam_id, function(data) {
+                                    button.closest('tr').fadeOut(1000);
+                                    Swal.fire({
+                                        title: "تم الحذف!",
+                                        text: "تم حذف البيانات بنجاح.",
+                                        icon: "error"
+                                    });
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: "لم يتم الحذف!",
+                                    text: "البيانات لم تحذف.",
+                                    icon: "error"
+                                });
+                            }
+                        }
+                    );
+            }
+        @endif
+
         function changeExams() {
 
             var filters = '?area_id=' + $('#area_id').val() + '&sub_area_id=' + $('#pending_exams_sub_areas_select')

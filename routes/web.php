@@ -201,6 +201,7 @@ Route::get('restoreBookFromExcel/{book}', function(\App\Models\Book $book) {
  *  Start Courses Operations
  */
 Route::resource('courses', \App\Http\Controllers\controlPanel\CoursesController::class);
+Route::get('addReservationOrder/{course}', [\App\Http\Controllers\controlPanel\CoursesController::class,'addReservationOrder'])->name('courses.addReservationOrder');
 Route::get('getCoursesData', [\App\Http\Controllers\controlPanel\CoursesController::class,'getData'])->name('courses.getData');
 Route::get('getCoursesDetails/{course}', [\App\Http\Controllers\controlPanel\CoursesController::class,'details'])->name('courses.details');
 Route::get('getSubAreaTeachers/{area_id}', [\App\Http\Controllers\controlPanel\CoursesController::class,'getSubAreaTeachers'])->name('courses.getSubAreaTeachers');

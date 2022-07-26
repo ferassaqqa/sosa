@@ -41,6 +41,9 @@ class Course extends Model
             '<button type="button" class="btn btn-danger" title="حذف بيانات الدورة" data-url="'.route('courses.destroy',$this->id).'" data-alert="'.$alert.'" onclick="deleteCourse(this)"><i class="mdi mdi-trash-can"></i></button>&nbsp' : '';
        $courseDetails = '<button type="button" class="btn btn-info" title="تفاصيل الدورة" data-url="'.route('courses.details',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-x2" onclick="callApi(this,\'user_modal_content_new\')"><i class="mdi mdi-account-details"></i></button>';
 
+       $add_reservation_order = (Auth::user()->hasRole('مدير الدائرة') && $this->status != 'منتهية') ?
+       '<button type="button" class="btn btn-primary" style="background-color:#254a70 !important;" title="اضافة طلب حجز موعد اختبار" data-url="'.route('courses.addReservationOrder',$this->id).'" data-alert="" onclick="addReservationOrder(this)"><i class="mdi mdi-account-details"></i></button>&nbsp' : '';
+
        return [
             'id'=>self::$counter,
             'teacher_name'=>$this->name,
@@ -63,7 +66,8 @@ class Course extends Model
                     '<button type="button" class="btn btn-success" title="بانتظار اعتماد الدرجات" data-url="'.route('courseExam.showCourseExamMarks',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')">بانتظار اعتماد الدرجات</button>')
                 : '<span style="background-color:green;color: white;padding: 5px;border-radius: 8%;">'.$this->status.'</span>',
             'tools'=>'<div class="mb-1">'.$exportCertificate.$export.$addExcelStudent.$addStudent.$viewStudents.'</div>'.'
-                    <div class="mb-1">'.$updateCourse.$deleteCourse.$courseDetails.'</div>'
+                    <div class="mb-1">'.$updateCourse.$deleteCourse.$courseDetails.'</div>'.'
+                    <div class="mb-1">'.$add_reservation_order.'</div>'
         ];
     }
     public function getNameAttribute(){

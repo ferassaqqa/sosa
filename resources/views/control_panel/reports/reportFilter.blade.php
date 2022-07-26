@@ -144,8 +144,9 @@
                 case 'قسم أسانيد السنة النبوية': {
                     $('#analysis_type').empty().html(
                         '<option value="0">اختر التحليل المناسب</option>' +
+                        '<option value="asaneedAreaPlanProgress">انجاز المناطق الكبرى</option>' +
                             '<option value="asaneedPlanProgress">انجاز خطة الدورات</option>' +
-                            '<option value="asaneedMostAccomplished">الأكثر إنجازًا</option>'
+                            '<option value="asaneedMostAccomplished">الأكثر إنجازًا</option>' 
                     );
 
                 }

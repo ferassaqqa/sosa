@@ -35,6 +35,26 @@ class CoursesController extends Controller
 
         return view('control_panel.courses.basic.details',compact('course'));
     }
+
+    public function addReservationOrder(Course $course){
+
+        if($course->exam){   
+            
+            // dd($course->exam);
+                return response()->json(['msg'=>'يوجد طلب مسبق لهذه الدورة','title'=>'خطأ','type'=>'info']);
+        }else{
+            $students_count = $course->students->count();
+            if($students_count >= 10 && !$course->exam){
+                $course->exam()->create();
+                return response()->json(['msg'=>'تم ارسال الطلب بنجاح','title'=>'اضافة','type'=>'success']);
+
+            }else{            
+                return response()->json(['msg'=>'يجب ان تحتوى الدورة على 10 طلاب على الاقل ليتم حجز موعد للدورة','title'=>'خطأ','type'=>'danger']);
+            }
+        }
+    }
+
+
     public function getSubAreaTeachers($area_id)
     {
 

@@ -124,8 +124,18 @@ class ReportsController extends Controller
 
     }
     public function asaneedReviewDetailsView(Request $request){
-        $areas = Area::whereNull('area_id')->get();
+        $sub_area_id = (int)$request->sub_area_id ? (int)$request->sub_area_id : 0;
+        $area_id = (int)$request->area_id ? (int)$request->area_id : 0;
+
+        $areas = Area::permissionssubarea($sub_area_id,$area_id)
+        ->whereNull('area_id')->get();
         $value = array();
+
+        foreach ($areas as $index => $item) {
+            $new_item = $item->asaneed_reviews_row_data;
+            array_push($value, $new_item);
+        }
+
         return [
             'view' => view('control_panel.reports.departments.reviews.asaneedReviewsDetails', compact('areas', 'value'))->render()
         ];
@@ -160,7 +170,10 @@ class ReportsController extends Controller
                         return $this->mostaccomplishedLocalAreaView($request);
                     }
                 }
-
+            
+            case 'asaneedAreaPlanProgress':{
+                    return $this->asaneedAreaPlanProgressView($request);
+                }
             case 'asaneedPlanProgress': {
                     return $this->asaneedPlanProgressView($request);
                 }
@@ -182,7 +195,30 @@ class ReportsController extends Controller
     /**
      * analysis Views functions
      */
-    public function courseAreaPlanProgressView(Request $request){
+    private function asaneedAreaPlanProgressView(Request $request){
+
+
+        $asaneed_plan_books = AsaneedBook::whereNotNull('author')->get();
+        $value = array();
+
+        // dd($asaneed_plan_books);
+
+
+            foreach ($asaneed_plan_books as $index => $item) {
+                
+                    $new_item = '';
+                    array_push($value, $new_item);
+                
+            }
+
+
+
+        return [
+            'view' => view('control_panel.reports.departments.asaneed.asaneedAreaPlanProgress', compact('value'))->render()
+        ];        
+    }
+
+    private function courseAreaPlanProgressView(Request $request){
 
         $areas = Area::whereNull('area_id')->get();
         $year = date("Y");

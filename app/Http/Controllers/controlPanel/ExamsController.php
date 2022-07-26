@@ -266,6 +266,8 @@ class ExamsController extends Controller
     }
     public function getNextExamsAppointmentsData(Request $request){
 
+
+
         $draw = (int)$request->draw;
         $start = (int)$request->start;
         $length = (int)$request->length;
@@ -282,95 +284,62 @@ class ExamsController extends Controller
 
         $startDate = $request->start_date ? $request->start_date : '';
         $endDate = $request->end_date ? $request->end_date : '';
+
         $place_area = $request->place_area ? $request->place_area : 0;
+
         $exam_type = $request->exam_type ? $request->exam_type : 0;
 
 
-        // echo $sub_area_id; exit;
-
-
         $value = array();
-
+//        var_dump($area_id);
         if (!empty($search)) {
-            // $count = Exam::where('status', 1)
-            //     ->orWhere('status', 0)
-            //     ->subarea($sub_area_id, $area_id)
-            //     ->examtype($exam_type)
-            //     ->placearea($place_area)
-            //     ->search($search)
-            //     ->fromDate($startDate)
-            //     ->toDate($endDate)
-            //     ->moallem($moallem_id)
-            //     ->book($book_id)
-            //     ->count();
-
-            // $exams = Exam::where('status', 1)
-            //     ->orWhere('status', 0)
-            //     ->subarea($sub_area_id, $area_id)
-            //     ->examtype($exam_type)
-            //     ->placearea($place_area)
-            //     ->fromDate($startDate)
-            //     ->toDate($endDate)
-            //     ->moallem($moallem_id)
-            //     ->book($book_id)
-            //     ->orderBy('id', 'DESC')
-            //     ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
-            //     ->get();
-
-        $count = Exam::whereNull('date')->orWhere('date',0)
-            ->subarea($sub_area_id, $area_id)
-            ->examtype($exam_type)
-            ->placearea($place_area)
-            ->search($search)
-            ->fromDate($startDate)
-            ->toDate($endDate)
-            ->moallem($moallem_id)
-            ->book($book_id)
-            ->count();
-
-        $exams = Exam::whereNull('date')->orWhere('date',0)
-            ->subarea($sub_area_id, $area_id)
-            ->examtype($exam_type)
-            ->placearea($place_area)
-            ->fromDate($startDate)
-            ->toDate($endDate)
-            ->moallem($moallem_id)
-            ->book($book_id)
-            ->orderBy('id', 'DESC')
-            ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
-            ->get();
-
-        } else {
-
-            // where('status', 1)
-            //     ->orWhere('status', 0)
-
-            $count = Exam::
-                whereNull('date')->orWhere('date',0)
+            $count = Exam::whereNull('date')->orWhere('date',0)
                 ->subarea($sub_area_id, $area_id)
                 ->examtype($exam_type)
-                ->fromDate($startDate)
                 ->placearea($place_area)
+                ->search($search)
+                ->fromDate($startDate)
                 ->toDate($endDate)
                 ->moallem($moallem_id)
                 ->book($book_id)
                 ->count();
 
-            $exams = Exam::
-                whereNull('date')->orWhere('date',0)
-                ->fromDate($startDate)
+            $exams = Exam::whereNull('date')->orWhere('date',0)
+                ->subarea($sub_area_id, $area_id)
+                ->examtype($exam_type)
                 ->placearea($place_area)
+                ->search($search)
+                ->fromDate($startDate)
                 ->toDate($endDate)
                 ->moallem($moallem_id)
                 ->book($book_id)
+                ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
+                ->get();
+        } else {
+            $count = Exam::whereNull('date')->orWhere('date',0)
                 ->subarea($sub_area_id, $area_id)
                 ->examtype($exam_type)
-                ->orderBy('id', 'DESC')
+                ->placearea($place_area)
+                ->fromDate($startDate)
+                ->toDate($endDate)
+                ->moallem($moallem_id)
+                ->book($book_id)
+                ->count();
+            $exams = Exam::whereNull('date')->orWhere('date',0)
+                ->subarea($sub_area_id, $area_id)
+                ->examtype($exam_type)
+                ->placearea($place_area)
+                ->fromDate($startDate)
+                ->toDate($endDate)
+                ->moallem($moallem_id)
+                ->book($book_id)
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                 ->get();
         }
         Exam::$counter = $start;
         Carbon::setLocale('ar');
+
+
         foreach ($exams as $index => $item) {
             $approveButton = hasPermissionHelper('تأكيد طلبات الحجز') ? '<button class="btn btn-success" onclick="approveExamAppointment(this,'.$item->id .')"><i class="mdi mdi-table"></i></button>' : '';
             $removeButton = hasPermissionHelper('حذف طلبات مواعيد الاختبارات') ? '<button class="btn btn-danger" onclick="deleteExamAppointment(this,'.$item->id .')"><i class="mdi mdi-close"></i></button>' : '';
@@ -836,8 +805,11 @@ if($exam->examable_type == 'App\Models\AsaneedCourse'){
             foreach ($exams as $index => $item) {
 //                dd($item->examable);
                 Exam::$counter++;
+
+            $removeButton = hasPermissionHelper('حذف طلبات مواعيد الاختبارات') ? '<button class="btn btn-danger" onclick="deleteExamAppointment(this,'.$item->id .')"><i class="mdi mdi-close"></i></button>' : '';
+
                 $enterExamMarksButton = hasPermissionHelper('انهاء الدورة و ادخال الدرجات') ?
-                    '<button class="btn btn-success" onclick="enterExamMarks('.$item->id .')">انهاء الدورة</button>'
+            '<button class="btn btn-success" onclick="enterExamMarks('.$item->id .')">انهاء الدورة</button> '.$removeButton
                     : '';
                 array_push(
                     $value,

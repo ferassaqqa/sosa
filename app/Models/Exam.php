@@ -291,7 +291,7 @@ class Exam extends Model
                     if ($user->hasRole('رئيس الدائرة')){
                         return $builder;
                     } else if($user->hasRole('مدير الدائرة') || $user->hasRole('مساعد اداري')){
-                        $builder->genderdepartment($user->role);
+                        return $builder;
                     }else if($user->hasRole('مشرف عام')){
                         $builder->genderdepartment($user->role)->permissionssubarea(0,$area_supervisor_area_id);
                     }else if($user->hasRole('مدير دائرة التخطيط والجودة')){
@@ -499,12 +499,12 @@ class Exam extends Model
     public function scopeSubArea($query,$sub_area_id,$area_id)
     {
         if ($sub_area_id){
-//            dd($sub_area_id,1);
+        //    dd($sub_area_id,1);
             return $query->whereHas('placeForPermissions', function ($query) use ($sub_area_id) {
                 $query->where('area_id', $sub_area_id);
             });
         }else if($area_id){
-//            dd(2);
+        //    dd(2);
             return $query->whereHas('placeForPermissions', function ($query) use ($area_id) {
                 $query->whereHas('areaForPermissions', function ($query) use ($area_id) {
                     $query->where('area_id', $area_id);
@@ -517,7 +517,7 @@ class Exam extends Model
 
     public function scopePermissionsSubArea($query,$sub_area_id,$area_id)
     {
-//        dd($sub_area_id,$area_id);
+      
         if($area_id){
             return $query->whereHas('placeForPermissions', function ($query) use ($area_id) {
                 $query->whereHas('areaForPermissions', function ($query) use ($area_id) {

@@ -245,6 +245,71 @@ class Area extends Model
         ';
     }
 
+
+    public function getAsaneedReviewsRowDataAttribute()
+    {
+
+
+        $year = date("Y");
+        $books = AsaneedBook::whereNotNull('author')->get();
+        self::$counter++;
+
+
+        $total_pass = 0;
+        $total_required  = 0;
+        $pass = 0;
+
+
+
+        foreach ($books as $key => $book) {
+
+            if ($book->required_students_number == 0) {
+                continue;
+            } else {
+
+                $rest = 0;
+                $pass = AsaneedCourseStudent::book($book->id)
+                    ->subarea(0, $this->id)
+                    ->whereBetween('mark', [60, 101])->count();
+
+                $total_required += floor(($this->percentage * $book->required_students_number)  / 100);
+
+                $rest =  $pass - floor(($this->percentage * $book->required_students_number)  / 100);
+                if ($rest > 0) {
+                    $total_pass += floor(($this->percentage * $book->required_students_number)  / 100);
+                } elseif ($rest < 0) {
+                    $total_pass += $pass;
+                }
+            }
+        }
+
+
+        $sucess_percentage = round($total_pass / $total_required, 2) * 100;
+
+        $percentage_38 = floor(($sucess_percentage * 38) / 100);
+
+        $percentage_50 = $percentage_38 + 5 + 2 + 5;
+
+
+        return '
+
+            <tr >
+                <td>' . self::$counter . '</td>
+                <td>' . $this->name . '</td>
+        
+                <td>' . $percentage_38 . '%</td>
+                <td>5%</td>
+                <td>2%</td>
+                <td>3%</td>
+                <td><b>' . $percentage_50 . '%</b></td>
+        
+                <td><b>' . ($percentage_50 * 2) . '%</b></td>
+                <td></td>
+                <td></td>
+            </tr>
+                ';
+    }
+
     public function getCourseReviewsRowDataAttribute()
     {
 
@@ -261,41 +326,28 @@ class Area extends Model
 
 
         foreach ($books as $key => $book) {
-    
+
             if ($book->required_students_number == 0) {
                 continue;
-            }else{
+            } else {
 
                 $rest = 0;
                 $pass = CourseStudent::book($book->id)
                     ->subarea(0, $this->id)
                     ->whereBetween('mark', [60, 101])->count();
 
-                // $rest =  $pass - floor(($this->percentage * $book->required_students_number)  / 100);
-                // if ($rest > 0) {
-                    $total_required += floor(($this->percentage * $book->required_students_number)  / 100);
-                //  }elseif($rest < 0){
-                //     $total_required += abs($rest);
-                  
-                // }
-    
-    
+                $total_required += floor(($this->percentage * $book->required_students_number)  / 100);
+
+
+
                 $rest =  $pass - floor(($this->percentage * $book->required_students_number)  / 100);
                 if ($rest > 0) {
                     $total_pass += floor(($this->percentage * $book->required_students_number)  / 100);
                 } elseif ($rest < 0) {
                     $total_pass += $pass;
                 }
-
             }
-
-       
         }
-
-        // if($this->id = 5){
-        //     echo $total_required.' -> '.$total_pass; exit;
-        // }
-
 
 
         $sucess_percentage = round($total_pass / $total_required, 2) * 100;

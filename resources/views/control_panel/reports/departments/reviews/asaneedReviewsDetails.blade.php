@@ -10,40 +10,70 @@
 
 
 
-                        <table class="table table-centered   table-nowrap mb-0" id="dataTable" style="font-size: 18px">
+          
+                        <table class="table table-centered table-bordered  table-nowrap mb-0" id="dataTable"
+                        style="font-size: 16px">
 
-                            <thead>
-                                <tr>
-                                    <th colspan="8" scope="col">تفصيل تقييم قسم الأسانيد</th>                                    
-                                </tr>
-                            </thead>
-                            <tbody>
+                        <thead>
+                            <tr>
+                                <th colspan="10" scope="col">تفصيل تقييم قسم الاسانيد و الاجازات</th>
+                            </tr>
 
-                                <tr>
-                                    <tr>
-                                        <th style="background: #f0f0f0; width:50px; ">#</th>
-                                        <th style="background: #f0f0f0">المنطقة</th>
-                                        <th style="background: #f0f0f0">قسم التحفيظ (38%)</th>
-                                        <th style="background: #f0f0f0">قسم الدورات (50%)</th>
-                                        <th style="background: #f0f0f0">قسم الاسانيد (10%)</th>
-                                        <th style="background: #f0f0f0">التقييم العام (100%)</th>
-                                        <th style="background: #f0f0f0">الترتيب</th>
-                                        <th style="background: #f0f0f0">ملحوظات</th>
-                                    </tr>
-                                </tr>
 
-                                @if (isset($value) && count($value) > 0)
+                            <col style="background: #f0f0f0">
+                            <colgroup style="background: #f0f0f0" span="5"></colgroup>
+                            <col style="background: #f0f0f0">
+                            <col style="background: #f0f0f0">
+                            <col style="background: #f0f0f0">
+                            <col style="background: #f0f0f0">
+                            <col style="background: #f0f0f0">
+
+
+                            <tr>
+                                <td rowspan="2" style="width:50px; ">#</td>
+                                <td rowspan="2"> <b> المنطقة </b></td>
+
+
+                                <td colspan="5"> <b> بنود تقييم قسم الأسانيد والاجازات </b></td>
+
+                                <td rowspan="2"> <b>التقييم العام (100%)</b></td>
+                                <td rowspan="2"> <b> الترتيب </b></td>
+                                <td rowspan="2"> <b> ملحوظات </b></td>
+
+                            </tr>
+
+
+                            <tr>
+                                <td scope="col1">دورات الخطة (38%)</td>
+                                <td scope="col1">جودة الاختبارات (5%)</td>
+                                <td scope="col1">تمييز فائض الخريجين (2%)</td>
+                                <td scope="col1">فئات الخريجين (3%)</td>
+                                <td scope="col1"> <b>التقييم العام (50%)</b></td>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+
+                       
+
+
+
+                            @if (isset($value) && count($value) > 0)
                                 @foreach ($value as $index => $val)
-                                             {!! $val !!}
+                                    {!! $val !!}
                                 @endforeach
-                                @endif
+                            @endif
 
 
 
 
-                            </tbody>
 
-                        </table>
+
+                        </tbody>
+
+                    </table>
 
 
 
