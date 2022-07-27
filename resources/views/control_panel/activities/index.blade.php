@@ -56,7 +56,9 @@
                                 </th>
                                 <th scope="col">الحدث</th>
                                 <th scope="col">المستخدم</th>
-                                <th scope="col">البيانات التي تم عليها الحدث</th>
+                                <th scope="col">نوع العملية</th>
+                                <th scope="col">التفاصيل</th>
+                                <th scope="col">التاريخ</th>
                                 <th scope="col">أدوات</th>
                             </tr>
                         </thead>
@@ -110,7 +112,9 @@
                     { "mData": "id" },
                     { "mData": "description" },
                     { "mData": "user" },
+                    { "mData": "log_name" },
                     { "mData": "model" },
+                    { "mData": "date" },
                     // { "mData": "status" },
                     { "mData": "tools" }
                 ]

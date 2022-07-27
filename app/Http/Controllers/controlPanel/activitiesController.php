@@ -56,14 +56,18 @@ class activitiesController extends Controller
 ////                    $query->search($search);
 //                })
                 ->filteractivities($status,$start_date,$end_date)
-                ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
+                // ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
+                ->orderBy('id', 'DESC')
+                ->limit($length)->offset($start)
                 ->get();
         } else {
             $count = Activity::
                 filteractivities($status,$start_date,$end_date)->count();
             $activities = Activity::
-                limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
-                ->filteractivities($status,$start_date,$end_date)
+                // limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
+                filteractivities($status,$start_date,$end_date)
+                ->orderBy('id', 'DESC')
+                ->limit($length)->offset($start)
                 ->get();
 //            dd($activities);
         }
