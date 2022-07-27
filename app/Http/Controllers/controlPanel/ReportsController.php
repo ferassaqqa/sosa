@@ -170,7 +170,7 @@ class ReportsController extends Controller
                         return $this->mostaccomplishedLocalAreaView($request);
                     }
                 }
-            
+
             case 'asaneedAreaPlanProgress':{
                     return $this->asaneedAreaPlanProgressView($request);
                 }
@@ -182,9 +182,9 @@ class ReportsController extends Controller
                     if ($analysis_sub_type == 'teachers') {
                         return $this->mostAsaneedAccomplishedTeacherView($request);
                     } elseif ($analysis_sub_type == 'mosques') {
-                        return $this->mostaccomplishedMosquesView($request);
+                        return $this->mostAsaneedAccomplishedMosquesView($request);
                     } elseif ($analysis_sub_type == 'local_areas') {
-                        return $this->mostaccomplishedLocalAreaView($request);
+                        return $this->mostAsaneedAccomplishedLocalAreaView($request);
                     }
                 }
 
@@ -192,30 +192,50 @@ class ReportsController extends Controller
         }
     }
 
+
+    public function mostAsaneedAccomplishedTeacherView(Request $request)
+    {
+        return [
+            'view' => view('control_panel.reports.departments.asaneed.mostAccomplishedCourseTeacher')->render(),
+        ];
+    }
+
+    public function mostAsaneedAccomplishedMosquesView(Request $request)
+    {
+        return [
+            'view' => view('control_panel.reports.departments.asaneed.mostAccomplishedCourseMosques')->render(),
+        ];
+    }
+
+    public function mostAsaneedAccomplishedLocalAreaView(Request $request)
+    {
+        return [
+            'view' => view('control_panel.reports.departments.asaneed.mostAccomplishedCourseLocalArea')->render(),
+        ];
+    }
+
     /**
      * analysis Views functions
      */
     private function asaneedAreaPlanProgressView(Request $request){
 
-
+        $areas = Area::whereNull('area_id')->get();
         $asaneed_plan_books = AsaneedBook::whereNotNull('author')->get();
         $value = array();
 
-        // dd($asaneed_plan_books);
-
 
             foreach ($asaneed_plan_books as $index => $item) {
-                
-                    $new_item = '';
-                    array_push($value, $new_item);
-                
+
+                $new_item = $item->asaneed_students_reports_by_area_row_data;
+                array_push($value, $new_item);
+
             }
 
 
 
         return [
-            'view' => view('control_panel.reports.departments.asaneed.asaneedAreaPlanProgress', compact('value'))->render()
-        ];        
+            'view' => view('control_panel.reports.departments.asaneed.asaneedAreaPlanProgress', compact('value','areas'))->render()
+        ];
     }
 
     private function courseAreaPlanProgressView(Request $request){
@@ -338,14 +358,6 @@ class ReportsController extends Controller
         ];
     }
 
-    public function mostAsaneedAccomplishedTeacherView(Request $request)
-    {
-        return [
-            'view' => view('control_panel.reports.departments.asaneed.mostAccomplishedCourseTeacher')->render(),
-        ];
-    }
-
-
     public function mostaccomplishedMosquesView(Request $request)
     {
         return [
@@ -367,6 +379,8 @@ class ReportsController extends Controller
             'view' => view('control_panel.reports.departments.courses.accomplishedSafwaProgramStudents')->render(),
         ];
     }
+
+
 
 
 

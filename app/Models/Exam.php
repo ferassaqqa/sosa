@@ -135,7 +135,7 @@ class Exam extends Model
 
     }
     public function getPassedStudentsCountAttribute(){
-  
+
 
 
                 if($this->examable_type == 'App\Models\Course'){
@@ -416,7 +416,9 @@ class Exam extends Model
 //        $query->whereJsonContains('quality_supervisor_id',[$user_id]);
     }
     public function scopeArea($query,$area_id,$sub_area_id=0){
-        return $query->whereHas('place',function($query) use($area_id,$sub_area_id){
+
+        return $query->whereHas('examable', function ($query) use ($area_id,$sub_area_id) {
+         $query->whereHas('place',function($query) use($area_id,$sub_area_id){
                 if($area_id && !$sub_area_id) {
                     return $query->fatherarea($area_id);
                 }elseif($sub_area_id){
@@ -425,6 +427,8 @@ class Exam extends Model
                     return $query;
                 }
             });
+        });
+
     }
 
     public function scopePlaceArea($query,$place_id){
@@ -498,32 +502,38 @@ class Exam extends Model
 
     public function scopeSubArea($query,$sub_area_id,$area_id)
     {
-        if ($sub_area_id){
-        //    dd($sub_area_id,1);
-            return $query->whereHas('placeForPermissions', function ($query) use ($sub_area_id) {
-                $query->where('area_id', $sub_area_id);
-            });
-        }else if($area_id){
-        //    dd(2);
-            return $query->whereHas('placeForPermissions', function ($query) use ($area_id) {
-                $query->whereHas('areaForPermissions', function ($query) use ($area_id) {
+        if($area_id){
+            return $query->whereHas('examable', function ($query) use ($area_id) {
+             $query->whereHas('placeForPermissions', function ($query) use ($area_id) {
+                $query->whereHas('area', function ($query) use ($area_id) {
                     $query->where('area_id', $area_id);
                 });
             });
-        }else{
+        });
+
+        }else if ($sub_area_id){
+            return $query->whereHas('examable', function ($query) use ($sub_area_id) {
+                $query->whereHas('placeForPermissions', function ($query) use ($sub_area_id) {
+                       $query->where('area_id', $sub_area_id);
+               });
+           });
+        } else{
             return $query;
         }
     }
 
     public function scopePermissionsSubArea($query,$sub_area_id,$area_id)
     {
-      
+
         if($area_id){
-            return $query->whereHas('placeForPermissions', function ($query) use ($area_id) {
+            return $query->whereHas('examable', function ($query) use ($area_id) {
+             $query->whereHas('placeForPermissions', function ($query) use ($area_id) {
                 $query->whereHas('areaForPermissions', function ($query) use ($area_id) {
                     $query->where('area_id', $area_id);
                 });
             });
+        });
+
         }else if ($sub_area_id){
             return $query->whereHas('placeForPermissions', function ($query) use ($sub_area_id) {
                 $query->where('area_id', $sub_area_id);

@@ -54,7 +54,7 @@ var table = '';
             table = $('#dataTable').DataTable( {
                 "processing": true,
                 "serverSide": true,
-                "ajax": "{{ route('reports.getAnalysisData').'?analysis_type=mostAccomplished'}}"+ filters,
+                "ajax": "{{ route('reports.getAnalysisData').'?analysis_type=asaneedMostAccomplished'}}"+ filters,
                 language: {
                     search: "بحث",
                     processing:     "جاري معالجة البيانات" ,
