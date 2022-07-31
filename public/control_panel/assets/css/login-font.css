@@ -1,0 +1,12 @@
+@font-face {
+    font-family: Cairo-Regular;
+    src: url(Cairo-Regular.ttf);
+}
+@font-face {
+    font-family: NotoKufiArabic;
+    src: url(NotoKufiArabic-VariableFont_wght.ttf);
+}
+* {
+    font-family: NotoKufiArabic,sans-serif !important;
+    /*color:#fff !important;*/
+}
