@@ -22,8 +22,10 @@ class Course extends Model
         //     ($this->is_certifications_exported ?'<button type="button" class="btn btn-outline-secondary" title="دورة منتهية تم طباعة شهاداتها">
         //     <i class="mdi mdi-checkbox-marked-circle-outline" ></i></button>&nbsp': '').'<button type="button" class="btn btn-primary" title="استخراج كشف درجات الدورة اكسل"  onclick="exportCourseStudentsMarksExcelSheet('.$this->id.')"><i class="mdi mdi-microsoft-excel"></i></button>&nbsp': '';
 
+        // I remove $this->exam_status because the course will not work on teacher account make id integrity
+
         $exportCertificate =
-        ( ($this->status == 'منتهية' || $this->exam_status == 5) && $this->is_certifications_exported) ?'<button type="button" class="btn btn-outline-secondary" title="دورة منتهية تم طباعة شهاداتها"><i class="mdi mdi-checkbox-marked-circle-outline" ></i></button>&nbsp': '';
+        ( ($this->status == 'منتهية') && $this->is_certifications_exported) ?'<button type="button" class="btn btn-outline-secondary" title="دورة منتهية تم طباعة شهاداتها"><i class="mdi mdi-checkbox-marked-circle-outline" ></i></button>&nbsp': '';
 
         $export = ($this->status == 'منتهية') ? '<button type="button" class="btn btn-primary" title="استخراج كشف درجات الدورة اكسل"  onclick="exportCourseStudentsMarksExcelSheet('.$this->id.')"><i class="mdi mdi-microsoft-excel"></i></button>&nbsp' : '';
 
@@ -42,7 +44,8 @@ class Course extends Model
        $courseDetails = '<button type="button" class="btn btn-info" title="تفاصيل الدورة" data-url="'.route('courses.details',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-x2" onclick="callApi(this,\'user_modal_content_new\')"><i class="mdi mdi-account-details"></i></button>';
 
        $add_reservation_order = (Auth::user()->hasRole('مدير الدائرة') && $this->status != 'منتهية') ?
-       '<button type="button" class="btn btn-primary" style="background-color:#254a70 !important;" title="اضافة طلب حجز موعد اختبار" data-url="'.route('courses.addReservationOrder',$this->id).'" data-alert="" onclick="addReservationOrder(this)"><i class="mdi mdi-account-details"></i></button>&nbsp' : '';
+       '<button type="button" class="btn btn-primary inline" style="width:50%; background-color:#254a70 !important; border-color:#254a70 !important;" title="اضافة طلب حجز موعد اختبار" data-url="'.route('courses.addReservationOrder',$this->id).'" data-alert="" onclick="addReservationOrder(this)"><i class="mdi mdi-account-details"></i></button>&nbsp' : '';
+
 
        return [
             'id'=>self::$counter,
@@ -63,11 +66,13 @@ class Course extends Model
             'studentCount'=>$this->studentsForPermissions->count(),
             'status'=>$this->status != 'منتهية' ?
                 ($this->status != 'بانتظار اعتماد الدرجات' ? $this->status_select :
+
                     '<button type="button" class="btn btn-success" title="بانتظار اعتماد الدرجات" data-url="'.route('courseExam.showCourseExamMarks',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')">بانتظار اعتماد الدرجات</button>')
                 : '<span style="background-color:green;color: white;padding: 5px;border-radius: 8%;">'.$this->status.'</span>',
-            'tools'=>'<div class="mb-1">'.$exportCertificate.$export.$addExcelStudent.$addStudent.$viewStudents.'</div>'.'
-                    <div class="mb-1">'.$updateCourse.$deleteCourse.$courseDetails.'</div>'.'
-                    <div class="mb-1">'.$add_reservation_order.'</div>'
+            'tools'=> '<div class="mb-1">'.$add_reservation_order . '</div> '.
+            '<div class="mb-1">'.$exportCertificate.$export.$addExcelStudent.$addStudent.$viewStudents.'</div>'.'
+                    <div class="mb-1">'.$updateCourse.$deleteCourse.$courseDetails.'</div>'
+
         ];
     }
     public function getNameAttribute(){

@@ -30,6 +30,7 @@ use App\Imports\CircleStudentsImport;
 use App\Exports\CircleStudentsFaultsExport;
 
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 
 class ExcelExporterController extends Controller
@@ -61,8 +62,11 @@ class ExcelExporterController extends Controller
         $import->import(request()->file('file'));
         $asaneedCourse->update(['status'=>'قائمة']);
 
+
+        $exam = Exam::where('examable_id','=', $asaneedCourse->id)->withoutGlobalScopes()->first();
+
         $students_count = $asaneedCourse->students->count();
-        if($students_count >= 10 && !$asaneedCourse->exam){$asaneedCourse->exam()->create($request->all());}
+        if($students_count >= 10 && !$exam){$asaneedCourse->exam()->create($request->all());}
 
         if($import->failures()->count()) {
             $excel->store(
@@ -105,10 +109,13 @@ class ExcelExporterController extends Controller
         $import = new CourseStudentsImport($course);
         $import->import(request()->file('file'));
         $course->update(['status'=>'قائمة']);
-
-
         $students_count = $course->students->count();
-        if($students_count >= 10 && !$course->exam){$course->exam()->create($request->all());}
+
+        $exam = Exam::where('examable_id','=', $course->id)->withoutGlobalScopes()->first();
+
+        if($students_count >= 10 && !$exam){
+            $course->exam()->create($request->all());
+        }
 
 
         if($import->failures()->count()) {
