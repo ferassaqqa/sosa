@@ -471,14 +471,14 @@ class ReportsController extends Controller
 
 
 
-        if (Cache::has('safwa_books_ids')) {
-            $books_ids = Cache::get('safwa_books_ids');
-        } else {
+        // if (Cache::has('safwa_books_ids')) {
+        //     $books_ids = Cache::get('safwa_books_ids');
+        // } else {
             $year = date("Y");
             $books_ids = CourseProject::where('year', $year)->limit(1)->pluck('books')->first(); //get safwa project
             $books_ids = json_decode($books_ids);
-            Cache::put('safwa_books_ids', $books_ids,600);
-        }
+        //     Cache::put('safwa_books_ids', $books_ids,600);
+        // }
 
 
         $count = User::subarea($sub_area_id, $area_id)
@@ -498,7 +498,7 @@ class ReportsController extends Controller
                     ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                     ->whereHas('courses', function ($query) use ($books_ids){
                         $query->whereIn('book_id',$books_ids);
-                    })->cursor()
+                    })
                     ->get();
 
 

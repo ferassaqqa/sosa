@@ -9,6 +9,8 @@
         display: none;
     }
 </style>
+
+<h2>تقرير انجاز خطة الدورات</h2>
 <table class="table table-centered table-nowrap mb-0" id="dataTable" >
     <thead style="text-align: center !important;">
     <tr>

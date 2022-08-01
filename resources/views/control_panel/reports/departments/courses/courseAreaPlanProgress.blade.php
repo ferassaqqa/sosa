@@ -6,7 +6,7 @@
             border: 1px solid rgb(161, 161, 161) !important;
         }
     </style>
-
+<h2>تقرير انجاز المناطق الكبرى</h2>
     <div class="row">
         <div class="col-lg-12">
             <div class="card">

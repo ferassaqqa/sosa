@@ -14,6 +14,7 @@
 @section('style')
     <link href="{{asset('control_panel/assets/css/datatable.css')}}" rel="stylesheet" type="text/css" />
 @endsection
+<h2>تقرير الاكثر انجاز للمعلمون</h2>
 <table class="table table-centered table-nowrap mb-0" id="dataTable" >
     <thead style="text-align: center !important;">
     <tr>
