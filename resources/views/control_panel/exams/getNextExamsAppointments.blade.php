@@ -34,6 +34,34 @@
 </div>
 
 
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-centered table_bordered">
+                    <thead>
+                        <tr>
+                            <th>عدد الدورات</th>
+                            <th>عدد الطلاب</th>
+                            <th>عدد الطلاب الناجحين</th>
+                            <th>عدد الطلاب الراسبين</th>
+                            <th>لم يتم ادخال درجاتهم</th>
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr id="main_statistics">    
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    </div>
+    
+
+
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
@@ -106,6 +134,9 @@
                 "processing": true,
                 "serverSide": true,
                 // "scrollX":true,
+                "drawCallback": function() {
+                        $('#main_statistics').empty().html(table.data().context[0].json['statistics']);
+                    },
                 "ajax": "{{ route('exams.getNextExamsAppointmentsData') }}",
                 language: {
                     search: "",

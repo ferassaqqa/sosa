@@ -149,6 +149,38 @@ class Exam extends Model
                 }
 
     }
+
+    public function getFailsStudentsCountAttribute(){
+
+
+
+        if($this->examable_type == 'App\Models\Course'){
+            return $this->course ?
+            ( $this->course->manyStudentsForPermissions->whereBetween('mark', [1, 59])->count()
+                ? $this->course->manyStudentsForPermissions->whereBetween('mark', [1, 59])->count() : 0) : 0;
+        }else if($this->examable_type == 'App\Models\AsaneedCourse'){
+            return $this->asaneed ?
+            ( $this->asaneed->manyStudentsForPermissions->whereBetween('mark', [1, 59])->count()
+                ? $this->asaneed->manyStudentsForPermissions->whereBetween('mark', [1, 59])->count() : 0) : 0;
+        }
+
+}
+
+public function getNullStudentsCountAttribute(){
+
+
+
+    if($this->examable_type == 'App\Models\Course'){
+        return $this->course ?
+        ( $this->course->manyStudentsForPermissions->whereNull('mark')->count()
+            ? $this->course->manyStudentsForPermissions->whereNull('mark')->count() : 0) : 0;
+    }else if($this->examable_type == 'App\Models\AsaneedCourse'){
+        return $this->asaneed ?
+        ( $this->asaneed->manyStudentsForPermissions->whereNull('mark')->count()
+            ? $this->asaneed->manyStudentsForPermissions->whereNull('mark')->count() : 0) : 0;
+    }
+
+}
     public function getRowAttribute(){
         $approveButton = hasPermissionHelper('تأكيد طلبات الحجز') ? '<button class="btn btn-success" onclick="approveExamAppointment(this,'.$this->id .')"><i class="mdi mdi-table"></i></button>' : '';
         $removeButton = hasPermissionHelper('حذف طلبات مواعيد الاختبارات') ? '<button class="btn btn-danger" onclick="deleteExamAppointment(this,'.$this->id .')"><i class="mdi mdi-close"></i></button>' : '';

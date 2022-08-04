@@ -18,6 +18,15 @@ use Illuminate\Support\Facades\Auth;
 
 class ExamsController extends Controller
 {
+
+    public function __construct()
+    {
+       
+        ini_set('max_execution_time', 360); //6 minutes
+
+    }
+
+    
     public function examEligibleCourses()
     {
         checkPermissionHelper('حجز موعد اختبار');
@@ -32,6 +41,9 @@ class ExamsController extends Controller
         $courses = Course::where('status', 'قائمة')->whereDoesntHave('exam')->has('manyStudentsForPermissions', '>', 9)->get();
 
         //        dd($courses);
+
+
+
 
         return view('control_panel.exams.examEligibleCourses', compact('courses', 'areas', 'moallems', 'books'));
     }
@@ -298,6 +310,53 @@ class ExamsController extends Controller
 
 
         $value = array();
+
+
+        $total_exams = Exam::whereNull('date')->orWhere('date', 0)
+        ->area($area_id, $sub_area_id)
+        ->examtype($exam_type)
+        ->placearea($place_area)
+        ->search($search)
+        ->fromDate($startDate)
+        ->toDate($endDate)
+        ->moallem($moallem_id)
+        ->book($book_id)
+        ->count();
+
+        $ss__exams = Exam::whereNull('date')->orWhere('date', 0)
+        ->area($area_id, $sub_area_id)
+        ->examtype($exam_type)
+        ->placearea($place_area)
+        ->search($search)
+        ->fromDate($startDate)
+        ->toDate($endDate)
+        ->moallem($moallem_id)
+        ->book($book_id)
+        ->get();
+
+        $total_students = 0;
+        foreach ($ss__exams as $key => $value1) {
+            $total_students += $value1->students_count;
+            
+        }
+        
+
+        $passed_students = 0;
+        foreach ($ss__exams as $key => $value2) {
+            $passed_students += $value2->passed_students_count;                
+        }
+
+        $fails_students = 0;
+        foreach ($ss__exams as $key => $value3) {
+            $fails_students += $value3->fails_students_count;                
+        }
+
+        $null_students = 0;
+        foreach ($ss__exams as $key => $value2) {
+            $null_students += $value2->null_students_count;                
+        }
+
+
         //        var_dump($area_id);
         if (!empty($search)) {
             $count = Exam::whereNull('date')->orWhere('date', 0)
@@ -380,7 +439,15 @@ class ExamsController extends Controller
             "recordsTotal" => $count,
             "recordsFiltered" => $count,
             "data" => (array)$value,
-            "order" => $columns[$order]["db"]
+            "order" => $columns[$order]["db"],
+            'statistics' => '
+            <td>'.$total_exams.'</td>
+            <td>'.$total_students.'</td>
+            <td>'.$passed_students.'</td>
+            <td>'.$fails_students.'</td>
+            <td>'.$null_students.'</td>
+
+  '
         ];
     }
     public function getExamsAppointmentsArchive()
@@ -432,6 +499,11 @@ class ExamsController extends Controller
         $exam_type = $request->exam_type ? $request->exam_type : 0;
 
         $value = array();
+
+
+        
+
+
 
         if (!empty($search)) {
             $count = Exam::where('status', 5)
@@ -509,6 +581,7 @@ class ExamsController extends Controller
             "recordsFiltered" => $count,
             "data" => (array)$value,
             "order" => $columns[$order]["db"]
+
         ];
     }
     public function getExamsWaitingApproveMarks()
@@ -553,6 +626,53 @@ class ExamsController extends Controller
 
 
         $value = array();
+
+
+        $total_exams =  Exam::where('status', '>=', 2)->where('status', '<=', 4)
+        ->area($area_id, $sub_area_id)
+        ->examtype($exam_type)
+        ->placearea($place_area)
+        ->search($search)
+        ->fromDate($startDate)
+        ->toDate($endDate)
+        ->moallem($moallem_id)
+        ->book($book_id)
+        ->count();
+
+        $ss__exams =  Exam::where('status', '>=', 2)->where('status', '<=', 4)
+        ->area($area_id, $sub_area_id)
+        ->examtype($exam_type)
+        ->placearea($place_area)
+        ->search($search)
+        ->fromDate($startDate)
+        ->toDate($endDate)
+        ->moallem($moallem_id)
+        ->book($book_id)
+        ->get();
+
+        $total_students = 0;
+        foreach ($ss__exams as $key => $value1) {
+            $total_students += $value1->students_count;
+            
+        }
+        
+
+        $passed_students = 0;
+        foreach ($ss__exams as $key => $value2) {
+            $passed_students += $value2->passed_students_count;                
+        }
+
+        $fails_students = 0;
+        foreach ($ss__exams as $key => $value3) {
+            $fails_students += $value3->fails_students_count;                
+        }
+
+        $null_students = 0;
+        foreach ($ss__exams as $key => $value2) {
+            $null_students += $value2->null_students_count;                
+        }
+
+
         //        var_dump($area_id);
         if (!empty($search)) {
             $count = Exam::where('status', '>=', 2)->where('status', '<=', 4)
@@ -631,7 +751,15 @@ class ExamsController extends Controller
             "recordsTotal" => $count,
             "recordsFiltered" => $count,
             "data" => (array)$value,
-            "order" => $columns[$order]["db"]
+            "order" => $columns[$order]["db"],
+            'statistics' => '
+            <td>'.$total_exams.'</td>
+            <td>'.$total_students.'</td>
+            <td>'.$passed_students.'</td>
+            <td>'.$fails_students.'</td>
+            <td>'.$null_students.'</td>
+
+  '
         ];
     }
     public function approveExamAppointment(Exam $exam)
@@ -731,6 +859,8 @@ class ExamsController extends Controller
 
         $moallems = User::department(2)->get();
 
+   
+
         return view('control_panel.exams.getEligibleCoursesForMarkEnter', compact('exams', 'areas', 'books', 'moallems'));
     }
     public function getEligibleCoursesForMarkEnterData(Request $request)
@@ -771,6 +901,51 @@ class ExamsController extends Controller
 
 
             $value = array();
+
+            $total_exams = Exam::where('status', 1)
+            ->fromDate($startDate)
+            ->placearea($place_area)
+            ->toDate($endDate)
+            ->moallem($moallem_id)
+            ->book($book_id)
+            ->area($area_id, $sub_area_id)
+            ->examtype($exam_type)
+            ->search($search)
+            ->count();
+
+            $ss__exams = Exam::where('status', 1)
+            ->fromDate($startDate)
+            ->placearea($place_area)
+            ->toDate($endDate)
+            ->moallem($moallem_id)
+            ->book($book_id)
+            ->area($area_id, $sub_area_id)
+            ->examtype($exam_type)
+            ->search($search)
+            ->get();
+
+            $total_students = 0;
+            foreach ($ss__exams as $key => $value1) {
+                $total_students += $value1->students_count;
+                
+            }
+            
+
+            $passed_students = 0;
+            foreach ($ss__exams as $key => $value2) {
+                $passed_students += $value2->passed_students_count;                
+            }
+
+            $fails_students = 0;
+            foreach ($ss__exams as $key => $value2) {
+                $fails_students += $value2->fails_students_count;                
+            }
+
+            $null_students = 0;
+            foreach ($ss__exams as $key => $value2) {
+                $null_students += $value2->null_students_count;                
+            }
+
 
             if (!empty($search)) {
                 $count = Exam::where('status', 1)
@@ -846,7 +1021,9 @@ class ExamsController extends Controller
                         // 'course_start_date'=>$item->course_start_date,
                         'course_start_date' => $item->date ? GetFormatedDate($item->date) . ' الساعة ' . Carbon::parse($item->time)->isoFormat('h:mm a') : '',
 
-                        'tools' => $enterExamMarksButton
+                        'tools' => $enterExamMarksButton,
+
+                        
                     ]
                 );
             }
@@ -856,7 +1033,15 @@ class ExamsController extends Controller
                 "recordsTotal" => $count,
                 "recordsFiltered" => $count,
                 "data" => (array)$value,
-                "order" => $columns[$order]["db"]
+                "order" => $columns[$order]["db"],
+
+                'statistics' => '
+                <td>'.$total_exams.'</td>
+                <td>'.$total_students.'</td>
+                <td>'.$passed_students.'</td>
+                <td>'.$fails_students.'</td>
+                <td>'.$null_students.'</td>
+      '
             ];
         }
     }
