@@ -403,6 +403,12 @@
                                     </a>
                                 @endif
                             <!-- item-->
+                                @if(hasPermissionHelper('تصنيفات كتب الدورات') && hasPermissionHelper('كتب الدورات'))
+                                    <a class="dropdown-item" href="{{route('courseProjects.index')}}">
+                                       برامج الدورات
+                                    </a>
+                                @endif
+                                <!-- item-->
                                 @if(hasPermissionHelper('تصنيفات كتب الدورات'))
                                     <a class="dropdown-item" href="{{route('CourseBookCategory.index')}}">
                                         تصنيفات كتب الدورات
@@ -414,6 +420,8 @@
                                         الخطة
                                     </a>
                                 @endif
+
+                            <!-- item-->
                             </div>
                         </div>
                     </div>

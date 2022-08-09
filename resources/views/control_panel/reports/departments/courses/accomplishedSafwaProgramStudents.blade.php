@@ -8,14 +8,17 @@
     .dataTables_paginate{
         display: block;
     }
+    h3{
+        padding: 20px;
+    }
 </style>
 
+<h3> تقرير برنامج الصفوة </h3>
 
 @section('style')
     <link href="{{asset('control_panel/assets/css/datatable.css')}}" rel="stylesheet" type="text/css" />
 @endsection
 
-<h2> تقرير برنامج الصفوة </h2>
 <table class="table table-centered table-nowrap mb-0" id="dataTable" >
     <thead style="text-align: center !important;">
     <tr>

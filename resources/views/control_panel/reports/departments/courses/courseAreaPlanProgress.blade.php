@@ -5,13 +5,17 @@
         td {
             border: 1px solid rgb(161, 161, 161) !important;
         }
+        h3{
+            padding: 20px;
+        }
     </style>
-<h2>تقرير انجاز المناطق الكبرى</h2>
+<h3>تقرير انجاز المناطق الكبرى للدورات العلمية</h3>
+
     <div class="row">
         <div class="col-lg-12">
+
             <div class="card">
                 <div class="card-body">
-
 
 
                     <div id="tableContainer">

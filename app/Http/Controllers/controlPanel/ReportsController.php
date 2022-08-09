@@ -30,42 +30,42 @@ class ReportsController extends Controller
         $areas = Area::whereNull('area_id')->get();
         $year = date("Y");
 
-        $course_project = CourseProject::where('year', $year)->limit(1)->pluck('books')->first(); //get safwa project
-        $course_project = json_decode($course_project);
-        $project_books_value = array();
+        // $course_project = CourseProject::where('year', $year)->limit(1)->pluck('books')->first(); //get safwa project
+        // $course_project = json_decode($course_project);
+        // $project_books_value = array();
 
-        $in_plane_books = Book::where('year', $year)->where('included_in_plan','داخل الخطة')->get();
-        $in_plane_books_value = array();
+        $in_plane_books = Book::where('year', $year)->where('required_students_number' ,'>',0)->get();
+        // $in_plane_books_value = array();
 
-        $out_plane_books = Book::where('year', $year)->where('included_in_plan','خارج الخطة')->get();
-        $out_plane_books_value = array();
-
-
-
-            foreach ($in_plane_books as $index => $item) {
-                if(! in_array($item->id,$course_project)){
-                    $new_item = $item->course_students_reports_by_area_row_data;
-                    array_push($in_plane_books_value, $new_item);
-                }
-            }
-
-            foreach ($in_plane_books as $index => $item) {
-                if( in_array($item->id,$course_project)){
-                    $new_item = $item->course_students_reports_by_area_row_data;
-                    array_push($project_books_value, $new_item);
-                }
-            }
-
-            foreach ($out_plane_books as $index => $item) {
-                if(! in_array($item->id,$course_project)){
-                    $new_item = $item->course_students_reports_by_area_row_data;
-                    array_push($out_plane_books_value, $new_item);
-                }
-            }
+        // $out_plane_books = Book::where('year', $year)->where('required_students_number' ,'>',0)->where('included_in_plan','خارج الخطة')->get();
+        // $out_plane_books_value = array();
 
 
 
-        return view('control_panel.reports.courseAreaReport', compact('areas', 'in_plane_books_value', 'in_plane_books','out_plane_books_value','project_books_value'));
+            // foreach ($in_plane_books as $index => $item) {
+            //     if(! in_array($item->id,$course_project)){
+            //         $new_item = $item->course_students_reports_by_area_row_data;
+            //         array_push($in_plane_books_value, $new_item);
+            //     }
+            // }
+
+            // foreach ($in_plane_books as $index => $item) {
+            //     if( in_array($item->id,$course_project)){
+            //         $new_item = $item->course_students_reports_by_area_row_data;
+            //         array_push($project_books_value, $new_item);
+            //     }
+            // }
+
+            // foreach ($out_plane_books as $index => $item) {
+            //     if(! in_array($item->id,$course_project)){
+            //         $new_item = $item->course_students_reports_by_area_row_data;
+            //         array_push($out_plane_books_value, $new_item);
+            //     }
+            // }
+
+
+
+        return view('control_panel.reports.courseAreaReport', compact('areas','in_plane_books'));
     }
 
     public function allReviews()
@@ -150,15 +150,22 @@ class ReportsController extends Controller
     public function getAnalysisView(Request $request)
     {
         $analysis_type = $request->analysis_type;
+
         switch ($analysis_type) {
             case 'courseAreaPlanProgress':{
                 return $this->courseAreaPlanProgressView($request);
+                break;
+
             }
             case 'coursePlanProgress': {
                     return $this->coursePlanProgressView($request);
+                break;
+
                 }
             case 'safwaProgram' : {
                 return $this->accomplishedSafwaProgramStudentsView($request);
+                break;
+
             }
             case 'mostAccomplished': {
                     $analysis_sub_type = $request->analysis_sub_type;
@@ -169,13 +176,19 @@ class ReportsController extends Controller
                     } elseif ($analysis_sub_type == 'local_areas') {
                         return $this->mostaccomplishedLocalAreaView($request);
                     }
+                break;
+
                 }
 
             case 'asaneedAreaPlanProgress':{
                     return $this->asaneedAreaPlanProgressView($request);
+                break;
+
                 }
             case 'asaneedPlanProgress': {
                     return $this->asaneedPlanProgressView($request);
+                break;
+
                 }
             case 'asaneedMostAccomplished': {
                     $analysis_sub_type = $request->analysis_sub_type;
@@ -186,10 +199,14 @@ class ReportsController extends Controller
                     } elseif ($analysis_sub_type == 'local_areas') {
                         return $this->mostAsaneedAccomplishedLocalAreaView($request);
                     }
+                break;
+
                 }
 
-                break;
+
         }
+
+
     }
 
 
@@ -247,10 +264,10 @@ class ReportsController extends Controller
         $course_project = json_decode($course_project);
         $project_books_value = array();
 
-        $in_plane_books = Book::where('year', $year)->where('included_in_plan','داخل الخطة')->get();
+        $in_plane_books = Book::where('year', $year)->where('required_students_number' ,'>',0)->where('included_in_plan','داخل الخطة')->get();
         $in_plane_books_value = array();
 
-        $out_plane_books = Book::where('year', $year)->where('included_in_plan','خارج الخطة')->get();
+        $out_plane_books = Book::where('year', $year)->where('required_students_number' ,'>',0)->where('included_in_plan','خارج الخطة')->get();
         $out_plane_books_value = array();
 
 
@@ -320,6 +337,9 @@ class ReportsController extends Controller
         ];
     }
 
+
+
+
     public function coursePlanProgressView(Request $request)
     {
         $start_date = $request->start_date;
@@ -328,22 +348,56 @@ class ReportsController extends Controller
 
         $year = Carbon::parse($request->start_date)->format('Y');
 
-        if ($book_id) {
-            $books = Book::where('id', $book_id)->get();
-        } else {
-            $books = Book::where('year', $year)->get();
-        }
-        $value = array();
+        $in_plane_books_value = array();
+        $out_plane_books_value = array();
 
-            foreach ($books as $index => $item) {
+        $course_project = CourseProject::where('year', $year)->limit(1)->pluck('books')->first(); //get safwa project
+        $course_project = json_decode($course_project);
+        $project_books_value = array();
+
+
+        if ($book_id) {
+
+            $in_plane_books = Book::where('year', $year)->where('id', $book_id)->where('required_students_number' ,'>',0)->where('included_in_plan','داخل الخطة')->get();
+
+            $out_plane_books = Book::where('year', $year)->where('required_students_number' ,'>',0)->where('included_in_plan','خارج الخطة')->get();
+
+        } else {
+            // $books = Book::where('year', $year)->where('required_students_number' ,'>',0)->get();
+
+            $in_plane_books = Book::where('year', $year)->where('required_students_number' ,'>',0)->where('included_in_plan','داخل الخطة')->get();
+
+            $out_plane_books = Book::where('year', $year)->where('required_students_number' ,'>',0)->where('included_in_plan','خارج الخطة')->get();
+
+
+        }
+
+        foreach ($in_plane_books as $index => $item) {
+            if( in_array($item->id,$course_project)){
                 $new_item = $item->students_reports_by_students_categories_row_data;
-                array_push($value, $new_item);
+                array_push($project_books_value, $new_item);
+            }
+        }
+
+            foreach ($in_plane_books as $index => $item) {
+                if(! in_array($item->id,$course_project)){
+                    $new_item = $item->students_reports_by_students_categories_row_data;
+                    array_push($in_plane_books_value, $new_item);
+                }
+            }
+
+
+            foreach ($out_plane_books as $index => $item) {
+                if(! in_array($item->id,$course_project)){
+                    $new_item = $item->students_reports_by_students_categories_row_data;
+                    array_push($out_plane_books_value, $new_item);
+                }
             }
 
 
         return [
             'view' => view('control_panel.reports.coursesPlanProgress', compact(
-                'value'
+                'in_plane_books_value','out_plane_books_value','project_books_value'
             ))->render()
             // ,
             // 'filters'=>$filters
@@ -614,7 +668,13 @@ class ReportsController extends Controller
         if (!empty($search)) {
             $count = Place::select('id', 'name', 'area_id')
                 ->search($search)
-                ->has('courses')
+                // ->has('courses')
+                ->whereHas('courses', function ($query) {
+                    $query->whereHas('manyStudents', function ($query) {
+
+                    });
+                })
+
                 ->teacher($teacher_id)
                 ->book($book_id)
                 ->place($place_id)
@@ -622,7 +682,12 @@ class ReportsController extends Controller
                 ->count();
             $places = Place::select('id', 'name', 'area_id')
                 ->search($search)
-                ->has('courses')
+                // ->has('courses')
+                ->whereHas('courses', function ($query) {
+                    $query->whereHas('manyStudents', function ($query) {
+
+                    });
+                })
                 ->teacher($teacher_id)
                 ->book($book_id)
                 ->place($place_id)
@@ -632,13 +697,23 @@ class ReportsController extends Controller
         } else {
             $count = Place::select('id', 'name', 'area_id')->teacher($teacher_id)
                 ->book($book_id)
-                ->has('courses')
+                // ->has('courses')
+                ->whereHas('courses', function ($query) {
+                    $query->whereHas('manyStudents', function ($query) {
+
+                    });
+                })
                 ->place($place_id)
                 ->permissionssubarea($sub_area_id, $area_id)->count();
             $places = Place::select('id', 'name', 'area_id')
                 ->teacher($teacher_id)
                 ->book($book_id)
-                ->has('courses')
+                // ->has('courses')
+                ->whereHas('courses', function ($query) {
+                    $query->whereHas('manyStudents', function ($query) {
+
+                    });
+                })
                 ->place($place_id)
                 ->permissionssubarea($sub_area_id, $area_id)
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
@@ -695,14 +770,24 @@ class ReportsController extends Controller
             $count = User::subarea($sub_area_id, $area_id)
                 ->search($search)
                 ->department(2)
-                ->has('teacherCourses')
+                // ->has('teacherCourses')
+                ->whereHas('teacherCourses', function ($query) {
+                    $query->whereHas('manyStudents', function ($query) {
+
+                    });
+                })
                 ->book($book_id)
                 ->place($place_id)
                 ->count();
             $teachers = User::subarea($sub_area_id, $area_id)
                 ->search($search)
                 ->department(2)
-                ->has('teacherCourses')
+                // ->has('teacherCourses')
+                ->whereHas('teacherCourses', function ($query) {
+                    $query->whereHas('manyStudents', function ($query) {
+
+                    });
+                })
                 ->book($book_id)
                 ->place($place_id)
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
@@ -710,14 +795,24 @@ class ReportsController extends Controller
         } else {
             $count = User::subarea($sub_area_id, $area_id)
                 ->department(2)
-                ->has('teacherCourses')
+                // ->has('teacherCourses')
+                ->whereHas('teacherCourses', function ($query) {
+                    $query->whereHas('manyStudents', function ($query) {
+
+                    });
+                })
                 ->teacher($teacher_id)
                 ->book($book_id)
                 ->place($place_id)
                 ->count();
             $teachers = User::subarea($sub_area_id, $area_id)
                 ->department(2)
-                ->has('teacherCourses')
+                // ->has('teacherCourses')
+                ->whereHas('teacherCourses', function ($query) {
+                    $query->whereHas('manyStudents', function ($query) {
+
+                    });
+                })
                 ->teacher($teacher_id)
                 ->book($book_id)
                 ->place($place_id)
@@ -852,17 +947,17 @@ class ReportsController extends Controller
         $value = array();
 
         if (!empty($search)) {
-            $count = Book::where('year', $year)->search($search)
+            $count = Book::where('year', $year)->where('required_students_number' ,'>',0)->search($search)
                 ->book($book_id)
                 ->count();
-            $books = Book::where('year', $year)->search($search)
+            $books = Book::where('year', $year)->where('required_students_number' ,'>',0)->search($search)
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                 ->book($book_id)
                 ->get();
         } else {
-            $count = Book::where('year', $year)->book($book_id)
+            $count = Book::where('year', $year)->where('required_students_number' ,'>',0)->book($book_id)
                 ->count();
-            $books = Book::where('year', $year)->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
+            $books = Book::where('year', $year)->where('required_students_number' ,'>',0)->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                 ->book($book_id)
                 ->get();
         }

@@ -1,6 +1,20 @@
 
+<style>
+    h3{
+        padding: 20px;
+    }
+</style>
 
-                        <table class="table table-centered   table-nowrap mb-0"  id="dataTable" style="font-size: 18px">
+
+<h2>تقرير انجاز خطة الدورات العلمية</h2>
+
+
+<h3>  كتب داخل الخطة   </h3>
+<div class="row">
+    <div class="row justify-content-md-center">
+
+
+                        <table class="table table-centered   table-nowrap mb-0"  style="font-size: 18px">
 
                             <thead>
                                 <tr>
@@ -18,59 +32,97 @@
                             <tbody>
 
 
-                                @if (isset($value) && count($value) > 0)
-                                @foreach ($value as $index => $val)
+                                @if (isset($in_plane_books_value) && count($in_plane_books_value) > 0)
+                                @foreach ($in_plane_books_value as $index => $val)
                                              {!! $val !!}
                                 @endforeach
+                                @else
+                                <tr>
+                                    <td colspan="7" style="color: #00734b" scope="col"><b >  لا يوجد كتب داخل الخطة   </b></td>
+                                </tr>
                                 @endif
-
-
-
-
 
                             </tbody>
 
                         </table>
+    </div>
 
-<script>
+</div>
+<h3>  كتب خارج الخطة  </h3>
+<div class="row">
+    <div class="row justify-content-md-center">
 
-    // $(document).ready(function() {
-    //     var table = $('#dataTable').DataTable( {
-    //         "processing": true,
-    //         "serverSide": true,
-    //         "ajax": "{{ route('reports.getAnalysisData').'?analysis_type=coursePlanProgress'}}",
-    //         language: {
-    //             search: "بحث",
-    //             processing:     "جاري معالجة البيانات" ,
-    //             lengthMenu:    "عدد _MENU_ الصفوف",
-    //             info:           "من _START_ الى _END_ من أصل _TOTAL_ صفحة",
-    //             infoEmpty: "لا يوجد بيانات",
-    //             loadingRecords: "يتم تحميل البيانات",
-    //             zeroRecords:    "<p style='text-align: center'>لا يوجد بيانات</p>",
-    //             emptyTable:     "<p style='text-align: center'>لا يوجد بيانات</p>",
-    //             paginate: {
-    //                 first:      "الأول",
-    //                 previous:   "السابق",
-    //                 next:       "التالي",
-    //                 last:       "الأخير"
-    //             },
-    //             aria: {
-    //                 sortAscending:  ": ترتيب تصاعدي",
-    //                 sortDescending: ": ترتيب تنازلي"
-    //             }
-    //         },
-    //         "columnDefs": [
-    //             // { "sortable": false, "targets": [2] }
-    //         ],
-    //         "aoColumns": [
-    //             { "mData": "id" },
-    //             { "mData": "book_name" },
-    //             { "mData": "graduated_categories" },
-    //             { "mData": "required_num" },
-    //             { "mData": "completed_num" },
-    //             { "mData": "completed_num_percentage" },
-    //             { "mData": "excess_num_percentage" }
-    //         ]
-    //     } );
-    // });
-</script>
+
+                        <table class="table table-centered   table-nowrap mb-0"  style="font-size: 18px">
+
+                            <thead>
+                                <tr>
+                                    <th scope="col" style="width: 50px;">
+                                        #
+                                    </th>
+                                    <th scope="col"  style="width: 50px;">الكتاب</th>
+                                    <th scope="col">فئة الخريجين</th>
+                                    <th scope="col">العدد المطلوب</th>
+                                    <th scope="col">العدد المنجز</th>
+                                    <th scope="col">نسبة الانجاز</th>
+                                    <th scope="col">نسبة الفائض</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+
+                                @if (isset($out_plane_books_value) && count($out_plane_books_value) > 0)
+                                @foreach ($out_plane_books_value as $index => $val)
+                                             {!! $val !!}
+                                @endforeach
+                                @else
+                                <tr>
+                                    <td colspan="7" style="color: #00734b" scope="col"><b>  لا يوجد كتب خارج الخطة   </b></td>
+                                </tr>
+                                @endif
+
+                            </tbody>
+                        </table>
+    </div>
+</div>
+
+<div class="row">
+    <div class="row justify-content-md-center">
+
+                        <h3>  برنامج الصفوة  </h3>
+                        <table class="table table-centered   table-nowrap mb-0"  style="font-size: 18px">
+
+                            <thead>
+                                <tr>
+                                    <th scope="col" style="width: 50px;">
+                                        #
+                                    </th>
+                                    <th scope="col"  style="width: 50px;">الكتاب</th>
+                                    <th scope="col">فئة الخريجين</th>
+                                    <th scope="col">العدد المطلوب</th>
+                                    <th scope="col">العدد المنجز</th>
+                                    <th scope="col">نسبة الانجاز</th>
+                                    <th scope="col">نسبة الفائض</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+
+
+
+                                @if (isset($project_books_value) && count($project_books_value) > 0)
+                                @foreach ($project_books_value as $index => $val)
+                                             {!! $val !!}
+                                @endforeach
+                                @else
+                                <tr>
+                                    <td colspan="7" style="color: #00734b" scope="col"><b>  لا يوجد لبرنامج الصفوة   </b></td>
+                                </tr>
+                                @endif
+
+                            </tbody>
+                        </table>
+    </div>
+</div>
+
+
