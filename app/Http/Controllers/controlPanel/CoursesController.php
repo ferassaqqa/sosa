@@ -186,7 +186,7 @@ class CoursesController extends Controller
         $st_count = 0;
         foreach ($courses as $index => $item) {
 //            dd($item);
-            $st_count += $item->students_count;
+            // $st_count += $item->students_count;
             array_push(
                 $value,
                 $item->course_display_data
