@@ -164,7 +164,6 @@ class ReportsController extends Controller
             $result_review[] = $new_item;
         }
 
-
         foreach ($result_review as $key => $row) {
             $name[$key]  = $row['name'];
             $percentage_38[$key] = $row['percentage_38'];
@@ -175,7 +174,25 @@ class ReportsController extends Controller
 
         array_multisort($percentage_total, SORT_DESC, $result_review);
         foreach ($result_review as $key => $row) {
-            
+            $scores[] = $row['percentage_total'];
+        }
+        $duplicates = array_unique( array_diff_assoc( $scores, array_unique( $scores ) ) );
+        
+
+        foreach ($result_review as $key1 => $row) {
+            $label = $this->getOrderLabel($key1);
+            $key = 0;
+            if (array_key_exists($key1, $duplicates)) {
+                $key = array_search ($row['percentage_total'], $duplicates);
+                $label =$this->getOrderLabel($key-1).' مكرر'; 
+            }
+            // if(in_array($row['percentage_total'],$scores)){
+            //     $key = array_search ($row['percentage_total'], $duplicates);
+            //     $label =$this->getOrderLabel($key-1).' مكرر'; 
+            // }
+
+           
+
             $item = '                        
             <tr >
                 <td>' . $key . '</td>
@@ -188,14 +205,13 @@ class ReportsController extends Controller
                 <td><b>' . $row['percentage_50'] . '%</b></td>
         
                 <td><b>' . $row['percentage_total'] . '%</b></td>
-                <td>'.$this->getOrderLabel($key).'</td>
+                <td>' . $label . '</td>
                 <td></td>
             </tr>
                 
             ';
 
             array_push($value, $item);
-
         }
 
 
@@ -213,6 +229,7 @@ class ReportsController extends Controller
         $areas = Area::permissionssubarea($sub_area_id, $area_id)
             ->whereNull('area_id')->get();
         $value = array();
+        $result_review = array();
 
         // foreach ($areas as $index => $item) {
         //     $new_item = $item->asaneed_reviews_row_data;
@@ -224,8 +241,6 @@ class ReportsController extends Controller
             $new_item = $item->asaneed_reviews_row_data;
             $result_review[] = $new_item;
         }
-
-
         foreach ($result_review as $key => $row) {
             $name[$key]  = $row['name'];
             $percentage_38[$key] = $row['percentage_38'];
@@ -236,7 +251,22 @@ class ReportsController extends Controller
 
         array_multisort($percentage_total, SORT_DESC, $result_review);
         foreach ($result_review as $key => $row) {
-            
+            $scores[] = $row['percentage_total'];
+        }
+        $duplicates = array_unique( array_diff_assoc( $scores, array_unique( $scores ) ) );
+
+        foreach ($result_review as $key => $row) {
+            $label = $this->getOrderLabel($key);
+            // if (array_key_exists($key, $duplicates)) {
+            //     $label =$this->getOrderLabel($key-1).' مكرر'; 
+            // }
+            if(in_array($row['percentage_total'],$scores)){
+                $key = array_search ($row['percentage_total'], $duplicates);
+                $label =$this->getOrderLabel($key-1).' مكرر'; 
+            }
+
+           
+
             $item = '                        
             <tr >
                 <td>' . $key . '</td>
@@ -249,14 +279,13 @@ class ReportsController extends Controller
                 <td><b>' . $row['percentage_50'] . '%</b></td>
         
                 <td><b>' . $row['percentage_total'] . '%</b></td>
-                <td>'.$this->getOrderLabel($key).'</td>
+                <td>' . $label . '</td>
                 <td></td>
             </tr>
                 
             ';
 
             array_push($value, $item);
-
         }
 
         return [

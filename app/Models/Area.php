@@ -302,7 +302,7 @@ class Area extends Model
             'percentage_38' =>  $percentage_38,
             'percentage_50' =>  $percentage_50,
             'percentage_total' => $percentage_total,
-            'id' => $this->id
+            'id' => $this->id,
         );
 
 
