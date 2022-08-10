@@ -229,6 +229,10 @@ class Area extends Model
         $completed_num_percentage = $completed_num_percentage > 100 ? 100 : $completed_num_percentage;
 
 
+   
+
+
+
         return '
         <tr>
         <tr>
@@ -252,7 +256,7 @@ class Area extends Model
 
         $year = date("Y");
         $books = AsaneedBook::whereNotNull('author')->get();
-        self::$counter++;
+        // self::$counter++;
 
 
         $total_pass = 0;
@@ -290,24 +294,40 @@ class Area extends Model
 
         $percentage_50 = $percentage_38 + 5 + 2 + 5;
 
-
-        return '
-
-            <tr >
-                <td>' . self::$counter . '</td>
-                <td>' . $this->name . '</td>
         
-                <td>' . $percentage_38 . '%</td>
-                <td>5%</td>
-                <td>2%</td>
-                <td>3%</td>
-                <td><b>' . $percentage_50 . '%</b></td>
+        $percentage_total = ($percentage_50 * 2);
+
+        $review_result = array(
+            'name' => $this->name,
+            'percentage_38' =>  $percentage_38,
+            'percentage_50' =>  $percentage_50,
+            'percentage_total' => $percentage_total,
+            'id' => $this->id
+        );
+
+
+
+        return $review_result;
+
+
+
+        // return '
+
+        //     <tr >
+        //         <td>' . self::$counter . '</td>
+        //         <td>' . $this->name . '</td>
         
-                <td><b>' . ($percentage_50 * 2) . '%</b></td>
-                <td></td>
-                <td></td>
-            </tr>
-                ';
+        //         <td>' . $percentage_38 . '%</td>
+        //         <td>5%</td>
+        //         <td>2%</td>
+        //         <td>3%</td>
+        //         <td><b>' . $percentage_50 . '%</b></td>
+        
+        //         <td><b>' . $percentage_total . '%</b></td>
+        //         <td></td>
+        //         <td></td>
+        //     </tr>
+        //         ';
     }
 
     public function getCourseReviewsRowDataAttribute()
@@ -356,24 +376,20 @@ class Area extends Model
 
         $percentage_50 = $percentage_38 + 5 + 2 + 5;
 
+        $percentage_total = ($percentage_50 * 2);
 
-        return '
+        $review_result = array(
+            'name' => $this->name,
+            'percentage_38' =>  $percentage_38,
+            'percentage_50' =>  $percentage_50,
+            'percentage_total' => $percentage_total,
+            'id' => $this->id
+        );
 
-            <tr >
-                <td>' . self::$counter . '</td>
-                <td>' . $this->name . '</td>
-        
-                <td>' . $percentage_38 . '%</td>
-                <td>5%</td>
-                <td>2%</td>
-                <td>3%</td>
-                <td><b>' . $percentage_50 . '%</b></td>
-        
-                <td><b>' . ($percentage_50 * 2) . '%</b></td>
-                <td></td>
-                <td></td>
-            </tr>
-                ';
+
+
+        return $review_result;
+
     }
 
     public function getMostAccomplishedCourseRowDataAttribute()
