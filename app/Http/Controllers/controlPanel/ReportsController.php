@@ -176,22 +176,22 @@ class ReportsController extends Controller
         foreach ($result_review as $key => $row) {
             $scores[] = $row['percentage_total'];
         }
-        $duplicates = array_unique( array_diff_assoc( $scores, array_unique( $scores ) ) );
-        
+        $duplicates = array_unique(array_diff_assoc($scores, array_unique($scores)));
+
 
         foreach ($result_review as $key1 => $row) {
             $label = $this->getOrderLabel($key1);
             $key = 0;
             if (array_key_exists($key1, $duplicates)) {
-                $key = array_search ($row['percentage_total'], $duplicates);
-                $label =$this->getOrderLabel($key-1).' مكرر'; 
+                $key = array_search($row['percentage_total'], $duplicates);
+                $label = $this->getOrderLabel($key - 1) . ' مكرر';
             }
             // if(in_array($row['percentage_total'],$scores)){
             //     $key = array_search ($row['percentage_total'], $duplicates);
             //     $label =$this->getOrderLabel($key-1).' مكرر'; 
             // }
 
-           
+
 
             $item = '                        
             <tr >
@@ -253,19 +253,19 @@ class ReportsController extends Controller
         foreach ($result_review as $key => $row) {
             $scores[] = $row['percentage_total'];
         }
-        $duplicates = array_unique( array_diff_assoc( $scores, array_unique( $scores ) ) );
+        $duplicates = array_unique(array_diff_assoc($scores, array_unique($scores)));
 
         foreach ($result_review as $key => $row) {
             $label = $this->getOrderLabel($key);
             // if (array_key_exists($key, $duplicates)) {
             //     $label =$this->getOrderLabel($key-1).' مكرر'; 
             // }
-            if(in_array($row['percentage_total'],$scores)){
-                $key = array_search ($row['percentage_total'], $duplicates);
-                $label =$this->getOrderLabel($key-1).' مكرر'; 
+            if (in_array($row['percentage_total'], $scores)) {
+                $key = array_search($row['percentage_total'], $duplicates);
+                $label = $this->getOrderLabel($key - 1) . ' مكرر';
             }
 
-           
+
 
             $item = '                        
             <tr >
@@ -395,6 +395,97 @@ class ReportsController extends Controller
         ];
     }
 
+    private function getTotalRowCourseAreaPlanProgress($required_result = array(), $safwa_flag = false, $safwa_array = array())
+    {
+
+        $result_report_in_plane = array();
+        $in_plane_books_value = array();
+
+
+        foreach ($required_result as $index => $item) {
+
+            if (in_array($item->id, $safwa_array) === $safwa_flag) {
+                $new_item = $item->course_students_reports_by_area_row_data;
+                // array_push($in_plane_books_value, $new_item);
+                $result_report_in_plane[] = $new_item;
+            }
+        }
+
+        $pass_percentage = array();
+        foreach ($result_report_in_plane as $key => $row) {
+            $name[$key]  = $row['name'];
+            $required_students_number[$key] = $row['required_students_number'];
+            $data[$key] = $row['data'];
+            $total_pass[$key] = $row['total_pass'];
+            $total_rest[$key] = $row['total_rest'];
+            $pass_percentage[$key] = $row['pass_percentage'];
+            $id[$key] = $row['id'];
+        }
+
+
+        array_multisort($pass_percentage, SORT_DESC, $result_report_in_plane);
+
+
+
+
+
+        $required_students_number = 0;
+        $pass_students_number = 0;
+        $rest_students_number = 0;
+
+
+        foreach ($result_report_in_plane as $key => $row) {
+
+            if (in_array($row['id'], $safwa_array)  ==  $safwa_flag) {
+
+                $required_students_number += $row['required_students_number'];
+                $pass_students_number += $row['total_pass'];
+                $rest_students_number += $row['total_rest'];
+
+                $item = '                        
+                <tr>
+                    <td>' . $key . '</td>
+                    <td>' . $row['name'] . '</td>
+                    <td>' . $row['required_students_number'] . '</td>
+                   ' . $row['data'] . '
+                    <td>' . $row['total_pass'] . '</td>
+                    <td>' . $row['total_rest'] . '</td>
+                    <td>' . $row['pass_percentage'] . ' %</td>
+                </tr> 
+                ';
+
+                array_push($in_plane_books_value, $item);
+            }
+        }
+
+        // dd($result_report_in_plane);
+
+        $total_in_plan_row = '<tr>
+                                <td></td>
+                                <td>المجموع</td>
+                                <td>' . $required_students_number . '</td>';
+
+
+        $total_in_plan_row .= '<td colspan="14"></td>';
+
+        $total_percentage =  ($required_students_number > 0) ? round((($pass_students_number / $required_students_number) * 100), 2) : 0;
+
+        $total_in_plan_row .=  '<td>' . $pass_students_number . '</td>
+                                <td>' . $rest_students_number . '</td>
+                                <td><b>' . $total_percentage . ' % </b></td>
+                            </tr>';
+
+
+
+
+        array_push($in_plane_books_value, $total_in_plan_row);
+
+        // dd($in_plane_books_value);
+
+
+        return $in_plane_books_value;
+    }
+
     private function courseAreaPlanProgressView(Request $request)
     {
 
@@ -411,29 +502,94 @@ class ReportsController extends Controller
         $out_plane_books = Book::where('year', $year)->where('required_students_number', '>', 0)->where('included_in_plan', 'خارج الخطة')->get();
         $out_plane_books_value = array();
 
+        $in_plane_books_value = $this->getTotalRowCourseAreaPlanProgress($in_plane_books, false, $course_project);
+        $project_books_value = $this->getTotalRowCourseAreaPlanProgress($in_plane_books, true, $course_project);
+        $out_plane_books_value = $this->getTotalRowCourseAreaPlanProgress($out_plane_books, true, $course_project);
 
 
 
-        foreach ($in_plane_books as $index => $item) {
-            if (!in_array($item->id, $course_project)) {
-                $new_item = $item->course_students_reports_by_area_row_data;
-                array_push($in_plane_books_value, $new_item);
-            }
-        }
 
-        foreach ($in_plane_books as $index => $item) {
-            if (in_array($item->id, $course_project)) {
-                $new_item = $item->course_students_reports_by_area_row_data;
-                array_push($project_books_value, $new_item);
-            }
-        }
+        //     $result_report_in_plane = array();
+        //     $result_report_out_plane = array();
+        //     $result_report_safwa_plane = array();
 
-        foreach ($out_plane_books as $index => $item) {
-            if (!in_array($item->id, $course_project)) {
-                $new_item = $item->course_students_reports_by_area_row_data;
-                array_push($out_plane_books_value, $new_item);
-            }
-        }
+        //     foreach ($in_plane_books as $index => $item) {
+        //         if (!in_array($item->id, $course_project)) {
+        //             $new_item = $item->course_students_reports_by_area_row_data;
+        //             // array_push($in_plane_books_value, $new_item);
+        //             $result_report_in_plane[] = $new_item;
+        //         }
+        //     }
+
+        //     foreach ($result_report_in_plane as $key => $row) {
+        //         $name[$key]  = $row['name'];
+        //         $required_students_number[$key] = $row['required_students_number'];
+        //         $data[$key] = $row['data'];
+        //         $total_pass[$key] = $row['total_pass'];
+        //         $total_rest[$key] = $row['total_rest'];
+        //         $pass_percentage[$key] = $row['pass_percentage'];
+        //         $id[$key] = $row['id'];
+        //     }
+        //     array_multisort($pass_percentage, SORT_DESC, $result_report_in_plane);
+        //     $required_students_number = 0;
+        //     $pass_students_number = 0;
+        //     $rest_students_number = 0;
+
+        //     foreach ($result_report_in_plane as $key => $row) {
+        //         if (!in_array($row['id'], $course_project)) {
+        //             $required_students_number += $row['required_students_number'];
+        //             $pass_students_number += $row['total_pass'];
+        //             $rest_students_number += $row['total_rest'];
+
+        //             $item = '                        
+        //             <tr>
+        //                 <td>' . $key . '</td>
+        //                 <td>' . $row['name'] . '</td>
+        //                 <td>' . $row['required_students_number'] . '</td>
+        //                ' . $row['data'] . '
+        //                 <td>' . $row['total_pass'] . '</td>
+        //                 <td>' . $row['total_rest'] . '</td>
+        //                 <td>' . $row['pass_percentage'] . ' %</td>
+        //             </tr> 
+        //             ';
+
+        //             array_push($in_plane_books_value, $item);
+        //         }
+        //     }
+        //     $total_in_plan_row = '<tr>
+        //                             <td></td>
+        //                             <td>المجموع</td>
+        //                             <td>' .$required_students_number. '</td>';
+
+
+        // $total_in_plan_row .= '<td colspan="14"></td>';
+
+        // $total_percentage = round((($pass_students_number/$rest_students_number) * 100), 2);
+
+        // $total_in_plan_row .=  '<td>' . $pass_students_number . '</td>
+        //                             <td>' . $rest_students_number . '</td>
+        //                             <td><b>' . $total_percentage. ' % </b></td>
+        //                         </tr>';
+
+
+        //     array_push($in_plane_books_value, $total_in_plan_row);
+
+
+        // foreach ($in_plane_books as $index => $item) {
+        //     if (in_array($item->id, $course_project)) {
+        //         $new_item = $item->course_students_reports_by_area_row_data;
+        //         array_push($project_books_value, $new_item);
+        //     }
+        // }
+
+        // foreach ($out_plane_books as $index => $item) {
+        //     if (!in_array($item->id, $course_project)) {
+        //         $new_item = $item->course_students_reports_by_area_row_data;
+        //         array_push($out_plane_books_value, $new_item);
+        //     }
+        // }
+
+
 
 
 

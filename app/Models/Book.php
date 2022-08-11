@@ -60,15 +60,26 @@ class Book extends Model
         $total_rest = 0;
 
 
-        $rest = 0;
 
+
+        $rest = 0;
+        $all_areas_total_array = array();
             foreach ($areas as $key => $area) {
 
                 $pass = CourseStudent::book($this->id)
                                     ->subarea(0,$area->id)
                                     ->whereBetween('mark', [60, 101])->count();
 
-                $rest = $this->required_students_number? $pass - floor(($area->percentage * $this->required_students_number)  / 100):0;
+                                    
+                $required_number_by_area = floor(floor(($area->percentage * $this->required_students_number))/100);
+                
+
+                if($pass > $required_number_by_area){
+                    $pass = $required_number_by_area;
+                }
+                
+                $rest = $pass - floor(($area->percentage * $this->required_students_number)) /100; 
+                $rest = $this->required_students_number ? floor($rest) :0;
 
                 $color =  '#009933';
                 if($rest < 0){$color = '#cc0000';}
@@ -76,30 +87,29 @@ class Book extends Model
                 $total_pass +=$pass;
                 $total_rest +=$rest;
 
+
+                // $all_areas_total_array[] =  array('id'=>$area->id,'pass' => $pass,'rest' => abs($rest),'required_students_number' => $this->required_students_number);
                 $data .= '<td>'.$pass.'</td>
                               <td  style="color:'.$color.'">'.abs($rest).'</td>';
 
             }
 
-
             $pass_percentage = $this->required_students_number? round((($total_pass/$this->required_students_number) * 100), 2):0;
 
+    
 
-            return '
-        <tr>
-            <td>'.self::$counter.'</td>
-            <td>'.$this->name.'</td>
-            <td>'.$this->required_students_number.'</td>
+            $review_result = array(
+                'name' => $this->name,
+                'required_students_number' =>  $this->required_students_number,
+                'data' =>  $data,
+                'total_pass' => $total_pass,
+                'total_rest' => abs($total_rest),
+                'pass_percentage' => $pass_percentage,
+                'id' =>$this->id,
+            );
 
+            return $review_result;
 
-           '.$data.'
-
-            <td>'.$total_pass.'</td>
-            <td>'.abs($total_rest).'</td>
-            <td>'.$pass_percentage.' %</td>
-        </tr>
-
-            ';
     }
 
     public function getStudentsReportsByStudentsCategoriesRowDataAttribute(){
