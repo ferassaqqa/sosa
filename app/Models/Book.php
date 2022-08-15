@@ -70,15 +70,15 @@ class Book extends Model
                                     ->subarea(0,$area->id)
                                     ->whereBetween('mark', [60, 101])->count();
 
-                                    
+
                 $required_number_by_area = floor(floor(($area->percentage * $this->required_students_number))/100);
-                
+
 
                 if($pass > $required_number_by_area){
                     $pass = $required_number_by_area;
                 }
-                
-                $rest = $pass - floor(($area->percentage * $this->required_students_number)) /100; 
+
+                $rest = $pass - floor(($area->percentage * $this->required_students_number)) /100;
                 $rest = $this->required_students_number ? floor($rest) :0;
 
                 $color =  '#009933';
@@ -96,7 +96,7 @@ class Book extends Model
 
             $pass_percentage = $this->required_students_number? round((($total_pass/$this->required_students_number) * 100), 2):0;
 
-    
+
 
             $review_result = array(
                 'name' => $this->name,
@@ -128,9 +128,29 @@ class Book extends Model
 
 
 
+
+
+
         self::$counter++;
 
         $requierd_number = json_decode($this->required_students_number_array);
+
+        if($area_id > 0){
+            $area = Area::find($area_id);
+            $required_student_primary = floor($requierd_number[0] * ($area->percentage /100));
+            $required_student_middle = floor($requierd_number[1] * ($area->percentage /100));
+            $required_student_high = floor($requierd_number[2] * ($area->percentage /100));
+
+            $required_student_total = floor($this->required_students_number * ($area->percentage /100));
+
+        }else{
+            $required_student_primary = $requierd_number[0];
+            $required_student_middle = $requierd_number[1];
+            $required_student_high = $requierd_number[2];
+            $required_student_total = $this->required_students_number;
+
+        }
+
         $total_pass = CourseStudent::book($this->id)
                         ->coursebookorteacher($teacher_id,$book_id,$place_id)
                         ->subarea($sub_area_id,$area_id)
@@ -144,7 +164,7 @@ class Book extends Model
                         ->course('منتهية')->whereBetween('mark', [60, 101])->count();
 
         $passed_students_count = $total_pass;
-        $completed_num_percentage = $this->required_students_number? round((($passed_students_count/$this->required_students_number) * 100), 2): 0;
+        $completed_num_percentage = $required_student_total? round((($passed_students_count/$required_student_total) * 100), 2): 0;
         $completed_num_percentage = $completed_num_percentage > 100 ? 100 : $completed_num_percentage;
         $excess_num_percentage = $completed_num_percentage > 100 ? $completed_num_percentage - 100 : 0;
 
@@ -168,7 +188,7 @@ class Book extends Model
         ->course('منتهية')->whereBetween('mark', [60, 101])->count();
 
         $passed_students_count_primary = $primary;
-        $completed_num_percentage_primary = $requierd_number[0]? round((($passed_students_count_primary/$requierd_number[0]) * 100), 2): 0;
+        $completed_num_percentage_primary = $required_student_primary? round((($passed_students_count_primary/$required_student_primary) * 100), 2): 0;
         $completed_num_percentage_primary = $completed_num_percentage_primary > 100 ? 100 : $completed_num_percentage_primary;
         $excess_num_percentage_primary = $completed_num_percentage_primary > 100 ? $completed_num_percentage_primary - 100 : 0;
 
@@ -191,7 +211,7 @@ class Book extends Model
         ->course('منتهية')->whereBetween('mark', [60, 101])->count();
         $passed_students_count_middle = $middle;
 
-        $completed_num_percentage_middle = $requierd_number[1]? round((($passed_students_count_middle/$requierd_number[1]) * 100), 2): 0;
+        $completed_num_percentage_middle = $required_student_middle? round((($passed_students_count_middle/$required_student_middle) * 100), 2): 0;
         $completed_num_percentage_middle = $completed_num_percentage_middle > 100 ? 100 : $completed_num_percentage_middle;
         $excess_num_percentage_middle = $completed_num_percentage_middle > 100 ? $completed_num_percentage_middle - 100 : 0;
 
@@ -212,47 +232,42 @@ class Book extends Model
         ->course('منتهية')->whereBetween('mark', [60, 101])->count();
         $passed_students_count_high = $high;
 
-        $completed_num_percentage_high = $requierd_number[2]? round((($passed_students_count_high/$requierd_number[2]) * 100), 2): 0;
+        $completed_num_percentage_high = $required_student_high? round((($passed_students_count_high/$required_student_high) * 100), 2): 0;
         $completed_num_percentage_high = $completed_num_percentage_high > 100 ? 100 : $completed_num_percentage_high;
         $excess_num_percentage_high = $completed_num_percentage_high > 100 ? $completed_num_percentage_high - 100 : 0;
 
 
-        // Book::where('id', $this->id)->update(['total_students_passed' => $total_pass]);
 
 
-        return '            <tr>
-        <tr>
-            <th rowspan="4">'.self::$counter.'</th>
-            <th rowspan="4" style="background: #f0f0f0">'.$this->name.'</th>
-            <th>ابتدائية ( 7 - 12 )</th>
-            <td>'.$requierd_number[0].'</td>
-            <td>'.$passed_students_count_primary.'</td>
-            <td>'.$completed_num_percentage_primary.' %</td>
-            <td>'.$excess_num_percentage_primary.' %</td>
+        $review_result = array(
+            'name' => $this->name,
+            'required_number' =>  $required_student_total,
 
-        </tr>
-        <tr>
-            <th>اعدادية ( 13 - 15 )</th>
-            <td>'.$requierd_number[1].'</td>
-            <td>'.$passed_students_count_middle.'</td>
-            <td>'.$completed_num_percentage_middle.' %</td>
-            <td>'.$excess_num_percentage_middle.' %</td>
-        </tr>
-        <tr>
-            <th>ثانوية فما فوق ( 16 فما فوق )</th>
-            <td>'.$requierd_number[2].'</td>
-            <td>'.$passed_students_count_high.'</td>
-            <td>'.$completed_num_percentage_high.' %</td>
-            <td>'.$excess_num_percentage_high.' %</td>
-        </tr>
-        <tr style="background: #f0f0f0">
-            <th>المجموع</th>
-            <td>'.$this->required_students_number.'</td>
-            <td>'.$total_pass.'</td>
-            <td>'.$completed_num_percentage.' %</td>
-            <td>'.$excess_num_percentage.' %</td>
-        </tr>
-        </tr>';
+            'required_student_primary' =>  $required_student_primary,
+            'passed_students_count_primary' =>  $passed_students_count_primary,
+            'completed_num_percentage_primary' =>  $completed_num_percentage_primary,
+            'excess_num_percentage_primary' =>  $excess_num_percentage_primary,
+
+            'required_student_middle' =>  $required_student_middle,
+            'passed_students_count_middle' =>  $passed_students_count_middle,
+            'completed_num_percentage_middle' =>  $completed_num_percentage_middle,
+            'excess_num_percentage_middle' =>  $excess_num_percentage_middle,
+
+            'required_student_high' =>  $required_student_high,
+            'passed_students_count_high' =>  $passed_students_count_high,
+            'completed_num_percentage_high' =>  $completed_num_percentage_high,
+            'excess_num_percentage_high' =>  $excess_num_percentage_high,
+
+            'total_pass' => $total_pass,
+            'completed_num_percentage' => $completed_num_percentage,
+            'excess_num_percentage' => $excess_num_percentage,
+
+            'id' =>$this->id,
+        );
+
+        return $review_result;
+
+
     }
 
     public function getBookDisplayDataAttribute(){
