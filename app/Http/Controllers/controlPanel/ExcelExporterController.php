@@ -63,10 +63,18 @@ class ExcelExporterController extends Controller
         $asaneedCourse->update(['status'=>'قائمة']);
 
 
-        $exam = Exam::where('examable_id','=', $asaneedCourse->id)->withoutGlobalScopes()->first();
+
+        $exam = Exam::where('examable_id','=', $asaneedCourse->id)->where('examable_type' , 'App\Models\AsaneedCourse')->withoutGlobalScopes()->first();
 
         $students_count = $asaneedCourse->students->count();
-        if($students_count >= 10 && !$exam){$asaneedCourse->exam()->create($request->all());}
+        if($students_count >= 10 && !$exam){
+            $asaneedCourse->exam()->create($request->all());
+     
+        }
+
+        $asaneedCourse->exam()->update([
+            'status' => 5
+        ]);
 
         if($import->failures()->count()) {
             $excel->store(

@@ -137,7 +137,12 @@ class AsaneedCoursesStudentsController extends Controller
                         'asaneed_course_id' => $asaneedCourse->id
                     ]);
                     $students_count = $asaneedCourse->students->count();
-                    if($students_count >= 10 && !$asaneedCourse->exam){$asaneedCourse->exam()->create();}
+                    if($students_count >= 10 && !$asaneedCourse->exam){
+                        $asaneedCourse->exam()->create();
+                        $asaneedCourse->exam()->update([
+                            'status' => 5
+                        ]);
+                    }
                 }
                 $users = User::whereHas('asaneedCourses',function($query) use ($asaneedCourse){
                     $query->where('asaneed_course_id',$asaneedCourse->id);
@@ -160,7 +165,12 @@ class AsaneedCoursesStudentsController extends Controller
                     'asaneed_course_id' => $asaneedCourse->id
                 ]);
                 $students_count = $asaneedCourse->students->count();
-                if($students_count >= 10 && !$asaneedCourse->exam){$asaneedCourse->exam()->create();}
+                if($students_count >= 10 && !$asaneedCourse->exam){
+                    $asaneedCourse->exam()->create();
+                    $asaneedCourse->exam()->update([
+                        'status' => 5
+                    ]);
+                }
             } else {
                 return response()->json(['msg' => 'رقم الهوية خطأ', 'title' => 'خطأ!', 'type' => 'danger']);
             }
@@ -183,7 +193,12 @@ class AsaneedCoursesStudentsController extends Controller
             })->get();
 
             $students_count = $asaneedCourse->students->count();
-            if($students_count >= 10 && !$asaneedCourse->exam){$asaneedCourse->exam()->create();}
+            if($students_count >= 10 && !$asaneedCourse->exam){
+                $asaneedCourse->exam()->create();
+                $asaneedCourse->exam()->update([
+                    'status' => 5
+                ]);
+            }
 
             return view('control_panel.users.asaneedCourseStudents.showCourseStudents', compact('users', 'asaneedCourse'));
         }
@@ -221,7 +236,12 @@ class AsaneedCoursesStudentsController extends Controller
                 ]);
 
                 $students_count = $asaneedCourse->students->count();
-                if($students_count >= 10 && !$asaneedCourse->exam){$asaneedCourse->exam()->create();}
+                if($students_count >= 10 && !$asaneedCourse->exam){
+                    $asaneedCourse->exam()->create();
+                    $asaneedCourse->exam()->update([
+                        'status' => 5
+                    ]);
+                }
                 return response()->json(['msg' => 'تم اضافة مستخدم جديد', 'title' => 'اضافة', 'type' => 'success']);
             } else {
                 return response()->json(['msg' => 'رقم الهوية غير صحيح', 'title' => 'خطأ !', 'type' => 'danger']);
@@ -235,7 +255,12 @@ class AsaneedCoursesStudentsController extends Controller
                     'asaneed_course_id' => $request->asaneed_course_id
                 ]);
                 $students_count = $asaneedCourse->students->count();
-                if($students_count >= 10 && !$asaneedCourse->exam){$asaneedCourse->exam()->create();}
+                if($students_count >= 10 && !$asaneedCourse->exam){
+                    $asaneedCourse->exam()->create();
+                    $asaneedCourse->exam()->update([
+                        'status' => 5
+                    ]);
+                }
                 return response()->json(['msg' => 'تم اضافة مستخدم جديد', 'title' => 'اضافة', 'type' => 'success']);
             } else {
                 return response()->json(['msg' => ' الطالب ' . $old_user->name . ' مضاف لنفس الدورة مسبقا ', 'title' => 'خطأ !', 'type' => 'danger']);
