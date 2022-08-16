@@ -68,7 +68,7 @@
                             </thead>
 
 
-                            <tbody>
+                         <tbody>
 
 
                              @if (isset($in_plane_books_value) && count($in_plane_books_value) > 0)
@@ -78,7 +78,7 @@
                                 @endif
 
 
-                        <td colspan="20"><b>برنامج الصفوة</b></td>
+                     <td colspan="20"><b>برنامج الصفوة</b></td>
                                 @if (isset($project_books_value) && count($project_books_value) > 0)
                                    @foreach ($project_books_value as $index => $val)
                                                 {!! $val !!}
@@ -91,7 +91,7 @@
                                 @foreach ($out_plane_books_value as $index => $val)
                                              {!! $val !!}
                                 @endforeach
-                                @endif
+                                @endif  
 
 
 

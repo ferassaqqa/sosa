@@ -42,6 +42,10 @@
     .dataTables_wrapper {
         margin-top: -35px;
     }
+
+    body:not(.modal-open){
+  padding-right: 0px !important;
+}
 </style>
 
 <!-- start page title -->
@@ -429,51 +433,69 @@ $(document).ready(function() {
             }
             // console.log(course_id,status);
         }
-        function createNewCourseStudents(course_id){
-            Swal.fire({
-                customClass: 'swal-wide',
-                title: 'ادخل رقم الهوية',
-                input: 'text',
-                inputAttributes: {
-                    autocapitalize: 'off'
-                },
-                showCancelButton: true,
-                confirmButtonText: 'اضافة',
-                cancelButtonText: 'الغاء',
-                showLoaderOnConfirm: true,
-                preConfirm: function(value){
-                    return fetch('/asaneedCourseStudents/create/'+value+'/'+course_id)
-                        .then(function(response){
-                            return response.json();
-                        }).then(function(responseJson) {
-                            if (responseJson.errors){
-                                Swal.showValidationMessage(
-                                    responseJson.msg
-                                );
-                            }else{
-                                Swal.close();
-                                $('.bs-example-modal-xl').modal('show');
-                                $('#user_modal_content').html(responseJson.view);
-                            }
-                            // Do something with the response
-                        })
-                        .catch(function (errors) {
-                            // Swal.showValidationMessage(
-                            //     'لا يوجد اتصال بالشبكة'
-                            // )
-                        });
-                },
-                allowOutsideClick: function(){!Swal.isLoading();}
-            }).then(function(result){
-                // console.log(result);
-                if (result.isConfirmed) {
-                    // if(result.value.errors == 0) {
-                    // $('.bs-example-modal-xl').modal('show');
-                    // $('#user_modal_content').html(result.value.view);
-                    // }
+
+        function createNewCourseStudents(course_id) {
+                    Swal.fire({
+                        customClass: 'swal-wide',
+                        title: 'ادخل رقم الهوية',
+                        input: 'text',
+                        inputAttributes: {
+                            autocapitalize: 'off',
+                            id: 'id_num'
+                        },
+                        showCancelButton: true,
+                        confirmButtonText: 'اضافة',
+                        cancelButtonText: 'الغاء',
+                        showLoaderOnConfirm: true,
+                        preConfirm: function(value) {
+                            return fetch('/asaneedCourseStudents/create/'+value+'/'+course_id)
+                                .then(function(response) {
+                                    return response.json();
+                                }).then(function(responseJson) {
+                                    if (responseJson.errors) {
+                                        Swal.showValidationMessage(
+                                            responseJson.msg
+                                        );
+                                    } else if (responseJson.view) {
+                                        Swal.close();
+                                        $('.bs-example-modal-xl').modal('show');
+                                        $('#user_modal_content').html(responseJson.view);
+                                    } else {
+                                        Swal.showValidationMessage(
+                                            responseJson.msg
+                                        );
+                                        $('#dataTable').DataTable().ajax.reload();
+                                        $('#id_num').val('').focus().removeClass('swal2-inputerror');
+                                        // if($('#swal2-validation-message')){
+                                        //     $('#swal2-validation-message').removeClass('swal2-validation-message');
+                                        //     $('#swal2-validation-message').css('align-content','flex-end')
+                                        // }
+                                    }
+                                    // Do something with the response
+                                })
+                                .catch(function(errors) {
+                                    // Swal.showValidationMessage(
+                                    //     'لا يوجد اتصال بالشبكة'
+                                    // )
+                                });
+                        },
+                        allowOutsideClick: function() {
+                            !Swal.isLoading();
+                        }
+                    }).then(function(result) {
+                        // console.log(result);
+
+                        
+                        if (result.isConfirmed) {
+                            // if(result.value.errors == 0) {
+                            // $('.bs-example-modal-xl').modal('show');
+                            // $('#user_modal_content').html(result.value.view);
+                            // }
+                        }
+                    })
                 }
-            })
-        }
+
+   
 
 
 
@@ -490,11 +512,11 @@ $(document).ready(function() {
             ).load();
         }
 
-        $('.bs-example-modal-xl').on('hidden.bs.modal', function (e) {
-            // updateDateTable();
-            $('#dataTable').DataTable().ajax.reload();
+        // $('.bs-example-modal-xl').on('hidden.bs.modal', function (e) {
+        //     // updateDateTable();
+        //     $('#dataTable').DataTable().ajax.reload();
 
-            });
+        //     });
     </script>
 
 

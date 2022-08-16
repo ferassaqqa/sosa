@@ -38,7 +38,7 @@ class updateUserRequest extends FormRequest
             'email'=>'sometimes|email|nullable',
             'role_id'=>'required|string|exists:roles,name',
             'area_id'=>$area_id_role,
-            'sub_area_id'=>'required_if:role_id,مشرف ميداني|numeric|exists:areas,id',
+            // 'sub_area_id'=>'required_if:role_id,مشرف ميداني|numeric|exists:areas,id',
         ];
     }
     public function messages()
@@ -57,7 +57,7 @@ class updateUserRequest extends FormRequest
             'role_id.string'=>'صلاحيات المستخدم يجب ان تكون نصية',
             'role_id.exists'=>'لم يتم التعرف على الصلاحيات المطلوبة داخل البرنامج',
             'area_id.exists'=>'لم يتم التعرف على المنطقة المطلوبة داخل البرنامج',
-            'sub_area_id.exists'=>'لم يتم التعرف على المنطقة المطلوبة داخل البرنامج',
+            // 'sub_area_id.exists'=>'لم يتم التعرف على المنطقة المطلوبة داخل البرنامج',
 
         ];
     }
