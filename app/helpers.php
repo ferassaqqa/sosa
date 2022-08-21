@@ -426,6 +426,16 @@ function checkAreaTotalPercentage($area_id,$percent){
     }
     return ($total > 100) ? true : false;
 }
+
+function branchSupervisor($area_id){
+    //withoutGlobalScope('relatedAreas')->
+//    dd($area_id,\App\Models\Area::withoutGlobalScope('relatedAreas')->find($area_id));
+    $area = \App\Models\Area::withoutGlobalScope('relatedAreas')->find($area_id);
+    $area = $area ? $area->load('branchSupervisor') : $area;
+//    dd($area,$area->sub_area_supervisor_name,$area->area_supervisor_name);
+    return $area ? $area->branch_supervisor_name : "";
+}
+
 function areaSupervisor($area_id){
     //withoutGlobalScope('relatedAreas')->
 //    dd($area_id,\App\Models\Area::withoutGlobalScope('relatedAreas')->find($area_id));

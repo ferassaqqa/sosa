@@ -773,7 +773,7 @@ class User extends Authenticatable
     public function scopeUsers($query)
     {
         return $query->whereHas('user_roles', function ($query) {
-            $query->whereIn('name', ['مدير الدائرة', 'مساعد اداري', 'مشرف عام', 'مشرف ميداني', 'مشرف جودة', 'مدير دائرة التخطيط والجودة', 'رئيس قسم الاختبارات']);
+            $query->whereIn('name', ['مدير فرع','مدير الدائرة', 'مساعد اداري', 'مشرف عام', 'مشرف ميداني', 'مشرف جودة', 'مدير دائرة التخطيط والجودة', 'رئيس قسم الاختبارات']);
         });
     }
     public function scopeCourse($query, $status)
@@ -1049,9 +1049,16 @@ class User extends Authenticatable
     {
         return $this->hasOne(Area::class, 'sub_area_supervisor_id')->withoutGlobalScope('relatedAreas');
     }
+    public function branch_supervisor_area()
+    {
+        return $this->hasOne(Area::class, 'branch_supervisor_id')->withoutGlobalScope('relatedAreas');
+    }
     public function getSupervisorAreaAccessorAttribute()
     {
-        return $this->supervisor_area ? $this->supervisor_area->name : ($this->supervisor_sub_area ? $this->supervisor_sub_area->name : '');
+        
+        $res = $this->supervisor_area ? $this->supervisor_area->name : ($this->branch_supervisor_area ? $this->branch_supervisor_area->name: '');
+        if(!$res){$res = $this->supervisor_sub_area ?   $this->supervisor_sub_area->name : '' ;}
+        return $res;
     }
     public function getSubAreaSupervisorAreaIdAttribute()
     {
