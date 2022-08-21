@@ -429,11 +429,11 @@ class ReportsController extends Controller
                                 <td></td>
                                 <td>المجموع</td>
                                 <td>' . $required_students_number . '</td>';
-       
 
-        if($_REQUEST['area_id']){
+
+        if ($_REQUEST['area_id']) {
             $total_in_plan_row .= '<td colspan="2"></td>';
-        }else{
+        } else {
             $total_in_plan_row .= '<td colspan="14"></td>';
         }
 
@@ -470,13 +470,13 @@ class ReportsController extends Controller
 
         $area_id = $_REQUEST ? $_REQUEST['area_id'] : 0;
 
-        if($area_id){
-            $areas = Area::where('id',$area_id)->get();
-        }else{
+        if ($area_id) {
+            $areas = Area::where('id', $area_id)->get();
+        } else {
             $areas = Area::whereNull('area_id')->get();
         }
 
-        
+
 
 
 
@@ -598,11 +598,11 @@ class ReportsController extends Controller
 
 
         $result_report = array();
-        
+
         foreach ($required_result as $index => $item) {
             if (in_array($item->id, $safwa_array) == $safwa_flag) {
                 $new_item = $item->students_reports_by_students_categories_row_data;
-                array_push($result_report , $new_item);
+                array_push($result_report, $new_item);
             }
         }
 
@@ -619,13 +619,13 @@ class ReportsController extends Controller
             $completed_num_percentage_primary[$key] = $row['completed_num_percentage_primary'];
             $excess_num_percentage_primary[$key] = $row['excess_num_percentage_primary'];
 
-            
+
             $required_student_middle[$key] = $row['required_student_middle'];
             $passed_students_count_middle[$key] = $row['passed_students_count_middle'];
             $completed_num_percentage_middle[$key] = $row['completed_num_percentage_middle'];
             $excess_num_percentage_middle[$key] = $row['excess_num_percentage_middle'];
 
-            
+
             $required_student_high[$key] = $row['required_student_high'];
             $passed_students_count_high[$key] = $row['passed_students_count_high'];
             $completed_num_percentage_high[$key] = $row['completed_num_percentage_high'];
@@ -645,12 +645,12 @@ class ReportsController extends Controller
 
         foreach ($result_report as $index => $new_item) {
 
-                $total_required += $new_item['required_number'];
-                $total_pass_var += $new_item['total_pass'];
+            $total_required += $new_item['required_number'];
+            $total_pass_var += $new_item['total_pass'];
 
-                $index += 1;
+            $index += 1;
 
-                $item = '
+            $item = '
                 <tr>
                             <tr>
                                 <th rowspan="4">' . $index . '</th>
@@ -686,8 +686,7 @@ class ReportsController extends Controller
                     </tr>
                 ';
 
-                array_push($result, $item);
-            
+            array_push($result, $item);
         }
 
         $total = ($total_required > 0) ? floor(($total_pass_var / $total_required) * 100) : 0;
@@ -832,19 +831,25 @@ class ReportsController extends Controller
             ->BookStudents($book_id)
             ->place($place_id)
             ->teacher($teacher_id)
+            ->search($search)
             ->whereHas('courses', function ($query) use ($books_ids) {
-                $query->whereIn('book_id', $books_ids);
+                $query->whereHas('book', function ($query) use ($books_ids) {
+                    $query->whereIn('book_id', $books_ids);
+                })->whereBetween('mark', [60, 101]);
             })
             ->count();
+
 
         $users =  User::subarea($sub_area_id, $area_id)
             ->BookStudents($book_id)
             ->place($place_id)
             ->teacher($teacher_id)
             ->search($search)
-            ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
+            // ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
             ->whereHas('courses', function ($query) use ($books_ids) {
-                $query->whereIn('book_id', $books_ids);
+                $query->whereHas('book', function ($query) use ($books_ids) {
+                    $query->whereIn('book_id', $books_ids);
+                })->whereBetween('mark', [60, 101])->groupBy();
             })
             ->get();
 
@@ -853,16 +858,38 @@ class ReportsController extends Controller
 
 
 
-
+        $result = array();
+        $completed_books_count = array();
         foreach ($users as $index => $item) {
-            array_push($value, $item->student_safwa_project_compelation_data);
+            array_push($result, $item->student_safwa_project_compelation_data);
+        }
+
+
+        foreach ($result as $key => $row) {
+            $name[$key]  = $row['name'];
+            $dob[$key] = $row['dob'];
+            $place_dob[$key] = $row['place_dob'];
+            $completed_books[$key] = $row['completed_books'];
+            $rest_books[$key] = $row['rest_books'];
+            $completed_books_count[$key] = $row['completed_books_count'];
+
+            $id[$key] = $row['id'];
+        }
+
+
+        array_multisort($completed_books_count, SORT_DESC, $result);
+        $i = 0;
+
+        foreach ($result as $key => $value) {
+            $i++;
+            $result[$key]['id'] = $i;
         }
 
         return [
             "draw" => $draw,
             "recordsTotal" => $count,
             "recordsFiltered" => $count,
-            "data" => (array)$value,
+            "data" => (array)$result,
             "order" => $columns[$order]["db"]
         ];
     }

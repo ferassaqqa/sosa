@@ -182,7 +182,6 @@ class User extends Authenticatable
             'total_accomplished_students' => $total,
             'most_accomplished_course' => $top_course,
         ];
-
     }
 
 
@@ -292,15 +291,15 @@ class User extends Authenticatable
             $delete_route = $tools[1];
             //            self::$counter++;
 
-            
+
             // $change_password = '<button type="button"  onclick="changePasswordCustomUser('.$this->id.')"><i class="ri-lock-unlock-line align-middle me-1"></i> تغيير كلمة المرور</button>';
             // $edit_user_btn = '<button type="button" class="btn btn-warning btn-sm" data-url="' . $edit_route . '" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')"><i class="mdi mdi-comment-edit"></i></button>';
             // $delete_user_btn =   '<button type="button" class="btn btn-danger btn-sm" data-url="' . $delete_route . '" onclick="deleteItem(this)"><i class="mdi mdi-trash-can"></i></button>';
 
-            $change_password = (Auth::user()->hasRole('مدير الدائرة')) ?'<button type="button"  onclick="changePasswordCustomUser('.$this->id.')"><i class="ri-lock-unlock-line align-middle me-1"></i> تغيير كلمة المرور</button>' :'';
+            $change_password = (Auth::user()->hasRole('مدير الدائرة')) ? '<button type="button"  onclick="changePasswordCustomUser(' . $this->id . ')"><i class="ri-lock-unlock-line align-middle me-1"></i> تغيير كلمة المرور</button>' : '';
             $edit_user_btn = (hasPermissionHelper('تعديل مستخدم')) ? '<button type="button" class="btn btn-warning btn-sm" data-url="' . $edit_route . '" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')"><i class="mdi mdi-comment-edit"></i></button>' : '';
             $delete_user_btn =  (hasPermissionHelper('حذف مستخدم')) ? '<button type="button" class="btn btn-danger btn-sm" data-url="' . $delete_route . '" onclick="deleteItem(this)"><i class="mdi mdi-trash-can"></i></button>' : '';
-            $tools = $edit_user_btn . ' ' . $delete_user_btn .' '.$change_password;
+            $tools = $edit_user_btn . ' ' . $delete_user_btn . ' ' . $change_password;
 
             return [
                 'id' => self::$counter,
@@ -714,18 +713,15 @@ class User extends Authenticatable
      * Scopes
      */
 
-public function scopeBookStudents($query, $book_id)
+    public function scopeBookStudents($query, $book_id)
     {
         if ($book_id) {
             return $query->whereHas('studentCourses', function ($query) use ($book_id) {
                 $query->where('book_id', $book_id);
             });
-
         } else {
             return $query;
         }
-
-
     }
 
 
@@ -1333,7 +1329,8 @@ public function scopeBookStudents($query, $book_id)
     }
 
 
-    public function getStudentSafwaProjectCompelationDataAttribute(){
+    public function getStudentSafwaProjectCompelationDataAttribute()
+    {
 
 
         if (Cache::has('safwa_books_ids')) {
@@ -1342,21 +1339,28 @@ public function scopeBookStudents($query, $book_id)
             $year = date("Y");
             $books_ids = CourseProject::where('year', $year)->limit(1)->pluck('books')->first(); //get safwa project
             $books_ids = json_decode($books_ids);
-            Cache::put('safwa_books_ids', $books_ids,600);
+            Cache::put('safwa_books_ids', $books_ids, 600);
         }
 
 
         $completed_books =  DB::table('course_students')
-        ->leftJoin('courses', 'courses.id', '=', 'course_students.course_id')
-        ->leftJoin('books', 'books.id', '=', 'courses.book_id')
-        ->where('course_students.user_id','=',$this->id)
-        ->whereIn('courses.book_id', $books_ids)
-        ->select('books.name')
-        ->get();
+            ->leftJoin('courses', 'courses.id', '=', 'course_students.course_id')
+            ->leftJoin('books', 'books.id', '=', 'courses.book_id')
+            ->whereIn('courses.book_id', $books_ids)
+            ->where('course_students.user_id', '=', $this->id)
+            ->select('books.name')
+            ->get();
+
+
+        // $completed_books =  User::whereHas('courses', function ($query) use ($books_ids) {
+        //     $query->whereHas('book', function ($query) use ($books_ids) {
+        //         $query->whereIn('book_id', $books_ids);
+        //     })->select('name');
+        // })->get();
 
         $completed_books_text = '';
         foreach ($completed_books as $key => $book) {
-            $completed_books_text .= $book->name.'+ <br>';
+            $completed_books_text .= $book->name . '+ <br>';
         }
 
         $rest_books_count = count($books_ids) - count($completed_books);
@@ -1368,8 +1372,10 @@ public function scopeBookStudents($query, $book_id)
             'name' => $this->name,
             'dob' => $this->dob,
             'place_dob' => $this->pob,
-            'completed_books' => $completed_books_text ,
+            'completed_books' => $completed_books_text,
             'rest_books' => $rest_books_count,
+            'completed_books_count' => count($completed_books),
+
         ];
     }
 

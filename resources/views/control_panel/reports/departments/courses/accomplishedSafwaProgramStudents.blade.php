@@ -31,6 +31,8 @@
         {{-- <th scope="col">معلم الدورة</th> --}}
 
         <th scope="col">الكتب المنجزة</th>
+        <th scope="col"> العدد</th>
+
         <th scope="col">الكتب المتبقية</th>
 
 
@@ -98,7 +100,12 @@ var table = '';
                     { "mData": "place_dob" },
                     // { "mData": "course_teacher" },
                     { "mData": "completed_books" },
+                    { "mData": "completed_books_count" },
+
                     { "mData": "rest_books" },
+
+
+                    
 
                 ]
             } );
