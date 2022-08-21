@@ -208,6 +208,17 @@ class Area extends Model
         }
     }
 
+    public function scopeSubArea($query, $sub_area_id, $area_id){
+        if ($sub_area_id) {
+           return $query->where('id', $sub_area_id);
+        }elseif($area_id){
+           return $query->where('id', $sub_area_id);
+        }else {
+            return $query;
+        }
+
+    }
+
     public function getAllReviewsRowDataAttribute()
     {
         self::$counter++;

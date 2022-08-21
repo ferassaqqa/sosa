@@ -77,7 +77,7 @@
                                 @endforeach
                                 @else
                                 <tr>
-                                    <td colspan="7" style="color: #00734b" scope="col"><b>  لا يوجد كتب خارج الخطة   </b></td>
+                                    <td colspan="7" style="color: #00734b" scope="col"><b>  لا يوجد لبرنامج الصفوة   </b></td>
                                 </tr>
                                 @endif
 
@@ -116,8 +116,9 @@
                                 @endforeach
                                 @else
                                 <tr>
-                                    <td colspan="7" style="color: #00734b" scope="col"><b>  لا يوجد لبرنامج الصفوة   </b></td>
+                                    <td colspan="7" style="color: #00734b" scope="col"><b>  لا يوجد كتب خارج الخطة   </b></td>
                                 </tr>
+                               
                                 @endif
 
                             </tbody>
