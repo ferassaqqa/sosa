@@ -435,13 +435,10 @@ class ExamsController extends Controller
         checkPermissionHelper('ارشيف مواعيد الاختبارات');
         $areas = Area::whereNull('area_id')->get();
         // $moallems = User::department(2)->get();
-        $books = Book::whereHas('courses', function ($query) {
-            $query->whereHas('exam', function ($query) {
-                $query->where('status', 1)->where('date', '<=', Carbon::now()->format('Y-m-d'));
-            });
-        })->where('year', Carbon::now()->format('Y'))->get();
+        $books = Book::department(2)->where('year', Carbon::now()->format('Y'))->get();
+
         $exams = Exam::where('status', 5)->where('date', '<', Carbon::now()->format('Y-m-d'))->get();
-        return view('control_panel.exams.getExamsAppointmentsArchive', compact('exams', 'areas', 'books'));
+        return view('control_panel.exams.getExamsAppointmentsArchive', compact('exams', 'areas','books'));
     }
     public function getMoallemsList($area_id)
     {
@@ -569,16 +566,12 @@ class ExamsController extends Controller
         checkPermissionHelper('اعتماد الدرجات');
         //        dd(Carbon::now()->format('Y-m-d'));
         $areas = Area::whereNull('area_id')->get();
-        $books = Book::whereHas('courses', function ($query) {
-            $query->whereHas('exam', function ($query) {
-                $query->where('status', 1)->where('date', '<=', Carbon::now()->format('Y-m-d'));
-            });
-        })->where('year', Carbon::now()->format('Y'))->get();
         $exams = Exam::where('status', '>=', 2)->where('status', '<=', 4)->where('date', '<', Carbon::now()->format('Y-m-d'))->get();
         // $moallems = User::department(2)->get();
 
+        $books = Book::department(2)->where('year', Carbon::now()->format('Y'))->get();
 
-        return view('control_panel.exams.getExamsWaitingApproveMarks', compact('exams', 'areas', 'books'));
+        return view('control_panel.exams.getExamsWaitingApproveMarks', compact('exams', 'areas','books'));
     }
     public function getExamsWaitingApproveMarksData(Request $request)
     {
@@ -830,18 +823,10 @@ class ExamsController extends Controller
     {
         checkPermissionHelper('ادخال الدرجات');
         $areas = Area::whereNull('area_id')->get();
-        $books = Book::whereHas('courses', function ($query) {
-            $query->whereHas('exam', function ($query) {
-                $query->where('status', 1)->where('date', '<=', Carbon::now()->format('Y-m-d'));
-            });
-        })->where('year', Carbon::now()->format('Y'))->get();
-        $exams = Exam::where('status', 1)->where('date', '<=', Carbon::now()->format('Y-m-d'))->get();
+        $exams = Exam::where('status', 1)->get();
+        $books = Book::department(2)->where('year', Carbon::now()->format('Y'))->get();
 
-        // $moallems = User::department(2)->get();
-
-   
-
-        return view('control_panel.exams.getEligibleCoursesForMarkEnter', compact('exams', 'areas', 'books'));
+        return view('control_panel.exams.getEligibleCoursesForMarkEnter', compact('exams', 'areas','books'));
     }
     public function getEligibleCoursesForMarkEnterData(Request $request)
     {
