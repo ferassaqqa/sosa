@@ -641,6 +641,8 @@ class User extends Authenticatable
 
         // dd($this->get_data_from_identity_num->DATA[0]);
         //        return $this->get_data_from_identity_num;
+
+        $old_data = User::where('id_num',$this->id_num)->get();
         if (!empty($this->get_data_from_identity_num->DATA)) {
             $data = $this->get_data_from_identity_num->DATA[0];
             $this->name = $data->CI_FIRST_ARB . ' ' .

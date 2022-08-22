@@ -148,13 +148,13 @@ class ExamsController extends Controller
     }
     public function newCourseExamAppointment(Request $request, Course $course)
     {
-        if ($course->exam) {
-            //            dd($course->exam,$request->all());
-            $course->exam->update($request->all());
-        } else {
-            $course->exam()->create($request->all());
-        }
-        return response()->json(['msg' => 'تم تحديد طلب موعد اختبار الدورة بنجاح', 'title' => 'موعد', 'type' => 'success']);
+        // if ($course->exam) {
+        //     //            dd($course->exam,$request->all());
+        //     $course->exam->update($request->all());
+        // } else {
+        //     $course->exam()->create($request->all());
+        // }
+        // return response()->json(['msg' => 'تم تحديد طلب موعد اختبار الدورة بنجاح', 'title' => 'موعد', 'type' => 'success']);
     }
     public function getPendingExamRequests()
     {
@@ -257,30 +257,8 @@ class ExamsController extends Controller
     {
         checkPermissionHelper('مواعيد الاختبارات');
         $areas = Area::whereNull('area_id')->get();
-
-        $moallems = User::department(2)->whereHas('teacherCourses', function ($query) {
-            $query->whereHas('exam', function ($query) {
-                $query->where('status', 0);
-                $query->orWhere('status', 1);
-            });
-        })->get();
-        $books = Book::department(2)->whereHas('courses', function ($query) {
-            $query->whereHas('exam', function ($query) {
-                $query->where('status', 0);
-                $query->orWhere('status', 1);
-            });
-        })->where('year', Carbon::now()->format('Y'))->get();
-
-
-        //         $exams = Exam::where('status', 1)
-        //             ->where('examable_type', 'App\Models\Course')
-        //             ->whereHas('examable', function ($query) {
-        //                 $query->where('status', 'قائمة');
-        //             })
-        // //            ->withoutGlobalScope('relatedExams')
-        //             ->get();
-        //        dd($exams);
-        return view('control_panel.exams.getNextExamsAppointments', compact('areas', 'books', 'moallems'));
+        $books = Book::department(2)->where('year', Carbon::now()->format('Y'))->get();
+        return view('control_panel.exams.getNextExamsAppointments', compact('areas', 'books'));
     }
     public function getNextExamsAppointmentsData(Request $request)
     {
@@ -312,7 +290,7 @@ class ExamsController extends Controller
         $value = array();
 
 
-        $total_exams = Exam::whereNull('date')->orWhere('date', 0)
+        $total_exams = Exam::where('status',0)
         ->area($area_id, $sub_area_id)
         ->examtype($exam_type)
         ->placearea($place_area)
@@ -323,7 +301,7 @@ class ExamsController extends Controller
         ->book($book_id)
         ->count();
 
-        $ss__exams = Exam::whereNull('date')->orWhere('date', 0)
+        $ss__exams = Exam::where('status',0)
         ->area($area_id, $sub_area_id)
         ->examtype($exam_type)
         ->placearea($place_area)
@@ -359,7 +337,7 @@ class ExamsController extends Controller
 
         //        var_dump($area_id);
         if (!empty($search)) {
-            $count = Exam::whereNull('date')->orWhere('date', 0)
+            $count = Exam::where('status',0)
                 ->area($area_id, $sub_area_id)
                 ->examtype($exam_type)
                 ->placearea($place_area)
@@ -370,7 +348,7 @@ class ExamsController extends Controller
                 ->book($book_id)
                 ->count();
 
-            $exams = Exam::whereNull('date')->orWhere('date', 0)
+            $exams = Exam::where('status',0)
                 ->area($area_id, $sub_area_id)
                 ->examtype($exam_type)
                 ->placearea($place_area)
@@ -382,7 +360,7 @@ class ExamsController extends Controller
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                 ->get();
         } else {
-            $count = Exam::whereNull('date')->orWhere('date', 0)
+            $count = Exam::where('status',0)
                 ->area($area_id, $sub_area_id)
                 ->examtype($exam_type)
                 ->placearea($place_area)
@@ -391,7 +369,7 @@ class ExamsController extends Controller
                 ->moallem($moallem_id)
                 ->book($book_id)
                 ->count();
-            $exams = Exam::whereNull('date')->orWhere('date', 0)
+            $exams = Exam::where('status',0)
                 ->area($area_id, $sub_area_id)
 
                 ->examtype($exam_type)
@@ -410,7 +388,9 @@ class ExamsController extends Controller
         foreach ($exams as $index => $item) {
             $approveButton = hasPermissionHelper('تأكيد طلبات الحجز') ? '<button class="btn btn-success" onclick="approveExamAppointment(this,' . $item->id . ')"><i class="mdi mdi-table"></i></button>' : '';
             $removeButton = hasPermissionHelper('حذف طلبات مواعيد الاختبارات') ? '<button class="btn btn-danger" onclick="deleteExamAppointment(this,' . $item->id . ')"><i class="mdi mdi-close"></i></button>' : '';
-
+            $students_list =  (Auth::user()->hasRole('مدير الدائرة'))?
+            '<button type="button" class="btn btn-primary" title="عرض الطلاب" data-url="'.route('courseStudents.ShowCourseStudents',$item->examable_id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl" onclick="callApi(this,\'user_modal_content\')"><i class="mdi mdi-account-multiple"></i></button>&nbsp'
+            :"";
             Exam::$counter++;
             array_push(
                 $value,
@@ -428,7 +408,7 @@ class ExamsController extends Controller
                     'place_name' => $item->place_name,
 
                     'date' => $item->date ? GetFormatedDate($item->date) . ' الساعة ' . Carbon::parse($item->time)->isoFormat('h:mm a') : '',
-                    'tools' => $approveButton . '&nbsp' . $removeButton
+                    'tools' => $approveButton . '&nbsp' . $removeButton .'&nbsp'. $students_list,
 
                 ]
             );
@@ -454,14 +434,14 @@ class ExamsController extends Controller
     {
         checkPermissionHelper('ارشيف مواعيد الاختبارات');
         $areas = Area::whereNull('area_id')->get();
-        $moallems = User::department(2)->get();
+        // $moallems = User::department(2)->get();
         $books = Book::whereHas('courses', function ($query) {
             $query->whereHas('exam', function ($query) {
                 $query->where('status', 1)->where('date', '<=', Carbon::now()->format('Y-m-d'));
             });
         })->where('year', Carbon::now()->format('Y'))->get();
         $exams = Exam::where('status', 5)->where('date', '<', Carbon::now()->format('Y-m-d'))->get();
-        return view('control_panel.exams.getExamsAppointmentsArchive', compact('exams', 'areas', 'books', 'moallems'));
+        return view('control_panel.exams.getExamsAppointmentsArchive', compact('exams', 'areas', 'books'));
     }
     public function getMoallemsList($area_id)
     {
@@ -595,10 +575,10 @@ class ExamsController extends Controller
             });
         })->where('year', Carbon::now()->format('Y'))->get();
         $exams = Exam::where('status', '>=', 2)->where('status', '<=', 4)->where('date', '<', Carbon::now()->format('Y-m-d'))->get();
-        $moallems = User::department(2)->get();
+        // $moallems = User::department(2)->get();
 
 
-        return view('control_panel.exams.getExamsWaitingApproveMarks', compact('exams', 'areas', 'books', 'moallems'));
+        return view('control_panel.exams.getExamsWaitingApproveMarks', compact('exams', 'areas', 'books'));
     }
     public function getExamsWaitingApproveMarksData(Request $request)
     {
@@ -857,11 +837,11 @@ class ExamsController extends Controller
         })->where('year', Carbon::now()->format('Y'))->get();
         $exams = Exam::where('status', 1)->where('date', '<=', Carbon::now()->format('Y-m-d'))->get();
 
-        $moallems = User::department(2)->get();
+        // $moallems = User::department(2)->get();
 
    
 
-        return view('control_panel.exams.getEligibleCoursesForMarkEnter', compact('exams', 'areas', 'books', 'moallems'));
+        return view('control_panel.exams.getEligibleCoursesForMarkEnter', compact('exams', 'areas', 'books'));
     }
     public function getEligibleCoursesForMarkEnterData(Request $request)
     {

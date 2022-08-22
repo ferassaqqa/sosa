@@ -32,18 +32,14 @@
     <div class="col-md-4">
         <select id="moallem_id" class="form-control select2">
             <option value="0">المعلم</option>
-            @foreach ($moallems as $key => $moallem)
-                <option value="{{ $moallem->id }}">{{ $moallem->name }}</option>
-            @endforeach
+            
         </select>
     </div>
 
     <div class="col-md-4">
         <select id="book_id" class="form-control ">
             <option value="0">الكتاب</option>
-            @foreach ($books as $key => $book)
-                <option value="{{ $book->id }}">{{ $book->name }}</option>
-            @endforeach
+           
         </select>
     </div>
 

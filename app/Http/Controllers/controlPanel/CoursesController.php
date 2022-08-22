@@ -10,6 +10,7 @@ use App\Models\Area;
 use App\Models\Book;
 use App\Models\BookPlan;
 use App\Models\Course;
+use App\Models\Exam;
 use App\Models\CourseStudent;
 use App\Models\Place;
 use App\Models\User;
@@ -44,7 +45,8 @@ class CoursesController extends Controller
                 return response()->json(['msg'=>'يوجد طلب مسبق لهذه الدورة','title'=>'خطأ','type'=>'info']);
         }else{
             $students_count = $course->students->count();
-            if($students_count >= 10 && !$course->exam){
+            $has_exam = Exam::where('examable_id',$course->id)->where('examable_type','App\Models\Course')->exists();
+            if($students_count >= 10 && !$has_exam){
                 $course->exam()->create();
                 return response()->json(['msg'=>'تم ارسال الطلب بنجاح','title'=>'اضافة','type'=>'success']);
 
@@ -55,13 +57,18 @@ class CoursesController extends Controller
     }
 
 
-    public function getSubAreaTeachers($area_id)
+    public function getSubAreaTeachers($sub_area_id)
     {
 
 
         $result = array();
-        $moallems = User::department(2)->area($area_id)->withoutGlobalScope('relatedUsers')->get();
-        // $moallems = User::department(2)->subarea($area_id,0)->get();
+        // $moallems = User::department(2)->area($area_id)->withoutGlobalScope('relatedUsers')->get();
+        $moallems = User::department(2)->subarea($sub_area_id,0)->get();
+
+
+        // dd($moallems);
+
+
         $moallem_list = '<option value="0">اختر المعلم</option>';
         foreach ($moallems as $moallem) {
             $moallem_list .= '<option value="'.$moallem->id.'">'.$moallem->name.'</option>';
@@ -69,7 +76,7 @@ class CoursesController extends Controller
 
         $result[] = $moallem_list;
 
-        $places = Place::where('area_id',$area_id)->get();
+        $places = Place::where('area_id',$sub_area_id)->get();
         $place_list = '<option value="0">اختر المكان</option>';
         foreach ($places as $place) {
             $place_list .= '<option value="'.$place->id.'">'.$place->name.'</option>';
@@ -238,8 +245,6 @@ class CoursesController extends Controller
     {
         checkPermissionHelper('اضافة دورة علمية');
        $course = Course::create($request->all());
-
-        // $course->exam()->create($request->all());
         return response()->json(['msg'=>'تم اضافة دورة جديدة','title'=>'اضافة','type'=>'success']);
     }
 

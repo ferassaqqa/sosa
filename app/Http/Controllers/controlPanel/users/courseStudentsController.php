@@ -11,6 +11,7 @@ use App\Models\Book;
 use App\Models\Course;
 use App\Models\CourseBookPlan;
 use App\Models\CourseStudent;
+use App\Models\Exam;
 use App\Models\Place;
 use App\Models\User;
 use App\Models\UserNote;
@@ -268,7 +269,8 @@ class courseStudentsController extends Controller
                     ]);
                 }
                 $students_count = $course->students->count();
-                if($students_count >= 10 && !$course->exam){$course->exam()->create();}
+                $has_exam = Exam::where('examable_id',$course->id)->where('examable_type','App\Models\Course')->exists();
+                if($students_count >= 10 && !$has_exam){$course->exam()->create();}
                 // $users = User::whereHas('courses', function ($query) use ($course) {
                 //     $query->where('course_id', $course->id);
                 // })->get();
@@ -297,7 +299,8 @@ class courseStudentsController extends Controller
                     'course_id' => $course->id
                 ]);
                 $students_count = $course->students->count();
-                if($students_count >= 10 && !$course->exam){$course->exam()->create();}
+                $has_exam = Exam::where('examable_id',$course->id)->where('examable_type','App\Models\Course')->exists();
+                if($students_count >= 10 && !$has_exam){$course->exam()->create();}
             } else {
                 return response()->json(['msg' => 'رقم الهوية خطأ', 'title' => 'خطأ!', 'type' => 'danger']);
             }
@@ -316,7 +319,8 @@ class courseStudentsController extends Controller
                 ]);
             }
             $students_count = $course->students->count();
-            if($students_count >= 10 && !$course->exam){$course->exam()->create();}
+            $has_exam = Exam::where('examable_id',$course->id)->where('examable_type','App\Models\Course')->exists();
+            if($students_count >= 10 && !$has_exam){$course->exam()->create();}
         }
         $users = User::whereHas('courses', function ($query) use ($course) {
             $query->where('course_id', $course->id);
@@ -374,7 +378,8 @@ class courseStudentsController extends Controller
                         'course_id' => $request->course_id
                     ]);
                     $students_count = $course->students->count();
-                    if($students_count >= 10 && !$course->exam){$course->exam()->create();}
+                    $has_exam = Exam::where('examable_id',$course->id)->where('examable_type','App\Models\Course')->exists();
+                    if($students_count >= 10 && !$has_exam){$course->exam()->create();}
                     return response()->json(['msg' => 'تم اضافة مستخدم جديد', 'title' => 'اضافة', 'type' => 'success']);
                 } else {
                     return response()->json(['msg' => 'يوجد خطأ في بيانات الدورة', 'title' => 'خطأ !', 'type' => 'danger']);
@@ -392,7 +397,8 @@ class courseStudentsController extends Controller
                 ]);
                 $course = Course::find($request->course_id);
                 $students_count = $course->students->count();
-                if($students_count >= 10 && !$course->exam){$course->exam()->create();}
+                $has_exam = Exam::where('examable_id',$course->id)->where('examable_type','App\Models\Course')->exists();
+                if($students_count >= 10 && !$has_exam){$course->exam()->create();}
                 return response()->json(['msg' => 'تم اضافة مستخدم جديد', 'title' => 'اضافة', 'type' => 'success']);
             } else {
                 return response()->json(['msg' => ' الطالب ' . $old_user->name . ' مضاف لنفس الدورة مسبقا ', 'title' => 'خطأ !', 'type' => 'danger']);
@@ -457,8 +463,10 @@ class courseStudentsController extends Controller
 
         checkPermissionHelper('حذف طالب من دورة علمية');
 
+        $has_next_exam = Exam::where('examable_id',$course->id)->where('examable_type','App\Models\Course')->where('status',1)->exists();
+
         if ($course->status != 'منتهية') {
-            if (!$course->has_next_exam) {
+            if (!$has_next_exam) {
                 $courseStudent = CourseStudent::where('user_id', $user->id)
                     ->where('course_id', $course->id)->first();
                 $courseStudent->delete();
@@ -468,10 +476,6 @@ class courseStudentsController extends Controller
                         $user->removeRole('طالب دورات علمية');
                     }
                 }
-                //            dd($user->roles);
-                //                if(!$user->user_roles->count()){
-                //                    $user->delete();
-                //                }
                 return response()->json(['msg' => 'تم حذف بيانات الطالب من الدورة بنجاح', 'title' => 'حذف', 'type' => 'success']);
             } else {
                 return response()->json(['msg' => 'لا يمكن حذف طلاب من الدورة بعد اعتماد موعد الاختبار', 'title' => 'خطأ!', 'type' => 'danger']);
