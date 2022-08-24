@@ -56,18 +56,12 @@ class CoursesController extends Controller
         }
     }
 
-
-    public function getSubAreaTeachers($sub_area_id)
+    public function getSubAreaTeachersNew($sub_area_id)
     {
 
 
         $result = array();
-        // $moallems = User::department(2)->area($area_id)->withoutGlobalScope('relatedUsers')->get();
         $moallems = User::department(2)->subarea($sub_area_id,0)->get();
-
-
-        // dd($moallems);
-
 
         $moallem_list = '<option value="0">اختر المعلم</option>';
         foreach ($moallems as $moallem) {
@@ -77,6 +71,30 @@ class CoursesController extends Controller
         $result[] = $moallem_list;
 
         $places = Place::where('area_id',$sub_area_id)->get();
+        $place_list = '<option value="0">اختر المكان</option>';
+        foreach ($places as $place) {
+            $place_list .= '<option value="'.$place->id.'">'.$place->name.'</option>';
+        }
+
+        $result[] = $place_list;
+
+        return $result;
+    }
+
+    public function getSubAreaTeachers($area_id)
+    {
+
+
+        $result = array();
+        $moallems = User::department(2)->area($area_id)->withoutGlobalScope('relatedUsers')->get();
+        $moallem_list = '<option value="0">اختر المعلم</option>';
+        foreach ($moallems as $moallem) {
+            $moallem_list .= '<option value="'.$moallem->id.'">'.$moallem->name.'</option>';
+        }
+
+        $result[] = $moallem_list;
+
+        $places = Place::where('area_id',$area_id)->get();
         $place_list = '<option value="0">اختر المكان</option>';
         foreach ($places as $place) {
             $place_list .= '<option value="'.$place->id.'">'.$place->name.'</option>';

@@ -205,6 +205,7 @@ Route::get('addReservationOrder/{course}', [\App\Http\Controllers\controlPanel\C
 Route::get('getCoursesData', [\App\Http\Controllers\controlPanel\CoursesController::class,'getData'])->name('courses.getData');
 Route::get('getCoursesDetails/{course}', [\App\Http\Controllers\controlPanel\CoursesController::class,'details'])->name('courses.details');
 Route::get('getSubAreaTeachers/{area_id}', [\App\Http\Controllers\controlPanel\CoursesController::class,'getSubAreaTeachers'])->name('courses.getSubAreaTeachers');
+Route::get('getSubAreaTeachersNew/{area_id}', [\App\Http\Controllers\controlPanel\CoursesController::class,'getSubAreaTeachersNew'])->name('courses.getSubAreaTeachersNew');
 Route::get('changeCourseStatus/{course}/{status}/{note?}', [\App\Http\Controllers\controlPanel\CoursesController::class,'changeCourseStatus'])->name('courses.changeCourseStatus');
 Route::get('getYearBooksForNewCourse/{year}', [\App\Http\Controllers\controlPanel\CoursesController::class,'getYearBooksForNewCourse'])->name('courses.getYearBooksForNewCourse');
 Route::get('createOutOfPlanBook/{year}', [\App\Http\Controllers\controlPanel\CoursesController::class,'createOutOfPlanBook'])->name('courses.createOutOfPlanBook');

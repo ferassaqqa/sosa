@@ -44,6 +44,10 @@
                         <thead>
                             <th>#</th>
                             <th>عنوان الدورة\المجلس</th>
+                            <th>حالة الدورة</th>
+                            <th>حالة الاستخراج</th>
+
+
                             <th>نوع الإختبار</th>
                             <th>عدد الطلاب</th>
                             <th>عدد الطلاب المجازين</th>
@@ -54,6 +58,8 @@
                             <th>مكان الاختبار</th>
                             <th>مشرف الجودة</th>
                             <th>الموعد</th>
+                            <th>تايخ التعديل</th>
+
                             <th></th>
                         </thead>
                         <tbody id="pendingExams">
@@ -115,6 +121,10 @@
             "aoColumns": [
                 { "mData": "id" },
                 { "mData": "course_book_name"},
+                { "mData": "course_status"},
+                { "mData": "export_status"},
+
+
                 {
                         "mData": "exam_type"
                     },
@@ -127,6 +137,8 @@
                 { "mData": "place_name" },
                 { "mData": "quality_supervisors_string" },
                 { "mData": "course_start_date" },
+                { "mData": "update_date" },
+
                 { "mData": "tools" }
             ]
         } );

@@ -526,6 +526,7 @@ class ExamsController extends Controller
         Carbon::setLocale('ar');
 
         Exam::$counter = $start;
+        $status = '';
         foreach ($exams as $index => $item) {
             Exam::$counter++;
             array_push(
@@ -533,6 +534,10 @@ class ExamsController extends Controller
                 [
                     'id' => Exam::$counter,
                     'course_book_name' => $item->course_book_name,
+                    'course_status' => $item->course_status,
+                    'export_status' => ($item->course->is_certifications_exported)? '<span color: #2ca02c;><b>تمت</b></span>':'<span color: red;><b>لم تتم بعد</b></span>',
+
+
                     'exam_type' => $item->exam_type,
                     'students_count' => $item->students_count,
                     'passed_students_count' => $item->passed_students_count,
@@ -544,7 +549,7 @@ class ExamsController extends Controller
                     'quality_supervisors_string' => $item->quality_supervisors_string,
                     // 'date'=>$item->date . ' || '. Carbon::parse($item->time)->isoFormat('h:mm a'),
                     'course_start_date' => $item->date ? GetFormatedDate($item->date) . ' الساعة ' . Carbon::parse($item->time)->isoFormat('h:mm a') : '',
-
+                    'update_date' => GetFormatedDate($item->updated_at). ' الساعة ' . Carbon::parse($item->updated_at)->isoFormat('h:mm a'),
                     'tools' => hasPermissionHelper('استخراج كشف درجات معتمد')
                         ? '<a class="btn btn-success" target="_blank" href="' . route('exportExam', $item->id) . '">كشف درجات</a>'
                         : ''
@@ -705,6 +710,7 @@ class ExamsController extends Controller
                     'students_count' => $item->students_count,
                     'course_name' => $item->course_name,
                     'teacher_mobile' => $item->teacher_mobile,
+                    'course_status' => $item->course->status,
                     // 'course_area_father_name'=>$item->course_area_father_name,
                     // 'course_area_name'=>$item->course_area_name,
                     'area' => $item->course_area_father_name . ' - ' . $item->course_area_name,

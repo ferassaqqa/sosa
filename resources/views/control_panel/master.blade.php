@@ -1633,30 +1633,6 @@
         });
     }
 
-    function sunnaManagerApprovement(exam_id, obj) {
-        // $('#user_modal_content')
-        //     .html(
-        //         '<div class="spinner-border text-success" role="status" style="margin:25px auto;">' +
-        //         '   <span class="sr-only">يرجى الانتظار ...</span>' +
-        //         '</div>'
-        //     );
-        $.get('/sunnaManagerApprovement/' + exam_id, function (data) {
-            if (!data.errors) {
-                if (data.status == 4) {
-                    $(obj).text('اعتماد مدير الدائرة');
-                    Swal.fire({
-                        position: "top-right", icon: "success", title: data.msg, showConfirmButton: !1, timer: 2500
-                    })
-                } else if (data.status == 5) {
-                    $(obj).text('تراجع اعتماد مدير الدائرة');
-                    Swal.fire({
-                        position: "top-right", icon: "success", title: data.msg, showConfirmButton: !1, timer: 2500
-                    })
-                }
-            }
-            // console.log(data);
-        });
-    }
 
     $('.export-excel').on('click', function (e) {
         var url = $(this).data('url');

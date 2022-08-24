@@ -103,7 +103,7 @@
 
             function getSubareaTeacherPlace(obj) {
                 if (obj.value != 0) {
-                    $.get('/getSubAreaTeachers/' + obj.value, function(data) {
+                    $.get('/getSubAreaTeachersNew/' + obj.value, function(data) {
                         $('#moallem_id').empty().html(data[0]);
                         $('#place_area').empty().html(data[1]);
                     });
