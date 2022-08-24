@@ -535,7 +535,7 @@ class ExamsController extends Controller
                     'id' => Exam::$counter,
                     'course_book_name' => $item->course_book_name,
                     'course_status' => $item->course_status,
-                    'export_status' => ($item->course->is_certifications_exported)? '<span color: #2ca02c;><b>تمت</b></span>':'<span color: red;><b>لم تتم بعد</b></span>',
+                    'export_status' => ($item->export_status)? '<span color: #2ca02c;><b>تمت</b></span>':'<span color: red;><b>لم تتم بعد</b></span>',
 
 
                     'exam_type' => $item->exam_type,
