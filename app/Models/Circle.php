@@ -15,7 +15,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class Circle extends Model
 {
     use HasFactory,LogsActivity;
-    protected $fillable = ['start_date','place_id','teacher_id','supervisor_id','notes','status','is_delivered','is_approved'];
+    protected $fillable = ['start_date','place_id','teacher_id','supervisor_id','notes','status','contract_type','contarct_salary'];
     public function getCircleDisplayDataAttribute(){
 
 
@@ -29,7 +29,7 @@ class Circle extends Model
         <div>'.$addStudent.'<button type="button" class="btn btn-warning" title="تعديل" data-url="'.route('circles.edit',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-x2" onclick="callApi(this,\'user_modal_content_new\')"><i class="mdi mdi-comment-edit"></i></button>
         <button type="button" class="btn btn-danger" title="حذف" data-url="'.route('circles.destroy',$this->id).'" onclick="deleteItem(this)"><i class="mdi mdi-trash-can"></i></button></div>
     ';
-
+        
         return [
             'id'                    =>$this->id,
             'start_date'            =>$this->start_date,
@@ -38,7 +38,7 @@ class Circle extends Model
             'area_father_name'      => $this->place ? $this->place->area_father_name : 0,
             'area_name'             => $this->place ? $this->place->area_name : 0,
             'id_num'                => $this->teacher ? $this->teacher->id_num : '',
-            'contract_type'           => $this->teacher ? $this->teacher->userExtraData->contract_type : '',
+            'contract_type'           => $this->contract_type ? $this->contract_type : '',
             'supervisor_name'       =>subAreaSupervisor($this->area_id_for_permissions),
             'area_supervisor_name'  =>areaSupervisor($this->area_father_id_for_permissions),
             'StatusSelect'          =>$this->status_select,
@@ -151,6 +151,8 @@ class Circle extends Model
             case 'supervisor_id': {return 'المشرف الميداني';}break;
             case 'notes': {return 'ملاحظات';}break;
             case 'status': {return 'الحالة';}break;
+            case 'contarct_type': {return 'ملاحظات';}break;
+            case 'contarct_salary': {return 'الحالة';}break;
         }
     }
     public function getFillableRelationData($fillable){
@@ -162,9 +164,11 @@ class Circle extends Model
             case 'supervisor_id': {return $this->supervisor_name;}break;
             case 'notes': {return $this->notes;}break;
             case 'status': {return $this->status;}break;
+            case 'contarct_type': {return 'ملاحظات';}break;
+            case 'contarct_salary': {return 'الحالة';}break;
         }
     }
-    protected static $logAttributes = ['id','start_date','place_id','teacher_id','supervisor_id','notes','status'];
+    protected static $logAttributes = ['id','start_date','place_id','teacher_id','supervisor_id','notes','status','contract_type','contarct_salary'];
     public function tapActivity(Activity $activity, string $eventName)
     {
         $description = $eventName;

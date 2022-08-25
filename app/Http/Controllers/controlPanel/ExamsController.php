@@ -21,12 +21,12 @@ class ExamsController extends Controller
 
     public function __construct()
     {
-       
+
         ini_set('max_execution_time', 360); //6 minutes
 
     }
 
-    
+
     public function examEligibleCourses()
     {
         checkPermissionHelper('حجز موعد اختبار');
@@ -264,12 +264,15 @@ class ExamsController extends Controller
                 $query->orWhere('status', 1);
             });
         })->get();
-        $books = Book::department(2)->whereHas('courses', function ($query) {
-            $query->whereHas('exam', function ($query) {
-                $query->where('status', 0);
-                $query->orWhere('status', 1);
-            });
-        })->where('year', Carbon::now()->format('Y'))->get();
+        // $books = Book::department(2)->whereHas('courses', function ($query) {
+        //     $query->whereHas('exam', function ($query) {
+        //         $query->where('status', 0);
+        //         $query->orWhere('status', 1);
+        //     });
+        // })->where('year', Carbon::now()->format('Y'))->get();
+
+
+        $books = Book::where('year', Carbon::now()->format('Y'))->get();
 
 
         //         $exams = Exam::where('status', 1)
@@ -337,29 +340,29 @@ class ExamsController extends Controller
         $total_students = 0;
         foreach ($ss__exams as $key => $value1) {
             $total_students += $value1->students_count;
-            
+
         }
-        
+
 
         $passed_students = 0;
         foreach ($ss__exams as $key => $value2) {
-            $passed_students += $value2->passed_students_count;                
+            $passed_students += $value2->passed_students_count;
         }
 
         $fails_students = 0;
         foreach ($ss__exams as $key => $value3) {
-            $fails_students += $value3->fails_students_count;                
+            $fails_students += $value3->fails_students_count;
         }
 
         $null_students = 0;
         foreach ($ss__exams as $key => $value2) {
-            $null_students += $value2->null_students_count;                
+            $null_students += $value2->null_students_count;
         }
 
 
         //        var_dump($area_id);
         if (!empty($search)) {
-            $count = Exam::whereNull('date')->orWhere('date', 0)
+            $count = Exam::where('status',0)
                 ->area($area_id, $sub_area_id)
                 ->examtype($exam_type)
                 ->placearea($place_area)
@@ -370,7 +373,7 @@ class ExamsController extends Controller
                 ->book($book_id)
                 ->count();
 
-            $exams = Exam::whereNull('date')->orWhere('date', 0)
+            $exams = Exam::where('status',0)
                 ->area($area_id, $sub_area_id)
                 ->examtype($exam_type)
                 ->placearea($place_area)
@@ -382,7 +385,7 @@ class ExamsController extends Controller
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                 ->get();
         } else {
-            $count = Exam::whereNull('date')->orWhere('date', 0)
+            $count = Exam::where('status',0)
                 ->area($area_id, $sub_area_id)
                 ->examtype($exam_type)
                 ->placearea($place_area)
@@ -391,7 +394,7 @@ class ExamsController extends Controller
                 ->moallem($moallem_id)
                 ->book($book_id)
                 ->count();
-            $exams = Exam::whereNull('date')->orWhere('date', 0)
+            $exams = Exam::where('status',0)
                 ->area($area_id, $sub_area_id)
 
                 ->examtype($exam_type)
@@ -455,11 +458,15 @@ class ExamsController extends Controller
         checkPermissionHelper('ارشيف مواعيد الاختبارات');
         $areas = Area::whereNull('area_id')->get();
         $moallems = User::department(2)->get();
-        $books = Book::whereHas('courses', function ($query) {
-            $query->whereHas('exam', function ($query) {
-                $query->where('status', 1)->where('date', '<=', Carbon::now()->format('Y-m-d'));
-            });
-        })->where('year', Carbon::now()->format('Y'))->get();
+        // $books = Book::whereHas('courses', function ($query) {
+        //     $query->whereHas('exam', function ($query) {
+        //         $query->where('status', 1)->where('date', '<=', Carbon::now()->format('Y-m-d'));
+        //     });
+        // })->where('year', Carbon::now()->format('Y'))->get();
+
+        $books = Book::where('year', Carbon::now()->format('Y'))->get();
+
+
         $exams = Exam::where('status', 5)->where('date', '<', Carbon::now()->format('Y-m-d'))->get();
         return view('control_panel.exams.getExamsAppointmentsArchive', compact('exams', 'areas', 'books', 'moallems'));
     }
@@ -501,7 +508,7 @@ class ExamsController extends Controller
         $value = array();
 
 
-        
+
 
 
 
@@ -589,11 +596,15 @@ class ExamsController extends Controller
         checkPermissionHelper('اعتماد الدرجات');
         //        dd(Carbon::now()->format('Y-m-d'));
         $areas = Area::whereNull('area_id')->get();
-        $books = Book::whereHas('courses', function ($query) {
-            $query->whereHas('exam', function ($query) {
-                $query->where('status', 1)->where('date', '<=', Carbon::now()->format('Y-m-d'));
-            });
-        })->where('year', Carbon::now()->format('Y'))->get();
+        // $books = Book::whereHas('courses', function ($query) {
+        //     $query->whereHas('exam', function ($query) {
+        //         $query->where('status', 1)->where('date', '<=', Carbon::now()->format('Y-m-d'));
+        //     });
+        // })->where('year', Carbon::now()->format('Y'))->get();
+
+        $books = Book::where('year', Carbon::now()->format('Y'))->get();
+
+
         $exams = Exam::where('status', '>=', 2)->where('status', '<=', 4)->where('date', '<', Carbon::now()->format('Y-m-d'))->get();
         $moallems = User::department(2)->get();
 
@@ -653,23 +664,23 @@ class ExamsController extends Controller
         $total_students = 0;
         foreach ($ss__exams as $key => $value1) {
             $total_students += $value1->students_count;
-            
+
         }
-        
+
 
         $passed_students = 0;
         foreach ($ss__exams as $key => $value2) {
-            $passed_students += $value2->passed_students_count;                
+            $passed_students += $value2->passed_students_count;
         }
 
         $fails_students = 0;
         foreach ($ss__exams as $key => $value3) {
-            $fails_students += $value3->fails_students_count;                
+            $fails_students += $value3->fails_students_count;
         }
 
         $null_students = 0;
         foreach ($ss__exams as $key => $value2) {
-            $null_students += $value2->null_students_count;                
+            $null_students += $value2->null_students_count;
         }
 
 
@@ -850,16 +861,18 @@ class ExamsController extends Controller
     {
         checkPermissionHelper('ادخال الدرجات');
         $areas = Area::whereNull('area_id')->get();
-        $books = Book::whereHas('courses', function ($query) {
-            $query->whereHas('exam', function ($query) {
-                $query->where('status', 1)->where('date', '<=', Carbon::now()->format('Y-m-d'));
-            });
-        })->where('year', Carbon::now()->format('Y'))->get();
+        // $books = Book::whereHas('courses', function ($query) {
+        //     $query->whereHas('exam', function ($query) {
+        //         $query->where('status', 1)->where('date', '<=', Carbon::now()->format('Y-m-d'));
+        //     });
+        // })->where('year', Carbon::now()->format('Y'))->get();
+        $books = Book::where('year', Carbon::now()->format('Y'))->get();
+
         $exams = Exam::where('status', 1)->where('date', '<=', Carbon::now()->format('Y-m-d'))->get();
 
         $moallems = User::department(2)->get();
 
-   
+
 
         return view('control_panel.exams.getEligibleCoursesForMarkEnter', compact('exams', 'areas', 'books', 'moallems'));
     }
@@ -927,23 +940,23 @@ class ExamsController extends Controller
             $total_students = 0;
             foreach ($ss__exams as $key => $value1) {
                 $total_students += $value1->students_count;
-                
+
             }
-            
+
 
             $passed_students = 0;
             foreach ($ss__exams as $key => $value2) {
-                $passed_students += $value2->passed_students_count;                
+                $passed_students += $value2->passed_students_count;
             }
 
             $fails_students = 0;
             foreach ($ss__exams as $key => $value2) {
-                $fails_students += $value2->fails_students_count;                
+                $fails_students += $value2->fails_students_count;
             }
 
             $null_students = 0;
             foreach ($ss__exams as $key => $value2) {
-                $null_students += $value2->null_students_count;                
+                $null_students += $value2->null_students_count;
             }
 
 
@@ -1023,7 +1036,7 @@ class ExamsController extends Controller
 
                         'tools' => $enterExamMarksButton,
 
-                        
+
                     ]
                 );
             }

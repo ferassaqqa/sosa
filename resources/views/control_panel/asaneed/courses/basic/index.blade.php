@@ -485,7 +485,7 @@ $(document).ready(function() {
                     }).then(function(result) {
                         // console.log(result);
 
-                        
+
                         if (result.isConfirmed) {
                             // if(result.value.errors == 0) {
                             // $('.bs-example-modal-xl').modal('show');
@@ -495,7 +495,7 @@ $(document).ready(function() {
                     })
                 }
 
-   
+
 
 
 

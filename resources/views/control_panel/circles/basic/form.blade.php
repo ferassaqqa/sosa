@@ -72,7 +72,7 @@
     </div>
 </div>
 
-{{-- <div class="mb-3 row">
+<div class="mb-3 row">
     <label for="supervisor_id" class="col-md-3 col-form-label">نوع الحلقة:</label>
     <div class="col-md-3" style="padding: 10px;">
 
@@ -86,7 +86,7 @@
 
 
         <input class="form-check-input" type="checkbox" name="contract_type"
-            @if (isset($circle->) && $circle-> == 'متطوع') checked @endif id="exampleRadios62" value="متطوع">
+            @if (isset($circle->contract_type) && $circle->contract_type == 'متطوع') checked @endif id="exampleRadios62" value="متطوع">
         <label class="form-check-label" for="exampleRadios62">
             متطوع
         </label>
@@ -95,10 +95,10 @@
     </div>
     <label for="included_in_plan" class="col-md-2 col-form-label">قيمة الكفالة:</label>
     <div class="col-md-4">
-        <input type="text" class="form-control" placeholder="قيمة الكفالة" name="contract_type_value"
-        value="{{ old('contract_type_value', isset($circle->contract_type_value) ? $circle->contract_type_value : '') }}">
+        <input type="text" class="form-control" placeholder="قيمة الكفالة" name="contarct_salary"
+        value="{{!! $circle->contract_salary }} ">
     </div>
-</div> --}}
+</div>
 
 <div class="mb-3 row">
     <label for="supervisor_id" class="col-md-3 col-form-label">ملاحظات:</label>

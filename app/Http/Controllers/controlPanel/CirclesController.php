@@ -217,7 +217,7 @@ class CirclesController extends Controller
      */
     public function store(newCircleRequest $request)
     {
-        $circle = Circle::create($request->only('start_date','place_id','teacher_id','supervisor_id','notes'));
+        $circle = Circle::create($request->only('start_date','place_id','teacher_id','supervisor_id','notes','contract_type','contract_salary'));
         return response()->json(['msg'=>'تم اضافة حلقة جديدة','title'=>'اضافة','type'=>'success']);
     }
 
@@ -240,7 +240,6 @@ class CirclesController extends Controller
      */
     public function edit(Circle $circle)
     {
-
         $areas = Area::whereNull('area_id')->get();
         $sub_areas = Area::where('area_id',$circle->area_father_id)->get();
         $places = Place::where('area_id',$circle->area_id)->get();
@@ -259,7 +258,8 @@ class CirclesController extends Controller
      */
     public function update(updateCircleRequest $request, Circle $circle)
     {
-        $circle->update($request->only('start_date','place_id','teacher_id','supervisor_id','notes'));
+    //   dd($request->all());
+       $circle->update($request->all());
         return response()->json(['msg'=>'تم تعديل بيانات الحلقة بنجاح','title'=>'تعديل','type'=>'success']);
     }
 

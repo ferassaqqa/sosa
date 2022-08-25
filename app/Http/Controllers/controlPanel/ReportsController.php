@@ -909,15 +909,38 @@ class ReportsController extends Controller
 
 
 
+        // foreach ($sub_areas as $index => $item) {
+        //     array_push($value, $item->most_accomplished_course_row_data);
+        // }
+
+
+
+
+
+        $result_mostaccomplish_course = array();
+
         foreach ($sub_areas as $index => $item) {
-            array_push($value, $item->most_accomplished_course_row_data);
+                $new_item = $item->most_accomplished_course_row_data;
+                $result_mostaccomplish_course[] = $new_item;
         }
+
+        $total_accomplished_students = array();
+        foreach ($result_mostaccomplish_course as $key => $row) {
+            $subarea_name[$key]  = $row['subarea_name'];
+            $total_accomplished_course[$key] = $row['total_accomplished_course'];
+            $total_accomplished_students[$key] = $row['total_accomplished_students'];
+            $most_accomplished_course[$key] = $row['most_accomplished_course'];
+            $id[$key] = $row['id'];
+        }
+
+
+        array_multisort($total_accomplished_students, SORT_DESC, $result_mostaccomplish_course);
 
         return [
             "draw" => $draw,
             "recordsTotal" => $count,
             "recordsFiltered" => $count,
-            "data" => (array)$value,
+            "data" => (array)$result_mostaccomplish_course,
             "order" => $columns[$order]["db"]
         ];
     }
@@ -1005,16 +1028,33 @@ class ReportsController extends Controller
         }
 
 
+
+
+        $result_mostaccomplish_course = array();
+
         foreach ($places as $index => $item) {
-            $row = $item->most_accomplished_course_row_data;
-            array_push($value, $row);
+                $new_item = $item->most_accomplished_course_row_data;
+                $result_mostaccomplish_course[] = $new_item;
         }
+
+        $total_accomplished_students = array();
+        foreach ($result_mostaccomplish_course as $key => $row) {
+            $mosque_name[$key]  = $row['mosque_name'];
+            $total_accomplished_course[$key] = $row['total_accomplished_course'];
+            $total_accomplished_students[$key] = $row['total_accomplished_students'];
+            $most_accomplished_course[$key] = $row['most_accomplished_course'];
+            $id[$key] = $row['id'];
+        }
+
+
+        array_multisort($total_accomplished_students, SORT_DESC, $result_mostaccomplish_course);
+
 
         return [
             "draw" => $draw,
             "recordsTotal" => $count,
             "recordsFiltered" => $count,
-            "data" => (array)$value,
+            "data" => (array)$result_mostaccomplish_course,
             "order" => $columns[$order]["db"]
         ];
     }
@@ -1101,15 +1141,32 @@ class ReportsController extends Controller
         }
         User::$counter = $start;
 
+
+        $result_mostaccomplish_course = array();
+
         foreach ($teachers as $index => $item) {
-            array_push($value, $item->most_accomplished_course_row_data);
+                $new_item = $item->most_accomplished_course_row_data;
+                $result_mostaccomplish_course[] = $new_item;
         }
+
+        $total_accomplished_students = array();
+        foreach ($result_mostaccomplish_course as $key => $row) {
+            $teacher_name[$key]  = $row['teacher_name'];
+            $total_accomplished_course[$key] = $row['total_accomplished_course'];
+            $total_accomplished_students[$key] = $row['total_accomplished_students'];
+            $most_accomplished_course[$key] = $row['most_accomplished_course'];
+            $id[$key] = $row['id'];
+        }
+
+
+        array_multisort($total_accomplished_students, SORT_DESC, $result_mostaccomplish_course);
+
 
         return [
             "draw" => $draw,
             "recordsTotal" => $count,
             "recordsFiltered" => $count,
-            "data" => (array)$value,
+            "data" => (array)$result_mostaccomplish_course,
             "order" => $columns[$order]["db"]
         ];
     }

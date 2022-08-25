@@ -72,6 +72,10 @@ class AsaneedCoursesController extends Controller
         }
 
 
+
+
+
+
         $value = array();
 
         if (!empty($search)) {
@@ -105,10 +109,9 @@ class AsaneedCoursesController extends Controller
                 ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                 ->get();
         }
-//        dd($courses);
+
         AsaneedCourse::$counter = $start;
         foreach ($courses as $index => $item) {
-//            dd($item);
             array_push(
                 $value,
                 $item->course_display_data
@@ -119,7 +122,8 @@ class AsaneedCoursesController extends Controller
             "recordsTotal" => $count,
             "recordsFiltered" => $count,
             "data" => (array)$value,
-            "order" => $columns[$order]["db"]
+            "order" => $columns[$order]["db"],
+    
         ];
     }
 

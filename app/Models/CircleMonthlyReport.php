@@ -49,7 +49,7 @@ class CircleMonthlyReport extends Model
                     $current_book = CircleBooks::find($studentPrevReport->book_id);
                     $book_id = $studentPrevReport->book_id;
                     if ($studentPrevReport->current_to == $current_book->hadith_count) {
-                        $newBook = CircleBooks::where('location', ($current_book->location + 1))->firat();
+                        $newBook = CircleBooks::where('location', ($current_book->location + 1))->first();
                         if ($newBook) {
                             $book_id = $newBook->id;
                         }

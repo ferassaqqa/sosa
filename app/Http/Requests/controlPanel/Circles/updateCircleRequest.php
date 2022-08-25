@@ -33,6 +33,8 @@ class updateCircleRequest extends FormRequest
             'teacher_id'=>'required|string|exists:users,id|',
             'supervisor_id'=>'required|string|exists:users,id',
             'notes'=>'sometimes|string|nullable',
+            // 'contract_type'=>'required',
+            // 'contract_salary'=>'required',
         ];
     }
     public function messages()
@@ -49,6 +51,10 @@ class updateCircleRequest extends FormRequest
             'supervisor_id.required'=>'يرجى ادخال اسم المشرف',
             'supervisor_id.string'=>'اسم المشرف المطلوب قيمة نصية',
             'supervisor_id.exists'=>'يرجى ادخال اسم مشرف معرف مسبقا',
+
+            // 'contract_type.required'=>'يرجى ادخال نوع الحلقة ',
+            // 'contract_salary.required'=>'يرجى ادخال قيمة الكفاله ',
+
         ];
     }
 }
