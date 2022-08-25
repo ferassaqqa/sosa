@@ -5,6 +5,12 @@
     }
 </style>
 
+@if ($_REQUEST['area_id'])
+    {{ $colspan = 2 }}
+@else
+    {{ $colspan = 14 }}
+@endif
+
 <div class="row">
     <div class="col-lg-12">
         <div class="card">
@@ -30,11 +36,14 @@
                                     <td rowspan="3"> <b> إجمالي العدد المطلوب </b></td>
 
 
-                                    <td colspan="14"> <b> إنجاز المناطق الكبرى </b></td>
+                                    <td colspan="{{$colspan}}"> <b> إنجاز المناطق الكبرى </b></td>
+                                    
 
                                     <td rowspan="3"> <b>إجمالي الإنجاز</b></td>
                                     <td rowspan="3"> <b> إجمالي المتبقي </b></td>
                                     <td rowspan="3"> <b> نسبة الإنجاز </b></td>
+                                    <td rowspan="3"> <b> نسبة الفائض </b></td>
+
 
                                 </tr>
 

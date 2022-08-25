@@ -332,16 +332,107 @@ class ReportsController extends Controller
     private function asaneedAreaPlanProgressView(Request $request)
     {
 
-        $areas = Area::whereNull('area_id')->get();
+        $area_id = $_REQUEST ? $_REQUEST['area_id'] : 0;
+
+        if ($area_id) {
+            $areas = Area::where('id', $area_id)->get();
+        } else {
+            $areas = Area::whereNull('area_id')->get();
+        }
+        
         $asaneed_plan_books = AsaneedBook::whereNotNull('author')->get();
         $value = array();
 
+        $asaneedResult = array();
+
 
         foreach ($asaneed_plan_books as $index => $item) {
-
             $new_item = $item->asaneed_students_reports_by_area_row_data;
-            array_push($value, $new_item);
+            $asaneedResult[] = $new_item;
         }
+
+        foreach ($asaneedResult as $key => $row) {
+            $name[$key]  = $row['name'];
+            $required_students_number[$key] = $row['required_students_number'];
+            $data[$key] = $row['data'];
+            $total_pass[$key] = $row['total_pass'];
+            $total_rest[$key] = $row['total_rest'];
+            $total_plus[$key] = $row['total_plus'];
+            $pass_percentage[$key] = $row['pass_percentage'];
+            $id[$key] = $row['id'];
+        }
+
+        array_multisort($pass_percentage, SORT_DESC, $asaneedResult);
+
+        $required_students_number = 0;
+        $pass_students_number = 0;
+        $rest_students_number = 0;
+        $plus_students_number = 0;
+
+        $i = 0;
+        foreach ($asaneedResult as $key => $row) {
+            $i++;
+
+
+                $required_students_number += $row['required_students_number'];
+                $pass_students_number += $row['total_pass'];
+                $rest_students_number += $row['total_rest'];
+                $plus_students_number += $row['total_plus'];
+
+
+
+
+                $item = '
+                <tr>
+                    <td>' . $i . '</td>
+                    <td>' . $row['name'] . '</td>
+                    <td>' . $row['required_students_number'] . '</td>
+                   ' . $row['data'] . '
+                    <td>' . $row['total_pass'] . '</td>
+                    <td>' . $row['total_rest'] . '</td>
+                    <td>' . $row['pass_percentage'] . ' %</td>
+                    <td>' . $row['plus_percentage'] . ' %</td>
+                </tr>
+                ';
+
+                array_push($value, $item);
+
+        }
+
+
+        $total_row = '<tr>
+                                <td></td>
+                                <td>المجموع</td>
+                                <td>' . $required_students_number . '</td>';
+
+
+        if ($_REQUEST['area_id']) {
+            $total_row .= '<td colspan="2"></td>';
+        } else {
+            $total_row .= '<td colspan="14"></td>';
+        }
+
+        $total_percentage =  ($required_students_number > 0) ? round((($pass_students_number / $required_students_number) * 100), 2) : 0;
+        if ($total_percentage > 100) {
+            $total_percentage = 100;
+        }
+
+        $plus_percentage =  ($required_students_number > 0) ? round((($plus_students_number / $required_students_number) * 100), 2) : 0;
+
+
+        $total_row .=  '<td>' . $pass_students_number . '</td>
+                                <td>' . $rest_students_number . '</td>
+
+
+                                <td><b>' . $total_percentage . ' % </b></td>
+                                <td><b>' . $plus_percentage . ' % </b></td>
+
+                            </tr>';
+
+
+
+
+        array_push($value, $total_row);
 
 
 
@@ -412,7 +503,7 @@ class ReportsController extends Controller
                    ' . $row['data'] . '
                     <td>' . $row['total_pass'] . '</td>
                     <td>' . $row['total_rest'] . '</td>
-                    
+
                     <td>' . $row['pass_percentage'] . ' %</td>
                     <td>' . $row['plus_percentage'] . ' %</td>
 
@@ -447,7 +538,7 @@ class ReportsController extends Controller
 
         $total_in_plan_row .=  '<td>' . $pass_students_number . '</td>
                                 <td>' . $rest_students_number . '</td>
-                                
+
 
                                 <td><b>' . $total_percentage . ' % </b></td>
                                 <td><b>' . $plus_percentage . ' % </b></td>
