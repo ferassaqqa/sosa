@@ -70,6 +70,8 @@
                         <thead>
                             <th>#</th>
                             <th>عنوان الدورة\المجلس</th>
+                            <th>الحالة</th>
+
                             <th>نوع الإختبار</th>
                             <th>عدد الطلاب</th>
                             <th>المعلم\الشيخ</th>
@@ -149,6 +151,9 @@
                         "mData": "course_book_name"
                     },
                     {
+                        "mData": "course_status"
+                    },
+                    {
                         "mData": "exam_type"
                     },
                     {
@@ -194,6 +199,35 @@
             });
         }
         @endif
+
+
+        
+    function sunnaManagerApprovement(exam_id, obj) {
+        // $('#user_modal_content')
+        //     .html(
+        //         '<div class="spinner-border text-success" role="status" style="margin:25px auto;">' +
+        //         '   <span class="sr-only">يرجى الانتظار ...</span>' +
+        //         '</div>'
+        //     );
+        $.get('/sunnaManagerApprovement/' + exam_id, function (data) {
+            if (!data.errors) {
+                if (data.status == 4) {
+                    $(obj).text('اعتماد مدير الدائرة');
+                    Swal.fire({
+                        position: "top-right", icon: "success", title: data.msg, showConfirmButton: !1, timer: 2500
+                    })
+                } else if (data.status == 5) {
+                    $(obj).text('تراجع اعتماد مدير الدائرة');
+                    Swal.fire({
+                        position: "top-right", icon: "success", title: data.msg, showConfirmButton: !1, timer: 2500
+                    })
+                }
+            }
+            // console.log(data);
+        });
+    }
+
+
 
             function changeExams() {
 

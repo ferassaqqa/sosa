@@ -71,8 +71,12 @@
 </div>
 <div class="row mb-3">
     <label for="student_category" class="col-md-3 col-form-label">العدد الإجمالي للأعداد المطلوبة:</label>
-    <div class="col-md-9" id="required_students" style="text-align: center;padding: 8px 0;">
-        <span style="color: #a01a00;" id="required_students_number">{{ $book->required_students_number }}</span>
+    <div class="col-md-9" id="required_students" >
+        <div class="col-md-6"></div>
+        <div class="col-md-6" style="float: left;width: 47%;direction: rtl; padding-left:2%;">
+            <input class="form-control required_students_number" type="number" min="0" step="1" value="{{ $book->required_students_number }}" name="required_students_number" >
+        </div>
+
     </div>
 </div>
     <div class="row mb-3">
@@ -131,7 +135,7 @@
         $('.student_category').each(function(){
             totalStudentsCount += parseInt($(this).val()); //<==== a catch  in here !! read below
         });
-        $('#required_students_number').text(totalStudentsCount);
+        $('.required_students_number').val(totalStudentsCount);
         $('#student_category_string').empty().text(student_category.join("_"));
     });
 </script>

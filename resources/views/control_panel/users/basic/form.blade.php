@@ -32,8 +32,8 @@
             <td class="center-align" colspan="2" style="background-color: #f9fafb;">رقم الهوية / الوثيقة:</td>
             <td colspan="2">
                 {{-- {{ $user->id_num }} --}}
-                <input type="number" min="1" style="direction: rtl;" step="1" class="form-control" name="id_num"
-                    value="{{ $user->id_num }}">
+                <input type="number" min="1" style="direction: rtl;" step="1" class="form-control"
+                    name="id_num" value="{{ $user->id_num }}">
             </td>
         </tr>
         <tr>
@@ -52,9 +52,10 @@
         {{-- @if (isset($create) || (isset($edit) && $edit)) --}}
         <tr id="area_tr">
             {!! $areas !!}
-            <td class="center-align" id="sub_area_label" colspan="2" style="background-color: #f9fafb; display: @if (isset($edit) and !$edit) none; @endif">
+            <td class="center-align" id="sub_area_label" colspan="2"
+                style="background-color: #f9fafb; display: none;">
                 المنطقة المحلية:</td>
-            <td colspan="2" id="sub_area_select" style=" display: @if (isset($edit) and !$edit) none; @endif">
+            <td colspan="2" id="sub_area_select" style=" display:none;">
                 <select class="form-control sub_area_id" name="sub_area_id">
                     @if (isset($sub_areas))
                         {!! $sub_areas !!}
@@ -70,11 +71,11 @@
 
 
 <script>
-@if (isset($edit) and !$edit)
-        $( document ).ready(function() {
+    @if (isset($edit) and !$edit)
+        $(document).ready(function() {
             $('#role_id').change();
         });
- @endif
+    @endif
 
     $('select[name="area_id"]').on('change', function() {
         var area_id = $(this).val();
@@ -83,7 +84,6 @@
             $('select[name="sub_area_id"]').empty().html(data);
         });
     });
-    {{-- @if (isset($create) || (isset($edit) && $edit)) --}}
     $('#role_id').on('change', function() {
         // console.log($('#form').action);
         var role_name = $(this).val();
@@ -91,26 +91,35 @@
         switch (role_name) {
             case 'مشرف عام': {
 
-                $('#area_select').removeAttr('style');
+                $('#area_select').css('display', '');;
                 $('#area_label').css('background-color', '#f9fafb');
-                $('#area_label').removeAttr('style');
+                $('#area_label').css('display', '');
                 $('#sub_area_select').css('display', 'none');
                 $('#sub_area_label').css('display', 'none');
             }
             break;
-        case 'مشرف ميداني': {
-            $('#area_select').removeAttr('style');
+        case 'مدير فرع': {
+
+            $('#area_select').css('display', '');
             $('#area_label').css('background-color', '#f9fafb');
-            $('#area_label').removeAttr('style');
-            $('#sub_area_select').removeAttr('style');
+            $('#area_label').css('display', '');
+            $('#sub_area_select').css('display', 'none');
+            $('#sub_area_label').css('display', 'none');
+        }
+        break;
+        case 'مشرف ميداني': {
+            $('#area_select').css('display', '');
+            $('#area_label').css('background-color', '#f9fafb');
+            $('#area_label').css('display', '');
+            $('#sub_area_select').css('display', '');
             $('#sub_area_select').css('background-color', '#f9fafb');
-            $('#sub_area_label').removeAttr('style');
+            $('#sub_area_label').css('display', '');
 
             var area_id = $('select[name="area_id"]').val();
             if (area_id) {
                 $.get('/getSubAreas/' + area_id, function(data) {
                     $('select[name="sub_area_id"]').empty().html(data);
-                    $('.sub_area_id').val(@if (isset($edit) and $edit) $user->place->area_id @endif).change();
+            
 
                 });
             }
@@ -124,5 +133,4 @@
         }
         }
     });
-    {{-- @endif --}}
 </script>

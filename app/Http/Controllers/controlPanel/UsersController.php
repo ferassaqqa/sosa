@@ -35,7 +35,9 @@ class UsersController extends Controller
     public function index()
     {
         $areas = Area::whereNull('area_id')->get();
-        return view('control_panel.users.basic.index',compact('areas'));
+        $roles = Role::all();
+
+        return view('control_panel.users.basic.index',compact('areas','roles'));
     }
     public function getData(Request $request)
     {
@@ -107,7 +109,7 @@ class UsersController extends Controller
             if ($user->user_basic_data){
                 $roles = Role::withCount(['users' => function ($query) use ($user) {
                     $query->where('id', $user->id);
-                }])->whereIn('name',['مدير الدائرة','مساعد اداري','مشرف عام','مشرف ميداني','مشرف جودة','مدير دائرة التخطيط والجودة','رئيس قسم الاختبارات'])->get();
+                }])->whereIn('name',['مدير فرع','مدير الدائرة','مساعد اداري','مشرف عام','مشرف ميداني','مشرف جودة','مدير دائرة التخطيط والجودة','رئيس قسم الاختبارات'])->get();
                 $create = true;
                 $areas = $this->getAreasForGeneralSupervisor();
                 return response()->json(['view' => view('control_panel.users.basic.create', compact('areas','user','roles','create'))->render(), 'errors' => 0]);
@@ -116,7 +118,7 @@ class UsersController extends Controller
             }
         }else{
             if($old_user){
-                if($old_user->hasRole('مدير الدائرة')||$old_user->hasRole('مساعد اداري')||$old_user->hasRole('مشرف عام')||$old_user->hasRole('مشرف ميداني')||$old_user->hasRole('مشرف جودة')||$old_user->hasRole('مدير دائرة التخطيط والجودة')||$old_user->hasRole('رئيس قسم الاختبارات')){
+                if($old_user->hasRole('مدير الفرع')||$old_user->hasRole('مدير الدائرة')||$old_user->hasRole('مساعد اداري')||$old_user->hasRole('مشرف عام')||$old_user->hasRole('مشرف ميداني')||$old_user->hasRole('مشرف جودة')||$old_user->hasRole('مدير دائرة التخطيط والجودة')||$old_user->hasRole('رئيس قسم الاختبارات')){
                     $update_link =
                         '&nbsp;<a href="#!" class="call-user-modal" onclick="callUserModal(this)" data-url="' . route('users.edit', $old_user->id) . '" data-bs-toggle="modal" data-bs-target=".bs-example-modal-xl">
                                     هنا
@@ -127,7 +129,7 @@ class UsersController extends Controller
                     $user = $old_user;
                     $roles = Role::withCount(['users' => function ($query) use ($user) {
                         $query->where('id', $user->id);
-                    }])->whereIn('name',['مدير الدائرة','مساعد اداري','مشرف عام','مشرف ميداني','مشرف جودة','مدير دائرة التخطيط والجودة','رئيس قسم الاختبارات'])->get();
+                    }])->whereIn('name',['مدير فرع','مدير الدائرة','مساعد اداري','مشرف عام','مشرف ميداني','مشرف جودة','مدير دائرة التخطيط والجودة','رئيس قسم الاختبارات'])->get();
                     $create = true;
                     $areas = $this->getAreasForGeneralSupervisor();
 
@@ -167,6 +169,19 @@ class UsersController extends Controller
                             }
                         }
                         break;
+
+                        case 'مدير فرع':
+                            {
+                                if ($request->area_id) {
+                                    $area = Area::find($request->area_id);
+                                    // $area->update(['area_supervisor_id' => $old_user->id]);
+                                $area->update(['branch_supervisor_id' => $old_user->id]);
+
+                                    $old_user->update(['supervisor_area_id' => $request->area_id]);
+                                }
+                            }
+                            break;
+
                     case 'مشرف ميداني':
                         {
                             if ($request->sub_area_id) {
@@ -205,6 +220,21 @@ class UsersController extends Controller
                                 if ($request->area_id) {
                                     $area = Area::find($request->area_id);
                                     $area->update(['area_supervisor_id' => $user->id]);
+                                    $place_id = $area->first_place_id ? $area->first_place_id : null;
+                                    $user->update(['supervisor_area_id' => $request->area_id,'place_id'=>$place_id]);
+                                }
+                            }
+                            break;
+
+                            
+                        case 'مدير فرع':
+                            {
+                                if ($request->area_id) {
+                                    $area = Area::find($request->area_id);
+                                    // $area->update(['area_supervisor_id' => $user->id]);
+                                $area->update(['branch_supervisor_id' => $user->id]);
+
+                                    
                                     $place_id = $area->first_place_id ? $area->first_place_id : null;
                                     $user->update(['supervisor_area_id' => $request->area_id,'place_id'=>$place_id]);
                                 }
@@ -253,12 +283,15 @@ class UsersController extends Controller
     {
         $roles = Role::withCount(['users' => function ($query) use ($user) {
             $query->where('id', $user->id);
-        }])->whereIn('name',['مدير الدائرة','مساعد اداري','مشرف عام','مشرف ميداني','مشرف جودة','مدير دائرة التخطيط والجودة','رئيس قسم الاختبارات'])->get();
+        }])->whereIn('name',['مدير فرع','مدير الدائرة','مساعد اداري','مشرف عام','مشرف ميداني','مشرف جودة','مدير دائرة التخطيط والجودة','رئيس قسم الاختبارات'])->get();
         $father_area_id = 0;
         $sub_areas = '';
         $edit = false;
         if($user->hasRole('مشرف عام')){
             $father_area_id = $user->area_supervisor_area_id;
+            $edit = true;
+        }elseif($user->hasRole('مدير فرع')){
+            $father_area_id = $user->branch_supervisor_id;
             $edit = true;
         }elseif ($user->hasRole('مشرف ميداني') && !is_null($user->place_id)){
             $area = Area::find($user->sub_area_supervisor_area_id);
@@ -268,6 +301,7 @@ class UsersController extends Controller
             $edit = true;
         }
 //        $create = true;
+
         $areas = $this->getAreasForGeneralSupervisor($father_area_id);
         return view('control_panel.users.basic.update', compact('user','roles','edit','areas','sub_areas'));
     }
@@ -305,6 +339,21 @@ class UsersController extends Controller
                                 $user->update([
                                     'supervisor_area_id' => $request->area_id,
                                     'place_id'=>$place_id
+                                ]);
+                            }
+                        }
+                        break;
+
+                        
+                    case 'مدير فرع':
+                        {
+                            if ($request->area_id) {
+                                $area = Area::find($request->area_id);
+                                $area->update(['branch_supervisor_id' => $user->id]);
+                                // $place_id = $area->first_place_id ? $area->first_place_id : $place_id;
+                                $user->update([
+                                    'supervisor_area_id' => $request->area_id,
+                                    // 'place_id'=>$place_id
                                 ]);
                             }
                         }
@@ -353,7 +402,7 @@ class UsersController extends Controller
     public function destroy(User $user)
     {
     //    dd($user->roles[0]->name);
-        $roles = ['مساعد اداري','مشرف عام','مشرف ميداني','مشرف جودة','مدير دائرة التخطيط والجودة','رئيس قسم الاختبارات'];
+        $roles = ['مدير الفرع','مساعد اداري','مشرف عام','مشرف ميداني','مشرف جودة','مدير دائرة التخطيط والجودة','رئيس قسم الاختبارات'];
         if($user->user_roles->count() == 1 && in_array($user->roles[0]->name,$roles)){
             $area = Area::where('area_supervisor_id', $user->id)->orWhere('sub_area_supervisor_id', $user->id)->first();
             if ($area) {
@@ -381,9 +430,9 @@ class UsersController extends Controller
                 if($user->hasRole('مساعد اداري')){
                     $user->removeRole('مساعد اداري');
                 }
-//                if($user->hasRole('مدير الدائرة')){
-//                    $user->removeRole('مدير الدائرة');
-//                }
+               if($user->hasRole('مدير الفرع')){
+                   $user->removeRole('مدير الفرع');
+               }
             }
         }
         return response()->json(['msg'=>'تم حذف بيانات المستخدم بنجاح','title'=>'حذف','type'=>'success']);

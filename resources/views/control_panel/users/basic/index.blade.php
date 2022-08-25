@@ -53,13 +53,18 @@
                             <option value="0">اختر المنطقة المحلية</option>
                         </select>
                     </div>
+                
                     <div class="col-md-3">
                         <select class="form-control" id="roles_select" onchange="updateDateTable()">
                             <option value="0">اختر دور المستخدم</option>
-                            <option value="مدير دائرة">مدير دائرة</option>
+
+                            @foreach ($roles as $role)
+                            <option value="{{$role->name}}">{{$role->name}}</option>                                
+                            @endforeach
+                            {{-- <option value="مدير دائرة">مدير دائرة</option>
                             <option value="مشرف عام">مشرف عام</option>
                             <option value="مشرف ميداني">مشرف ميداني</option>
-                            <option value="مشرف جودة">مشرف جودة</option>
+                            <option value="مشرف جودة">مشرف جودة</option> --}}
                         </select>
                     </div>
                 </div>

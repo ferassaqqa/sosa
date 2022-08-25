@@ -133,9 +133,13 @@ class BooksController extends Controller
     public function store(newBookRequest $request)
     {
         $student_category = [];
-        $required_students_number = 0;
+        $required_students_number = $request->required_students_number;
+
+        //old
+        // $required_students_number = 0;
+
         foreach ($request->student_category as $key => $student_category_value){
-            $required_students_number += $student_category_value;
+            // $required_students_number += $student_category_value;
             if((int)$student_category_value){
                 if($key == 0){
                     array_push($student_category,'ابتدائية ( 7 - 12 )');
@@ -208,9 +212,11 @@ class BooksController extends Controller
     {
 //        dd($request->all());
         $student_category = [];
-        $required_students_number = 0;
+        $required_students_number = $request->required_students_number;
+
+        // $required_students_number = 0;
         foreach ($request->student_category as $key => $student_category_value){
-            $required_students_number += $student_category_value;
+            // $required_students_number += $student_category_value;
             if((int)$student_category_value){
                 if($key == 0){
                     array_push($student_category,'ابتدائية ( 7 - 12 )');

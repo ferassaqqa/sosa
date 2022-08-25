@@ -35,8 +35,8 @@
         </th>
         <th scope="col">{{$required_num}}</th>
         <th scope="col">{{$completed_num}}</th>
-        <th scope="col">%{{$completed_num_percentage}}</th>
-        <th scope="col">%{{$excess_num_percentage}}</th>
+        <th scope="col"><b>{{$completed_num_percentage}} %</b></th>
+        <th scope="col"><b>{{$excess_num_percentage}} %</b></th>
     </tr>
 </table>
 

@@ -38,6 +38,7 @@ class ExcelExporterController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        ini_set('max_execution_time', 360);
     }
     public function exportRolesExcel(Excel $excel,Request $request){
         return $excel->download(
@@ -119,9 +120,9 @@ class ExcelExporterController extends Controller
         $course->update(['status'=>'قائمة']);
         $students_count = $course->students->count();
 
-        $exam = Exam::where('examable_id','=', $course->id)->withoutGlobalScopes()->first();
+        $has_exam = Exam::where('examable_id','=', $course->id)->withoutGlobalScopes()->first();
 
-        if($students_count >= 10 && !$exam){
+        if($students_count >= 10 && !$has_exam){
             $course->exam()->create($request->all());
         }
 

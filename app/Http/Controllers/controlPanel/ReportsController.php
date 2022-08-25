@@ -29,42 +29,7 @@ class ReportsController extends Controller
     {
         $areas = Area::whereNull('area_id')->get();
         $year = date("Y");
-
-        // $course_project = CourseProject::where('year', $year)->limit(1)->pluck('books')->first(); //get safwa project
-        // $course_project = json_decode($course_project);
-        // $project_books_value = array();
-
         $in_plane_books = Book::where('year', $year)->where('required_students_number', '>', 0)->get();
-        // $in_plane_books_value = array();
-
-        // $out_plane_books = Book::where('year', $year)->where('required_students_number' ,'>',0)->where('included_in_plan','خارج الخطة')->get();
-        // $out_plane_books_value = array();
-
-
-
-        // foreach ($in_plane_books as $index => $item) {
-        //     if(! in_array($item->id,$course_project)){
-        //         $new_item = $item->course_students_reports_by_area_row_data;
-        //         array_push($in_plane_books_value, $new_item);
-        //     }
-        // }
-
-        // foreach ($in_plane_books as $index => $item) {
-        //     if( in_array($item->id,$course_project)){
-        //         $new_item = $item->course_students_reports_by_area_row_data;
-        //         array_push($project_books_value, $new_item);
-        //     }
-        // }
-
-        // foreach ($out_plane_books as $index => $item) {
-        //     if(! in_array($item->id,$course_project)){
-        //         $new_item = $item->course_students_reports_by_area_row_data;
-        //         array_push($out_plane_books_value, $new_item);
-        //     }
-        // }
-
-
-
         return view('control_panel.reports.courseAreaReport', compact('areas', 'in_plane_books'));
     }
 
@@ -146,7 +111,6 @@ class ReportsController extends Controller
 
         return $rate;
     }
-
 
     public function courseReviewDetailsView(Request $request)
     {
@@ -293,11 +257,6 @@ class ReportsController extends Controller
         ];
     }
 
-
-
-
-
-
     public function getAnalysisView(Request $request)
     {
         $analysis_type = $request->analysis_type;
@@ -349,7 +308,6 @@ class ReportsController extends Controller
         }
     }
 
-
     public function mostAsaneedAccomplishedTeacherView(Request $request)
     {
         return [
@@ -371,9 +329,6 @@ class ReportsController extends Controller
         ];
     }
 
-    /**
-     * analysis Views functions
-     */
     private function asaneedAreaPlanProgressView(Request $request)
     {
 
@@ -412,18 +367,21 @@ class ReportsController extends Controller
         }
 
         $pass_percentage = array();
+        $total_pass = array();
+
         foreach ($result_report_in_plane as $key => $row) {
             $name[$key]  = $row['name'];
             $required_students_number[$key] = $row['required_students_number'];
             $data[$key] = $row['data'];
             $total_pass[$key] = $row['total_pass'];
             $total_rest[$key] = $row['total_rest'];
+            $total_plus[$key] = $row['total_plus'];
             $pass_percentage[$key] = $row['pass_percentage'];
             $id[$key] = $row['id'];
         }
 
 
-        array_multisort($pass_percentage, SORT_DESC, $result_report_in_plane);
+        array_multisort($total_pass, SORT_DESC, $result_report_in_plane);
 
 
 
@@ -432,25 +390,32 @@ class ReportsController extends Controller
         $required_students_number = 0;
         $pass_students_number = 0;
         $rest_students_number = 0;
+        $plus_students_number = 0;
 
 
+        $i = 0;
         foreach ($result_report_in_plane as $key => $row) {
-
+            $i++;
             if (in_array($row['id'], $safwa_array)  ==  $safwa_flag) {
 
                 $required_students_number += $row['required_students_number'];
                 $pass_students_number += $row['total_pass'];
                 $rest_students_number += $row['total_rest'];
+                $plus_students_number += $row['total_plus'];
+
 
                 $item = '
                 <tr>
-                    <td>' . $key . '</td>
+                    <td>' . $i . '</td>
                     <td>' . $row['name'] . '</td>
                     <td>' . $row['required_students_number'] . '</td>
                    ' . $row['data'] . '
                     <td>' . $row['total_pass'] . '</td>
                     <td>' . $row['total_rest'] . '</td>
+                    
                     <td>' . $row['pass_percentage'] . ' %</td>
+                    <td>' . $row['plus_percentage'] . ' %</td>
+
                 </tr>
                 ';
 
@@ -466,13 +431,27 @@ class ReportsController extends Controller
                                 <td>' . $required_students_number . '</td>';
 
 
-        $total_in_plan_row .= '<td colspan="14"></td>';
+        if ($_REQUEST['area_id']) {
+            $total_in_plan_row .= '<td colspan="2"></td>';
+        } else {
+            $total_in_plan_row .= '<td colspan="14"></td>';
+        }
 
         $total_percentage =  ($required_students_number > 0) ? round((($pass_students_number / $required_students_number) * 100), 2) : 0;
+        if ($total_percentage > 100) {
+            $total_percentage = 100;
+        }
+
+        $plus_percentage =  ($required_students_number > 0) ? round((($plus_students_number / $required_students_number) * 100), 2) : 0;
+
 
         $total_in_plan_row .=  '<td>' . $pass_students_number . '</td>
                                 <td>' . $rest_students_number . '</td>
+                                
+
                                 <td><b>' . $total_percentage . ' % </b></td>
+                                <td><b>' . $plus_percentage . ' % </b></td>
+
                             </tr>';
 
 
@@ -489,7 +468,18 @@ class ReportsController extends Controller
     private function courseAreaPlanProgressView(Request $request)
     {
 
-        $areas = Area::whereNull('area_id')->get();
+        $area_id = $_REQUEST ? $_REQUEST['area_id'] : 0;
+
+        if ($area_id) {
+            $areas = Area::where('id', $area_id)->get();
+        } else {
+            $areas = Area::whereNull('area_id')->get();
+        }
+
+
+
+
+
         $year = date("Y");
 
         $course_project = CourseProject::where('year', $year)->limit(1)->pluck('books')->first(); //get safwa project
@@ -515,7 +505,6 @@ class ReportsController extends Controller
             // 'filters'=>$filters
         ];
     }
-
 
     public function asaneedPlanProgressView(Request $request)
     {
@@ -549,9 +538,6 @@ class ReportsController extends Controller
             // 'filters'=>$filters
         ];
     }
-
-
-
 
     public function coursePlanProgressView(Request $request)
     {
@@ -606,74 +592,113 @@ class ReportsController extends Controller
     {
         $result = array();
         $total_required = 0;
-        $total_pass = 0;
+        $total_pass_var = 0;
 
         $index = 0;
 
 
+        $result_report = array();
 
         foreach ($required_result as $index => $item) {
             if (in_array($item->id, $safwa_array) == $safwa_flag) {
                 $new_item = $item->students_reports_by_students_categories_row_data;
+                array_push($result_report, $new_item);
+            }
+        }
 
-                $total_required += $new_item['required_number'];
-                $total_pass +=$new_item['total_pass'];
+        $total_pass = array();
 
-                $index +=1;
+        foreach ($result_report as $key => $row) {
 
-                $item = '
+            $name[$key]  = $row['name'];
+            $required_number[$key] = $row['required_number'];
+
+
+            $required_student_primary[$key] = $row['required_student_primary'];
+            $passed_students_count_primary[$key] = $row['passed_students_count_primary'];
+            $completed_num_percentage_primary[$key] = $row['completed_num_percentage_primary'];
+            $excess_num_percentage_primary[$key] = $row['excess_num_percentage_primary'];
+
+
+            $required_student_middle[$key] = $row['required_student_middle'];
+            $passed_students_count_middle[$key] = $row['passed_students_count_middle'];
+            $completed_num_percentage_middle[$key] = $row['completed_num_percentage_middle'];
+            $excess_num_percentage_middle[$key] = $row['excess_num_percentage_middle'];
+
+
+            $required_student_high[$key] = $row['required_student_high'];
+            $passed_students_count_high[$key] = $row['passed_students_count_high'];
+            $completed_num_percentage_high[$key] = $row['completed_num_percentage_high'];
+            $excess_num_percentage_high[$key] = $row['excess_num_percentage_high'];
+
+            $total_pass[$key] = $row['total_pass'];
+            $completed_num_percentage[$key] = $row['completed_num_percentage'];
+            $excess_num_percentage[$key] = $row['excess_num_percentage'];
+
+            $id[$key] = $row['id'];
+        }
+
+
+        array_multisort($total_pass, SORT_DESC, $result_report);
+
+
+
+        foreach ($result_report as $index => $new_item) {
+
+            $total_required += $new_item['required_number'];
+            $total_pass_var += $new_item['total_pass'];
+
+            $index += 1;
+
+            $item = '
                 <tr>
                             <tr>
-                                <th rowspan="4">'.$index.'</th>
-                                <th rowspan="4" style="background: #f0f0f0">'.$item->name.'</th>
+                                <th rowspan="4">' . $index . '</th>
+                                <th rowspan="4" style="background: #f0f0f0">' . $new_item['name'] . '</th>
                                 <th>ابتدائية ( 7 - 12 )</th>
-                                <td>'.$new_item['required_student_primary'].'</td>
-                                <td>'.$new_item['passed_students_count_primary'].'</td>
-                                <td>'.$new_item['completed_num_percentage_primary'].' %</td>
-                                <td>'.$new_item['excess_num_percentage_primary'].' %</td>
+                                <td>' . $new_item['required_student_primary'] . '</td>
+                                <td>' . $new_item['passed_students_count_primary'] . '</td>
+                                <td>' . $new_item['completed_num_percentage_primary'] . ' %</td>
+                                <td>' . $new_item['excess_num_percentage_primary'] . ' %</td>
 
                             </tr>
                             <tr>
                                 <th>اعدادية ( 13 - 15 )</th>
-                                <td>'.$new_item['required_student_middle'].'</td>
-                                <td>'.$new_item['passed_students_count_middle'].'</td>
-                                <td>'.$new_item['completed_num_percentage_middle'].' %</td>
-                                <td>'.$new_item['excess_num_percentage_middle'].' %</td>
+                                <td>' . $new_item['required_student_middle'] . '</td>
+                                <td>' . $new_item['passed_students_count_middle'] . '</td>
+                                <td>' . $new_item['completed_num_percentage_middle'] . ' %</td>
+                                <td>' . $new_item['excess_num_percentage_middle'] . ' %</td>
                             </tr>
                             <tr>
                                 <th>ثانوية فما فوق ( 16 فما فوق )</th>
-                                <td>'.$new_item['required_student_high'].'</td>
-                                <td>'.$new_item['passed_students_count_high'].'</td>
-                                <td>'.$new_item['completed_num_percentage_high'].' %</td>
-                                <td>'.$new_item['excess_num_percentage_high'].' %</td>
+                                <td>' . $new_item['required_student_high'] . '</td>
+                                <td>' . $new_item['passed_students_count_high'] . '</td>
+                                <td>' . $new_item['completed_num_percentage_high'] . ' %</td>
+                                <td>' . $new_item['excess_num_percentage_high'] . ' %</td>
                             </tr>
                             <tr style="background: #f0f0f0">
                                 <th>المجموع</th>
-                                <td>'.$new_item['required_number'].'</td>
-                                <td>'.$new_item['total_pass'].'</td>
-                                <td>'.$new_item['completed_num_percentage'].' %</td>
-                                <td>'.$new_item['excess_num_percentage'].' %</td>
+                                <td>' . $new_item['required_number'] . '</td>
+                                <td>' . $new_item['total_pass'] . '</td>
+                                <td>' . $new_item['completed_num_percentage'] . ' %</td>
+                                <td>' . $new_item['excess_num_percentage'] . ' %</td>
                             </tr>
                     </tr>
                 ';
 
-                array_push($result, $item);
-
-
-            }
-
+            array_push($result, $item);
         }
 
-        $total = ($total_required > 0) ? floor(($total_pass/$total_required)*100) : 0;
+        $total = ($total_required > 0) ? floor(($total_pass_var / $total_required) * 100) : 0;
 
-        $complet_percentage = ($total > 100)? 100 : $total;
+        $complet_percentage = ($total > 100) ? 100 : $total;
 
         $total_in_plan_row = '<tr>
 
                                 <td colspan="3"><b>المجموع الكلي </b></td>
                                 <td>' . $total_required . '</td>
-                                <td>' . $total_pass . '</td>
-                                <td>'.$complet_percentage.' %</td>
+                                <td>' . $total_pass_var . '</td>
+                                <td>' . $complet_percentage . ' %</td>
                                 <td></td>
                             </tr>';
 
@@ -685,11 +710,6 @@ class ReportsController extends Controller
 
 
         return $result;
-
-
-
-
-
     }
 
 
@@ -721,22 +741,6 @@ class ReportsController extends Controller
             'view' => view('control_panel.reports.departments.courses.accomplishedSafwaProgramStudents')->render(),
         ];
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -827,19 +831,25 @@ class ReportsController extends Controller
             ->BookStudents($book_id)
             ->place($place_id)
             ->teacher($teacher_id)
+            ->search($search)
             ->whereHas('courses', function ($query) use ($books_ids) {
-                $query->whereIn('book_id', $books_ids);
+                $query->whereHas('book', function ($query) use ($books_ids) {
+                    $query->whereIn('book_id', $books_ids);
+                })->whereBetween('mark', [60, 101]);
             })
             ->count();
+
 
         $users =  User::subarea($sub_area_id, $area_id)
             ->BookStudents($book_id)
             ->place($place_id)
             ->teacher($teacher_id)
             ->search($search)
-            ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
+            // ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
             ->whereHas('courses', function ($query) use ($books_ids) {
-                $query->whereIn('book_id', $books_ids);
+                $query->whereHas('book', function ($query) use ($books_ids) {
+                    $query->whereIn('book_id', $books_ids);
+                })->whereBetween('mark', [60, 101])->groupBy();
             })
             ->get();
 
@@ -848,16 +858,38 @@ class ReportsController extends Controller
 
 
 
-
+        $result = array();
+        $completed_books_count = array();
         foreach ($users as $index => $item) {
-            array_push($value, $item->student_safwa_project_compelation_data);
+            array_push($result, $item->student_safwa_project_compelation_data);
+        }
+
+
+        foreach ($result as $key => $row) {
+            $name[$key]  = $row['name'];
+            $dob[$key] = $row['dob'];
+            $place_dob[$key] = $row['place_dob'];
+            $completed_books[$key] = $row['completed_books'];
+            $rest_books[$key] = $row['rest_books'];
+            $completed_books_count[$key] = $row['completed_books_count'];
+
+            $id[$key] = $row['id'];
+        }
+
+
+        array_multisort($completed_books_count, SORT_DESC, $result);
+        $i = 0;
+
+        foreach ($result as $key => $value) {
+            $i++;
+            $result[$key]['id'] = $i;
         }
 
         return [
             "draw" => $draw,
             "recordsTotal" => $count,
             "recordsFiltered" => $count,
-            "data" => (array)$value,
+            "data" => (array)$result,
             "order" => $columns[$order]["db"]
         ];
     }
@@ -944,8 +976,6 @@ class ReportsController extends Controller
             "order" => $columns[$order]["db"]
         ];
     }
-
-
 
     public function mostaccomplishedMosquesData(Request $request)
     {
@@ -1250,11 +1280,6 @@ class ReportsController extends Controller
         ];
     }
 
-
-
-
-
-
     public function coursePlanProgressData(Request $request)
     {
 
@@ -1299,8 +1324,9 @@ class ReportsController extends Controller
                 ->get();
         }
         foreach ($books as $index => $item) {
+            $index++;
             $new_item = $item->book_courses_plan_progress_display_data;
-            $new_item['id'] = $index + 1;
+            $new_item['id'] = $index;
             $new_item['completed_num_percentage'] = $new_item['completed_num_percentage'] . '%';
             $new_item['excess_num_percentage'] = $new_item['excess_num_percentage'] . '%';
             array_push($value, $new_item);

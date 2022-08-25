@@ -2,12 +2,10 @@
 
 namespace App\Imports;
 
-use Carbon\Carbon;
 
 use App\Models\CourseStudent;
 use App\Models\Place;
 use App\Models\User;
-use App\Models\CircleMonthlyReport;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -20,9 +18,9 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithUpserts;
 use Maatwebsite\Excel\Concerns\WithValidation;
 
-class CircleStudentsImport implements ToModel,WithUpserts,WithValidation,WithHeadingRow,SkipsOnFailure,SkipsEmptyRows
+class CircleStudentsImport implements ToModel, WithUpserts, WithValidation, WithHeadingRow, SkipsOnFailure, SkipsEmptyRows
 {
-    use Importable,SkipsFailures;
+    use Importable, SkipsFailures;
 
     private static $circle;
     public function __construct($circle)
@@ -35,115 +33,74 @@ class CircleStudentsImport implements ToModel,WithUpserts,WithValidation,WithHea
 
 
         $circle = Self::$circle;
-        // $id_num = (int)$row['rkm_alhoy'];
-        // if($circle->teacher_id_num == $id_num){
-        //     return response()->json(['view' => '', 'errors' => 1, 'msg' => ' لا يمكن اضافة المعلم '.$circle->teacher_name.' كطالب في دورته '], 404);
-        // }else {
-        //     $old_user = User::withoutGlobalScope('relatedUsers')->where('id_num', $id_num)->first();
-
-        //     $user_validity_check = getGetDataFromIdentityNum($id_num);
-        //     if($user_validity_check) {
-        //         $user_interior_ministry_data = array_merge(getUserBasicData($user_validity_check), ['place_id' => $circle->place_id]);
-        //         if (!$old_user) {
-
-        //                 // $user_data = array_merge(['id_num' => $id_num, 'password' => Hash::make($id_num),'teacher_id' =>$circle->teacher_id], $user_interior_ministry_data);
-
-        //                 $user_data = $user_interior_ministry_data;
-
-        //                 $user = User::create($user_data);
+        $id_num = (int)$row['rkm_alhoy'];
+        if ($circle->teacher_id_num == $id_num) {
+            return response()->json(['view' => '', 'errors' => 1, 'msg' => ' لا يمكن اضافة المعلم ' . $circle->teacher_name . ' كطالب في دورته '], 404);
+        } else {
+            $old_user = User::withoutGlobalScope('relatedUsers')->where('id_num', $id_num)->first();
 
 
-        //                 if ($user->userExtraData) {
-        //                     $user->userExtraData->update(['mobile' => $id_num]);
-        //                 } else {
-        //                     $user->userExtraData()->create(['mobile' => $id_num]);
-        //                 }
+            if ($old_user) {
 
-        //                 Auth::user()->sendFCM(
-        //                     [
-        //                         'title'=>'
-        //                                 <tr>
-        //                                     <td></td>
-        //                                     <td style="text-align:right;">'. $user->name .'</td>
-        //                                     <td>'. $user->id_num .'</td>
-        //                                     <td>'. $user->dob .'</td>
-        //                                     <td>'. $user->pob .'</td>
-        //                                 </tr>'
-        //                     ]
-        //                 );
-        //                 $user->assignRole('طالب تحفيظ');
+                // $user_data = array_merge(['password' => Hash::make($id_num),'teacher_id' =>$circle->teacher_id], $user_interior_ministry_data);
+                // $old_user->update($user_data);
 
-        //         } else {
+                if ($old_user->userExtraData) {
+                    $old_user->userExtraData->update(['mobile' => $id_num]);
+                } else {
+                    $old_user->userExtraData()->create(['mobile' => $id_num]);
+                }
 
-        //                 // $user_data = array_merge(['password' => Hash::make($id_num),'teacher_id' =>$circle->teacher_id], $user_interior_ministry_data);
-        //                 $user_data = $user_interior_ministry_data;
+                if (!$old_user->hasRole('طالب تحفيظ')) {
+                    $old_user->assignRole('طالب تحفيظ');
+                }
+                Auth::user()->sendFCM(
+                    [
+                        'title' => '
+                                <tr>
+                                    <td></td>
+                                    <td style="text-align:right;">' . $old_user->name . '</td>
+                                    <td>' . $old_user->id_num . '</td>
+                                    <td>' . $old_user->dob . '</td>
+                                    <td>' . $old_user->pob . '</td>
 
-        //                 $old_user->update($user_data);
-
-        //                 if ($old_user->userExtraData) {
-        //                     $old_user->userExtraData->update(['mobile' => $id_num]);
-        //                 } else {
-        //                     $old_user->userExtraData()->create(['mobile' => $id_num]);
-        //                 }
-
-        //                 if (!$old_user->hasRole('طالب تحفيظ')) {
-        //                     $old_user->assignRole('طالب تحفيظ');
-        //                 }
-        //                 Auth::user()->sendFCM(
-        //                     [
-        //                         'title'=>'
-        //                                 <tr>
-        //                                     <td></td>
-        //                                     <td style="text-align:right;">'. $old_user->name .'</td>
-        //                                     <td>'. $old_user->id_num .'</td>
-        //                                     <td>'. $old_user->dob .'</td>
-        //                                     <td>'. $old_user->pob .'</td>
-
-        //                                 </tr>'
-        //                     ]
-        //                 );
-
-
-        //         }
-
-
-                $today = Carbon::now()->format('Y-m-d');
-                $firstDay = Carbon::parse($today)->startOfMonth()->format('Y-m-d');
-                $lastDay = Carbon::parse($today)->endOfMonth()->format('Y-m-d');
-
-                dd($today);
-
-                $circlePrevMonthlyReport = CircleMonthlyReport::where('circle_id', $circle->id)->whereBetween('date', [$firstDay, $lastDay]);
-                $circlePrevMonthlyReport = ($circlePrevMonthlyReport)? $circlePrevMonthlyReport : '';
+                                </tr>'
+                    ]
+                );
+            } else { // empty old_user
 
 
 
+                $user_validity_check = getGetDataFromIdentityNum($id_num);
+                if ($user_validity_check) {
+
+                    $user_interior_ministry_data = array_merge(getUserBasicData($user_validity_check), ['place_id' => $circle->place_id]);
+                    $user_data = array_merge(['id_num' => $id_num, 'password' => Hash::make($id_num), 'teacher_id' => $circle->teacher_id], $user_interior_ministry_data);
+                    $user = User::create($user_data);
 
 
-                // $students = $circle->students;
+                    if ($user->userExtraData) {
+                        $user->userExtraData->update(['mobile' => $id_num]);
+                    } else {
+                        $user->userExtraData()->create(['mobile' => $id_num]);
+                    }
 
-                // foreach ($students as $key => $student) {
-
-                //     $student = CircleMonthlyReportStudent::create([
-                //         'circle_monthly_report_id' => $report->id,
-                //         'student_id' => $student->id,
-                //         'book_id' => 4,
-                //         'previous_from' => 0,
-                //         'previous_to' => 0,
-                //         'current_from' => 1,
-                //         'current_to' => 0
-
-                //     ]);
-                //         $student->save();
-
-                // }
-
-
-
-            // }else{
-
-            // }
-        // }
+                    Auth::user()->sendFCM(
+                        [
+                            'title' => '
+                                        <tr>
+                                            <td></td>
+                                            <td style="text-align:right;">' . $user->name . '</td>
+                                            <td>' . $user->id_num . '</td>
+                                            <td>' . $user->dob . '</td>
+                                            <td>' . $user->pob . '</td>
+                                        </tr>'
+                        ]
+                    );
+                    $user->assignRole('طالب تحفيظ');
+                }
+            }
+        }
     }
     public function uniqueBy()
     {
@@ -157,9 +114,9 @@ class CircleStudentsImport implements ToModel,WithUpserts,WithValidation,WithHea
     {
         // TODO: Implement rules() method.
         return [
-            'rkm_alhoy' => 'required|numeric|is_id_valid'//|can_exclude_student:'.SELF::$course->id,
-//            'almsgd' => 'required|string|exists:places,name',
-//            'rkm_algoal' => 'required|numeric',
+            'rkm_alhoy' => 'required|numeric|is_id_valid' //|can_exclude_student:'.SELF::$course->id,
+            //            'almsgd' => 'required|string|exists:places,name',
+            //            'rkm_algoal' => 'required|numeric',
         ];
     }
     public function customValidationMessages()

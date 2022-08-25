@@ -9,6 +9,8 @@ use App\Models\AsaneedCourse;
 use App\Models\AsaneedCourseStudent;
 use App\Models\User;
 use App\Models\Area;
+use App\Models\Exam;
+
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -137,7 +139,9 @@ class AsaneedCoursesStudentsController extends Controller
                         'asaneed_course_id' => $asaneedCourse->id
                     ]);
                     $students_count = $asaneedCourse->students->count();
-                    if($students_count >= 10 && !$asaneedCourse->exam){
+                    $has_exam = Exam::where('examable_id',$asaneedCourse->id)->where('examable_type','App\Models\AsaneedCourse')->exists();
+
+                    if($students_count >= 10 && !$has_exam){
                         $asaneedCourse->exam()->create();
                         $asaneedCourse->exam()->update([
                             'status' => 5
@@ -165,7 +169,9 @@ class AsaneedCoursesStudentsController extends Controller
                     'asaneed_course_id' => $asaneedCourse->id
                 ]);
                 $students_count = $asaneedCourse->students->count();
-                if($students_count >= 10 && !$asaneedCourse->exam){
+                $has_exam = Exam::where('examable_id',$asaneedCourse->id)->where('examable_type','App\Models\AsaneedCourse')->exists();
+
+                if($students_count >= 10 && !$has_exam){
                     $asaneedCourse->exam()->create();
                     $asaneedCourse->exam()->update([
                         'status' => 5
@@ -193,7 +199,9 @@ class AsaneedCoursesStudentsController extends Controller
             })->get();
 
             $students_count = $asaneedCourse->students->count();
-            if($students_count >= 10 && !$asaneedCourse->exam){
+            $has_exam = Exam::where('examable_id',$asaneedCourse->id)->where('examable_type','App\Models\AsaneedCourse')->exists();
+
+            if($students_count >= 10 && !$has_exam){
                 $asaneedCourse->exam()->create();
                 $asaneedCourse->exam()->update([
                     'status' => 5
@@ -236,7 +244,9 @@ class AsaneedCoursesStudentsController extends Controller
                 ]);
 
                 $students_count = $asaneedCourse->students->count();
-                if($students_count >= 10 && !$asaneedCourse->exam){
+                $has_exam = Exam::where('examable_id',$asaneedCourse->id)->where('examable_type','App\Models\AsaneedCourse')->exists();
+
+                if($students_count >= 10 && !$has_exam){
                     $asaneedCourse->exam()->create();
                     $asaneedCourse->exam()->update([
                         'status' => 5
@@ -255,7 +265,9 @@ class AsaneedCoursesStudentsController extends Controller
                     'asaneed_course_id' => $request->asaneed_course_id
                 ]);
                 $students_count = $asaneedCourse->students->count();
-                if($students_count >= 10 && !$asaneedCourse->exam){
+                $has_exam = Exam::where('examable_id',$asaneedCourse->id)->where('examable_type','App\Models\AsaneedCourse')->exists();
+
+                if($students_count >= 10 && !$has_exam){
                     $asaneedCourse->exam()->create();
                     $asaneedCourse->exam()->update([
                         'status' => 5

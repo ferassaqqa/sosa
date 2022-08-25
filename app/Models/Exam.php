@@ -37,6 +37,26 @@ class Exam extends Model
         }
     }
 
+
+    public function getExportStatusAttribute(){
+        if($this->examable_type == 'App\Models\Course'){
+            return $this->course->is_certifications_exported;
+        }
+        if($this->examable_type == 'App\Models\AsaneedCourse'){
+            return $this->asaneed->is_certifications_exported;            
+        }
+    }
+
+
+    public function getCourseStatusAttribute(){
+        if($this->examable_type == 'App\Models\Course'){
+            return $this->course->status;
+        }
+        if($this->examable_type == 'App\Models\AsaneedCourse'){
+            return $this->asaneed->status;            
+        }
+    }
+
     public function getAsaneedAttribute(){
         if($this->examable_type == 'App\Models\AsaneedCourse'){
             return $this->examable;

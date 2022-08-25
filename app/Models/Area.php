@@ -16,7 +16,7 @@ class Area extends Model
     use HasFactory;
     public static $counter = 0;
 
-    protected $fillable = ['name', 'area_id', 'area_supervisor_id', 'sub_area_supervisor_id', 'percentage', 'student_marks_export_count', 'student_marks_export_year'];
+    protected $fillable = ['name', 'area_id','branch_supervisor_id', 'area_supervisor_id', 'sub_area_supervisor_id', 'percentage', 'student_marks_export_count', 'student_marks_export_year'];
     public function subArea()
     {
         return $this->hasMany(Area::class, 'area_id', 'id')->withoutGlobalScope('relatedAreas');
@@ -164,6 +164,14 @@ class Area extends Model
     {
         return $this->belongsTo(User::class, 'area_supervisor_id', 'id')->withoutGlobalScope('relatedUsers');
     }
+    public function branchSupervisor()
+    {
+        return $this->belongsTo(User::class, 'branch_supervisor_id', 'id')->withoutGlobalScope('relatedUsers');
+    }
+    public function getBranchSupervisorNameAttribute()
+    {
+        return $this->branchSupervisor ? $this->branchSupervisor->name : '';
+    }
     public function getAreaSupervisorNameAttribute()
     {
         return $this->areaSupervisor ? $this->areaSupervisor->name : '';
@@ -206,6 +214,17 @@ class Area extends Model
         } else {
             return $query;
         }
+    }
+
+    public function scopeSubArea($query, $sub_area_id, $area_id){
+        if ($sub_area_id) {
+           return $query->where('id', $sub_area_id);
+        }elseif($area_id){
+           return $query->where('id', $sub_area_id);
+        }else {
+            return $query;
+        }
+
     }
 
     public function getAllReviewsRowDataAttribute()

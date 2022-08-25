@@ -32,9 +32,7 @@
     <div class="col-md-4">
         <select id="moallem_id" class="form-control select2">
             <option value="0">المعلم</option>
-            @foreach ($moallems as $key => $moallem)
-                <option value="{{ $moallem->id }}">{{ $moallem->name }}</option>
-            @endforeach
+            
         </select>
     </div>
 
@@ -105,7 +103,7 @@
 
             function getSubareaTeacherPlace(obj) {
                 if (obj.value != 0) {
-                    $.get('/getSubAreaTeachers/' + obj.value, function(data) {
+                    $.get('/getSubAreaTeachersNew/' + obj.value, function(data) {
                         $('#moallem_id').empty().html(data[0]);
                         $('#place_area').empty().html(data[1]);
                     });
