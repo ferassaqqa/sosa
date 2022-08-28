@@ -8,6 +8,9 @@ use App\Providers\RouteServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Cookie;
+
 
 class AuthenticatedSessionController extends Controller
 {
@@ -46,16 +49,24 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request)
     {
-        Auth::guard('web')->logout();
+        // Auth::guard('web')->logout();
 
-        $request->session()->invalidate();
+        // $request->session()->invalidate();
 
-        $request->session()->regenerateToken();
+        // $request->session()->regenerateToken();
 
-        $request->session()->flush();
+        // $request->session()->flush();
 
+        // return redirect('/');
 
+        // Get remember_me cookie name
+        $rememberMeCookie = Auth::getRecallerName();
+        // Tell Laravel to forget this cookie
+        $cookie = Cookie::forget($rememberMeCookie);
+        Session::flush();
+        Auth::logout();
 
-        return redirect('/');
+        return Redirect::to('/')->withCookie($cookie);
+
     }
 }

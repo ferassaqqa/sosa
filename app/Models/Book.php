@@ -58,7 +58,7 @@ class Book extends Model
     {
 
         $year = date("Y");
-        $books = Book::where('year', $year)->get();
+        // $books = Book::where('year', $year)->get();
         self::$counter++;
 
 
@@ -83,19 +83,19 @@ class Book extends Model
         }else{
             $areas = Area::whereNull('area_id')->get();
         }
-        
+
         if($sub_area_id){
             $areas = Area::where('id',$sub_area_id)->get();
             $this->required_students_number  = floor(floor($this->required_students_number * $areas[0]->percentage)/100);
         }
 
-        
+
 
 
 
 
         $rest = 0;
-        $all_areas_total_array = array();
+        // $all_areas_total_array = array();
         foreach ($areas as $key => $area) {
 
                 $pass = CourseStudent::book($this->id)
@@ -120,7 +120,7 @@ class Book extends Model
                 $total_pass += $pass;
                 $data .= '<td>' . $pass . '</td>
                         <td  style="color:' . $color . '"><b>' . $icon . ' ' . abs($rest) . '</b></td>';
-    
+
         }
 
         $pass_percentage = $this->required_students_number ? round((($total_pass / $this->required_students_number) * 100), 2) : 0;
@@ -192,7 +192,7 @@ class Book extends Model
 
             $required_student_total = floor($required_student_total * ($area->percentage / 100));
         }
-        // 
+        //
         // $pass = CourseStudent::book($this->id)
         // ->subarea(0,$area->id)
         // ->whereBetween('mark', [60, 101])->count();

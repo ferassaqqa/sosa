@@ -31,7 +31,7 @@
         </select>
     </div>
 </div>
-<div class="row mb-3">
+{{-- <div class="row mb-3">
     @if(isset($type) && $type == 'خارج الخطة')
         <input type="hidden" class="form-control" name="included_in_plan" value="خارج الخطة">
         <label for="category_id" class="col-md-3 col-form-label">التصنيف</label>
@@ -56,15 +56,32 @@
             </select>
         </div>
     @endif
-</div>
+</div> --}}
+
 
 <div class="row mb-3">
+    <label for="student_category" class="col-md-2 col-form-label">عدد الطلاب المطلوب</label>
+    <div class="col-md-4" id="required_students" >
+        <input style="direction: rtl;" class="form-control required_students_number" type="number" min="0" step="1" value="{{ $asaneedBook->required_students_number }}" name="required_students_number" >
+    </div>
+
+    <label for="category_id" class="col-md-2 col-form-label">التصنيف</label>
+    <div class="col-md-4">
+        <select class="form-control" name="category_id" id="category_id">
+            {!! $bookCategoriesSelect !!}
+        </select>
+    </div>
+
+</div>
+
+
+{{-- <div class="row mb-3">
         <label for="student_category" class="col-md-3 col-form-label">فئة الطلاب:</label>
         <div class="col-md-9" id="student_category" style="text-align: center;padding: 8px 0;">
             <span style="color: #2ca02c;" id="student_category_string">{!! $asaneedBook->student_category_string !!}</span>
         </div>
-    </div>
-    <div class="row mb-3">
+    </div> --}}
+    {{-- <div class="row mb-3">
         <label for="student_category" class="col-md-3 col-form-label">فئات الكتاب</label>
         <div class="col-md-9">
             <div class="row" data-cat="1">
@@ -84,35 +101,35 @@
                 <input class="form-control col-md-6 student_category" type="number" min="0" step="1" value="{{ count($asaneedBook->required_students_number_array_as_array) ? $asaneedBook->required_students_number_array_as_array[3] : 0 }}" name="student_category[]" style="width: 47%;direction: rtl;">
             </div>
         </div>
-    </div>
+    </div> --}}
 <input type="hidden" name="id" value="{{ $asaneedBook->id }}">
 
 
 <script>
-    $('.student_category').on('change',function(){
-        var input = $(this);
-        var student_category = $('#student_category_string').text() ? $('#student_category_string').text().split('-') : [];
-        var cat = input.closest('div').data('cat');
-        var category = "";
-        switch (cat){
-            case 1: {category = "ابتدائية";}break;
-            case 2: {category = "اعدادية";}break;
-            case 3: {category = "ثانوية";}break;
-            case 4: {category = "ثانوية فما فوق";}break;
-        }
+    // $('.student_category').on('change',function(){
+    //     var input = $(this);
+    //     var student_category = $('#student_category_string').text() ? $('#student_category_string').text().split('-') : [];
+    //     var cat = input.closest('div').data('cat');
+    //     var category = "";
+    //     switch (cat){
+    //         case 1: {category = "ابتدائية";}break;
+    //         case 2: {category = "اعدادية";}break;
+    //         case 3: {category = "ثانوية";}break;
+    //         case 4: {category = "ثانوية فما فوق";}break;
+    //     }
 
-        // console.log(category);
-        var boolVar = student_category.includes(category);
-        if(parseInt(input.val())){
-            if (!boolVar) {
-                student_category.push(category);
-            }
-        }else {
-            if (boolVar) {
-                var index = student_category.indexOf(category);
-                student_category.splice(index,1);
-            }
-        }
-        $('#student_category_string').empty().text(student_category.join("-"));
-    });
+    //     // console.log(category);
+    //     var boolVar = student_category.includes(category);
+    //     if(parseInt(input.val())){
+    //         if (!boolVar) {
+    //             student_category.push(category);
+    //         }
+    //     }else {
+    //         if (boolVar) {
+    //             var index = student_category.indexOf(category);
+    //             student_category.splice(index,1);
+    //         }
+    //     }
+    //     $('#student_category_string').empty().text(student_category.join("-"));
+    // });
 </script>

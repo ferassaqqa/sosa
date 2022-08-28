@@ -405,7 +405,7 @@ class ExamsController extends Controller
                     // 'course_area_name'=>$item->course_area_name,
                     'area' => $item->course_area_father_name . ' - ' . $item->course_area_name,
                     'quality_supervisors_string' => $item->quality_supervisors_string,
-                    'place_name' => $item->place_name,
+                    'place_name' => $item->course_place_name,
 
                     'date' => $item->date ? GetFormatedDate($item->date) . ' الساعة ' . Carbon::parse($item->time)->isoFormat('h:mm a') : '',
                     'tools' => $approveButton . '&nbsp' . $removeButton .'&nbsp'. $students_list,
@@ -715,7 +715,7 @@ class ExamsController extends Controller
                     // 'course_area_name'=>$item->course_area_name,
                     'area' => $item->course_area_father_name . ' - ' . $item->course_area_name,
                     'quality_supervisors_string' => $item->quality_supervisors_string,
-                    'place_name' => $item->place_name,
+                    'place_name' => $item->course_place_name,
 
                     'date' => $item->date ? GetFormatedDate($item->date) . ' الساعة ' . Carbon::parse($item->time)->isoFormat('h:mm a') : '',
                     'tools' => hasPermissionHelper('اعتماد نتائج الاختبارات') ?

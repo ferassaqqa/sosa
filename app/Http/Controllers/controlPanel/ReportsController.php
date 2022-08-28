@@ -339,8 +339,8 @@ class ReportsController extends Controller
         } else {
             $areas = Area::whereNull('area_id')->get();
         }
-        
-        $asaneed_plan_books = AsaneedBook::whereNotNull('author')->get();
+
+        $asaneed_plan_books = AsaneedBook::all();
         $value = array();
 
         $asaneedResult = array();
@@ -373,14 +373,10 @@ class ReportsController extends Controller
         foreach ($asaneedResult as $key => $row) {
             $i++;
 
-
                 $required_students_number += $row['required_students_number'];
                 $pass_students_number += $row['total_pass'];
                 $rest_students_number += $row['total_rest'];
                 $plus_students_number += $row['total_plus'];
-
-
-
 
                 $item = '
                 <tr>
@@ -399,11 +395,10 @@ class ReportsController extends Controller
 
         }
 
-
         $total_row = '<tr>
-                                <td></td>
-                                <td>المجموع</td>
-                                <td>' . $required_students_number . '</td>';
+                        <td></td>
+                        <td>المجموع</td>
+                        <td>' . $required_students_number . '</td>';
 
 
         if ($_REQUEST['area_id']) {
@@ -417,24 +412,16 @@ class ReportsController extends Controller
             $total_percentage = 100;
         }
 
-        $plus_percentage =  ($required_students_number > 0) ? round((($plus_students_number / $required_students_number) * 100), 2) : 0;
+        $plus_percentage =  ($plus_students_number > 0) ? round((($plus_students_number / $required_students_number) * 100), 2) : 0;
 
 
         $total_row .=  '<td>' . $pass_students_number . '</td>
                                 <td>' . $rest_students_number . '</td>
-
-
                                 <td><b>' . $total_percentage . ' % </b></td>
                                 <td><b>' . $plus_percentage . ' % </b></td>
-
-                            </tr>';
-
-
-
+                        </tr>';
 
         array_push($value, $total_row);
-
-
 
         return [
             'view' => view('control_panel.reports.departments.asaneed.asaneedAreaPlanProgress', compact('value', 'areas'))->render()
@@ -611,22 +598,75 @@ class ReportsController extends Controller
             $books = AsaneedBook::where('year', $year)->get();
         }
         $value = array();
-        if (Cache::has('asaneed_acheivment_reports')) {
-            $value = Cache::get('asaneed_acheivment_reports');
-        } else {
+        $asaneed_result = array();
+
             foreach ($books as $index => $item) {
                 $new_item = $item->asaneed_students_reports_by_students_categories_row_data;
-                array_push($value, $new_item);
+                $asaneed_result [] = $new_item;
+                // array_push($value, $new_item);
             }
-            Cache::put('asaneed_acheivment_reports', $value, 600);
+
+
+            $total_pass = array();
+            foreach ($asaneed_result as $key => $row) {
+                $name[$key]  = $row['name'];
+                $required_student_total[$key] = $row['required_student_total'];
+                $total_pass[$key] = $row['total_pass'];
+                $completed_num_percentage[$key] = $row['completed_num_percentage'];
+                $excess_num_percentage[$key] = $row['excess_num_percentage'];
+                $id[$key] = $row['id'];
+            }
+
+          array_multisort($total_pass, SORT_DESC, $asaneed_result);
+
+
+        $value = [];
+            $required = 0;
+            $pass = 0;
+
+
+        $i = 0;
+        foreach ($asaneed_result as $key => $row) {
+            $required += $row['required_student_total'];
+            $pass += $row['total_pass'];
+
+
+            $item = '
+                    <tr>
+                        <td>' . $i++ . '</td>
+                        <td>' . $row['name'] . '</td>
+                        <td>' . $row['required_student_total'] . '</td>
+                        <td>' . $row['total_pass'] . '</td>
+                        <td>' . $row['completed_num_percentage'] . ' %</td>
+                        <td>' . $row['excess_num_percentage'] . ' %</td>
+
+                    </tr>
+                ';
+            array_push($value, $item);
         }
 
+        $total_percentage =  ($required > 0) ? round((($pass / $required) * 100), 2) : 0;
+        if ($total_percentage > 100) {
+            $total_percentage = 100;
+        }
+
+        $totalRow =        '<tr>
+                                    <td></td>
+                                    <td>المجموع</td>
+                                    <td>' . $required . '</td>
+                                    <td>' . $pass . '</td>
+                                    <td>'.  $total_percentage .' %</td>
+                                    <td>0 %</td>
+                            </tr>';
+        array_push($value, $totalRow);
+
+
+
         return [
-            'view' => view('control_panel.reports.coursesPlanProgress', compact(
+            'view' => view('control_panel.reports.departments.asaneed.asaneedPlanProgress', compact(
                 'value'
             ))->render()
-            // ,
-            // 'filters'=>$filters
+
         ];
     }
 
@@ -908,14 +948,11 @@ class ReportsController extends Controller
 
 
 
-        // if (Cache::has('safwa_books_ids')) {
-        //     $books_ids = Cache::get('safwa_books_ids');
-        // } else {
+
         $year = date("Y");
         $books_ids = CourseProject::where('year', $year)->limit(1)->pluck('books')->first(); //get safwa project
         $books_ids = json_decode($books_ids);
-        //     Cache::put('safwa_books_ids', $books_ids,600);
-        // }
+
 
 
         $count = User::subarea($sub_area_id, $area_id)

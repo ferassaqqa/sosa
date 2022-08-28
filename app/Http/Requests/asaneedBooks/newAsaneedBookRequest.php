@@ -29,7 +29,7 @@ class newAsaneedBookRequest extends FormRequest
             'hours_count'=>'required_if:hadith_count,null|numeric',
             'pass_mark'=>'required|numeric',
             'book_code'=>'required|string|unique:books,name',
-            'included_in_plan'=>'required|in:خارج الخطة,داخل الخطة',
+            // 'included_in_plan'=>'required|in:خارج الخطة,داخل الخطة',
             'year'=>'required|numeric',
 //            'type'=>'required|string|in:سنوية,ساعات',
         ];
@@ -41,7 +41,7 @@ class newAsaneedBookRequest extends FormRequest
             'name.string'=>'قيمة الحقل يجب ان تكون نصية',
             'name.unique'=>'قيمة الحقل يجب ان تكون فريدة ، لا يمكن ادخال كتابين بنفس الاسم',
             'included_in_plan.required'=>'حدد نوع الكتاب',
-            'included_in_plan.in'=>'نوع الكتاب خارج الخطة أو داخل الخطة',
+            // 'included_in_plan.in'=>'نوع الكتاب خارج الخطة أو داخل الخطة',
             'hadith_count.required_if'=>'عدد الاحاديث مطلوب',
             'hadith_count.numeric'=>'عدد الاحاديث قيمة عددية',
             'hours_count.required_if'=>'عدد الساعات مطلوب',

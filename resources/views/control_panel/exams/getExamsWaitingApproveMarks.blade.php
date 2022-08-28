@@ -1,53 +1,52 @@
 @extends('control_panel.master')
 
 @section('style')
-    <link href="{{asset('control_panel/assets/css/datatable.css')}}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('control_panel/assets/css/datatable.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 @section('title')
     <title>برنامج السنة | اعتماد الاختبارات</title>
 @endsection
 @section('content')
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                <h4 class="mb-sm-0">اعتماد الاختبارات</h4>
 
-<div class="row">
-    <div class="col-12">
-        <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-            <h4 class="mb-sm-0">اعتماد الاختبارات</h4>
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">الرئيسية</a></li>
+                        <li class="breadcrumb-item active">اعتماد الاختبارات</li>
+                    </ol>
+                </div>
 
-            <div class="page-title-right">
-                <ol class="breadcrumb m-0">
-                    <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">الرئيسية</a></li>
-                    <li class="breadcrumb-item active">اعتماد الاختبارات</li>
-                </ol>
-            </div>
-
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-lg-12">
-        <div class="card">
-            <div class="card-body">
-                <table class="table table-centered table_bordered">
-                    <thead>
-                        <tr>
-                            <th>عدد الدورات</th>
-                            <th>عدد الطلاب</th>
-                            <th>عدد الطلاب الناجحين</th>
-                            <th>عدد الطلاب الراسبين</th>
-                            <th>لم يتم ادخال درجاتهم</th>
-
-
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr id="main_statistics">    
-                        </tr>
-                    </tbody>
-                </table>
             </div>
         </div>
     </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <table class="table table-centered table_bordered">
+                        <thead>
+                            <tr>
+                                <th>عدد الدورات</th>
+                                <th>عدد الطلاب</th>
+                                <th>عدد الطلاب الناجحين</th>
+                                <th>عدد الطلاب الراسبين</th>
+                                <th>لم يتم ادخال درجاتهم</th>
+
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr id="main_statistics">
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="row">
@@ -86,14 +85,14 @@
                             <th>أدوات</th>
                         </thead>
                         <tbody id="pendingExams">
-                        {{--@php $i=1; @endphp--}}
-                        {{--@foreach($exams as $key => $exam)--}}
-                        {{--<tr>--}}
-                        {{--<td>{{ $i }}</td>--}}
-                        {{--{!! $exam->eligible_courses_for_marks_approvement !!}--}}
-                        {{--</tr>--}}
-                        {{--@php $i++; @endphp--}}
-                        {{--@endforeach--}}
+                            {{-- @php $i=1; @endphp --}}
+                            {{-- @foreach ($exams as $key => $exam) --}}
+                            {{-- <tr> --}}
+                            {{-- <td>{{ $i }}</td> --}}
+                            {{-- {!! $exam->eligible_courses_for_marks_approvement !!} --}}
+                            {{-- </tr> --}}
+                            {{-- @php $i++; @endphp --}}
+                            {{-- @endforeach --}}
                         </tbody>
                     </table>
                 </div>
@@ -102,51 +101,51 @@
     </div>
 @endsection
 
-{{--<div class="modal-footer">--}}
-{{--<button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">إلغاء</button>--}}
-{{--<button type="submit" form="form" class="btn btn-primary waves-effect waves-light">حفظ</button>--}}
-{{--</div>--}}
+{{-- <div class="modal-footer"> --}}
+{{-- <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">إلغاء</button> --}}
+{{-- <button type="submit" form="form" class="btn btn-primary waves-effect waves-light">حفظ</button> --}}
+{{-- </div> --}}
 @section('script')
-
     <script>
-
         var table = '';
-        $(document).ready(function(){
-            table = $('#dataTable1').removeAttr('width').DataTable( {
+        $(document).ready(function() {
+            table = $('#dataTable1').removeAttr('width').DataTable({
                 "processing": true,
                 "serverSide": true,
                 // "scrollX":true,
                 "drawCallback": function() {
-                        $('#main_statistics').empty().html(table.data().context[0].json['statistics']);
-                    },
+                    $('#main_statistics').empty().html(table.data().context[0].json['statistics']);
+                },
                 "ajax": "{{ route('exams.getExamsWaitingApproveMarksData') }}",
                 language: {
                     search: "بحث",
-                    processing:     "جاري معالجة البيانات" ,
-                    lengthMenu:    "عدد _MENU_ الصفوف",
-                    info:           "من _START_ الى _END_ من أصل _TOTAL_ صفحة",
+                    processing: "جاري معالجة البيانات",
+                    lengthMenu: "عدد _MENU_ الصفوف",
+                    info: "من _START_ الى _END_ من أصل _TOTAL_ صفحة",
                     infoEmpty: "لا يوجد بيانات",
                     loadingRecords: "يتم تحميل البيانات",
-                    zeroRecords:    "<p style='text-align: center'>لا يوجد بيانات</p>",
-                    emptyTable:     "<p style='text-align: center'>لا يوجد بيانات</p>",
+                    zeroRecords: "<p style='text-align: center'>لا يوجد بيانات</p>",
+                    emptyTable: "<p style='text-align: center'>لا يوجد بيانات</p>",
                     paginate: {
-                        first:      "الأول",
-                        previous:   "السابق",
-                        next:       "التالي",
-                        last:       "الأخير"
+                        first: "الأول",
+                        previous: "السابق",
+                        next: "التالي",
+                        last: "الأخير"
                     },
                     aria: {
-                        sortAscending:  ": ترتيب تصاعدي",
+                        sortAscending: ": ترتيب تصاعدي",
                         sortDescending: ": ترتيب تنازلي"
                     }
                 },
 
-                "columnDefs": [
-                    {"sortable": false, "targets": [1,2,3,4,5,6,7,8]}
-                ],
+                "columnDefs": [{
+                    "sortable": false,
+                    "targets": [1, 2, 3, 4, 5, 6, 7, 8]
+                }],
 
-                "aoColumns": [
-                    { "mData": "id" },
+                "aoColumns": [{
+                        "mData": "id"
+                    },
                     {
                         "mData": "course_book_name"
                     },
@@ -183,66 +182,80 @@
                         "mData": "tools"
                     }
                 ]
-            } );
-        });
-        @if(hasPermissionHelper('اعتماد نتائج الاختبارات'))
-        function approveEnteredExamMarks(exam_id){
-            $('.bs-example-modal-xl').modal('show');
-            $('#user_modal_content')
-                .html(
-                    '<div class="spinner-border text-success" role="status" style="margin:25px auto;">' +
-                    '   <span class="sr-only">يرجى الانتظار ...</span>' +
-                    '</div>'
-                );
-            $.get('/approveEnteredExamMarks/'+exam_id,function (data) {
-                $('#user_modal_content').empty().html(data);
             });
-        }
+        });
+        @if (hasPermissionHelper('اعتماد نتائج الاختبارات'))
+            function approveEnteredExamMarks(exam_id) {
+                $('.bs-example-modal-xl').modal('show');
+                $('#user_modal_content')
+                    .html(
+                        '<div class="spinner-border text-success" role="status" style="margin:25px auto;">' +
+                        '   <span class="sr-only">يرجى الانتظار ...</span>' +
+                        '</div>'
+                    );
+                $.get('/approveEnteredExamMarks/' + exam_id, function(data) {
+                    $('#user_modal_content').empty().html(data);
+                });
+            }
+
+            $(".bs-example-modal-xl").on("hidden.bs.modal", function() {
+                $('#dataTable1').DataTable().draw();
+            });
         @endif
 
 
-        
-    function sunnaManagerApprovement(exam_id, obj) {
-        // $('#user_modal_content')
-        //     .html(
-        //         '<div class="spinner-border text-success" role="status" style="margin:25px auto;">' +
-        //         '   <span class="sr-only">يرجى الانتظار ...</span>' +
-        //         '</div>'
-        //     );
-        $.get('/sunnaManagerApprovement/' + exam_id, function (data) {
-            if (!data.errors) {
-                if (data.status == 4) {
-                    $(obj).text('اعتماد مدير الدائرة');
-                    Swal.fire({
-                        position: "top-right", icon: "success", title: data.msg, showConfirmButton: !1, timer: 2500
-                    })
-                } else if (data.status == 5) {
-                    $(obj).text('تراجع اعتماد مدير الدائرة');
-                    Swal.fire({
-                        position: "top-right", icon: "success", title: data.msg, showConfirmButton: !1, timer: 2500
-                    })
+
+
+
+
+        function sunnaManagerApprovement(exam_id, obj) {
+            // $('#user_modal_content')
+            //     .html(
+            //         '<div class="spinner-border text-success" role="status" style="margin:25px auto;">' +
+            //         '   <span class="sr-only">يرجى الانتظار ...</span>' +
+            //         '</div>'
+            //     );
+            $.get('/sunnaManagerApprovement/' + exam_id, function(data) {
+                if (!data.errors) {
+                    if (data.status == 4) {
+                        $(obj).text('اعتماد مدير الدائرة');
+                        Swal.fire({
+                            position: "top-right",
+                            icon: "success",
+                            title: data.msg,
+                            showConfirmButton: !1,
+                            timer: 2500
+                        })
+                    } else if (data.status == 5) {
+                        $(obj).text('تراجع اعتماد مدير الدائرة');
+                        Swal.fire({
+                            position: "top-right",
+                            icon: "success",
+                            title: data.msg,
+                            showConfirmButton: !1,
+                            timer: 2500
+                        })
+                    }
                 }
-            }
-            // console.log(data);
-        });
-    }
+                // console.log(data);
+            });
+        }
 
 
 
-            function changeExams() {
+        function changeExams() {
 
-                var filters = '?area_id=' + $('#area_id').val() + '&sub_area_id=' + $('#pending_exams_sub_areas_select')
-                    .val() +
-                    '&moallem_id=' + $('#moallem_id').val() + '&book_id=' + $('#book_id').val() + '&start_date=' + $(
-                        '#start_date').val() + '&end_date=' + $('#end_date').val() + '&place_area=' + $('#place_area')
-                    .val()+ '&exam_type=' + $('#exam_type').val();
+            var filters = '?area_id=' + $('#area_id').val() + '&sub_area_id=' + $('#pending_exams_sub_areas_select')
+                .val() +
+                '&moallem_id=' + $('#moallem_id').val() + '&book_id=' + $('#book_id').val() + '&start_date=' + $(
+                    '#start_date').val() + '&end_date=' + $('#end_date').val() + '&place_area=' + $('#place_area')
+                .val() + '&exam_type=' + $('#exam_type').val();
 
 
 
-                table.ajax.url(
-                    "/getExamsWaitingApproveMarksData" + filters
-                ).load();
-            }
-
+            table.ajax.url(
+                "/getExamsWaitingApproveMarksData" + filters
+            ).load();
+        }
     </script>
 @endsection

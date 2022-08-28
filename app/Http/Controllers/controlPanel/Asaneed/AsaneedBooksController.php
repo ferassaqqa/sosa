@@ -117,33 +117,18 @@ class AsaneedBooksController extends Controller
      */
     public function store(newAsaneedBookRequest $request)
     {
-//        dd($request->all());
-//        $book = AsaneedBook::create($request->all());
 
         $student_category = [];
-        $required_students_number = 0;
-        foreach ($request->student_category as $key => $student_category_value){
-            $required_students_number += $student_category_value;
-            if((int)$student_category_value){
-                if($key == 0){
-                    array_push($student_category,'ابتدائية');
-                }elseif ($key == 1){
-                    array_push($student_category,'اعدادية');
-                }elseif ($key == 2){
-                    array_push($student_category,'ثانوية');
-                }elseif ($key == 3){
-                    array_push($student_category,'ثانوية فما فوق');
-                }
-            }
-        }
+        $required_students_number = $request->required_students_number;
+
         $book = AsaneedBook::create(array_merge($request->except('student_category','_token','_method'),
             [
-                'student_category'=>$student_category,
+
                 'required_students_number'=>$required_students_number,
-                'required_students_number_array'=>$request->student_category
+
             ]));
         return response()->json(['msg'=>'تم اضافة كتاب جديد في قسم الاسانيد والاجازات','title'=>'اضافة','type'=>'success']);
-//        dd($request->all());
+
     }
 
     /**
@@ -193,28 +178,12 @@ class AsaneedBooksController extends Controller
      */
     public function update(updateAsaneedBookRequest $request, AsaneedBook $asaneedBook)
     {
-//        dd($request->all());
-        $student_category = [];
-        $required_students_number = 0;
-        foreach ($request->student_category as $key => $student_category_value){
-            $required_students_number += $student_category_value;
-            if((int)$student_category_value){
-                if($key == 0){
-                    array_push($student_category,'ابتدائية');
-                }elseif ($key == 1){
-                    array_push($student_category,'اعدادية');
-                }elseif ($key == 2){
-                    array_push($student_category,'ثانوية');
-                }elseif ($key == 3){
-                    array_push($student_category,'ثانوية فما فوق');
-                }
-            }
-        }
+
+        $required_students_number = $request->required_students_number;
+
         $asaneedBook->update(array_merge($request->except('student_category','_token','_method'),
             [
-                'student_category'=>$student_category,
                 'required_students_number'=>$required_students_number,
-                'required_students_number_array'=>$request->student_category
             ]));
         return response()->json(['msg'=>'تم تعديل بيانات الكتاب بنجاح','title'=>'تعديل','type'=>'success']);
     }
