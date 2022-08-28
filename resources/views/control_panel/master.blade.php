@@ -1463,7 +1463,7 @@
     }
 
     function getEligibleCourses() {
-        window.open('/examEligibleCourses', '_blank');
+        window.open('/examEligibleCourses', '_self');
         // $('.bs-example-modal-center').modal('hide');
         // $('.bs-example-modal-xl').modal('hide');
         // $('#modal-content')
@@ -1505,7 +1505,7 @@
     }
 
     function getEligibleCoursesForMarkEnter() {
-        window.open('/getEligibleCoursesForMarkEnter', '_blank');
+        window.open('/getEligibleCoursesForMarkEnter', '_self');
         // $('.bs-example-modal-xl').modal('show');
         // $('#user_modal_content')
         //     .html(
@@ -1520,7 +1520,7 @@
     @endif
     @if(hasPermissionHelper('طلبات حجز مواعيد الاختبارات'))
     function getPendingExamRequests() {
-        window.open('/getPendingExamRequests', '_blank');
+        window.open('/getPendingExamRequests', '_self');
         // $('.bs-example-modal-xl').modal('show');
         // $('#user_modal_content')
         //     .html(
@@ -1536,7 +1536,7 @@
     @endif
     @if(hasPermissionHelper('مواعيد الاختبارات'))
     function getNextExamsAppointments() {
-        window.open('/getNextExamsAppointments', '_blank');
+        window.open('/getNextExamsAppointments', '_self');
         // $('.bs-example-modal-xl').modal('show');
         // $('#user_modal_content')
         //     .html(
@@ -1552,7 +1552,7 @@
     @endif
     @if(hasPermissionHelper('اعتماد الدرجات'))
     function getExamsWaitingApproveMarks() {
-        window.open('/getExamsWaitingApproveMarks', '_blank');
+        window.open('/getExamsWaitingApproveMarks', '_self');
         // $('.bs-example-modal-xl').modal('show');
         // $('#user_modal_content')
         //     .html(
@@ -1568,7 +1568,7 @@
     @endif
     @if(hasPermissionHelper('ارشيف مواعيد الاختبارات'))
     function getExamsAppointmentsArchive() {
-        window.open('/getExamsAppointmentsArchive', '_blank');
+        window.open('/getExamsAppointmentsArchive', '_self');
         // $('.bs-example-modal-xl').modal('show');
         // $('#user_modal_content')
         //     .html(
