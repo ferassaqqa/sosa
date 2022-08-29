@@ -160,6 +160,10 @@ class Area extends Model
     {
         return $this->hasManyThrough(Course::class, Place::class);
     }
+    public function asaneed()
+    {
+        return $this->hasManyThrough(AsaneedCourse::class, Place::class);
+    }
     public function areaSupervisor()
     {
         return $this->belongsTo(User::class, 'area_supervisor_id', 'id')->withoutGlobalScope('relatedUsers');
@@ -184,6 +188,9 @@ class Area extends Model
     {
         return $this->subAreaSupervisor ? $this->subAreaSupervisor->name : '';
     }
+
+
+    /* courses */
 
     public function scopeBook($query, $book_id)
     {
@@ -215,6 +222,42 @@ class Area extends Model
             return $query;
         }
     }
+
+    /* asaneed */
+
+
+    public function scopeAsaneedBook($query, $book_id)
+    {
+        if ($book_id) {
+            return $query->whereHas('asaneed', function ($query) use ($book_id) {
+                $query->where('book_id', $book_id);
+            });
+        } else {
+            return $query;
+        }
+    }
+    public function scopeAsaneedPlace($query, $place_id)
+    {
+        if ($place_id) {
+            return $query->whereHas('asaneed', function ($query) use ($place_id) {
+                $query->where('place_id', $place_id);
+            });
+        } else {
+            return $query;
+        }
+    }
+    public function scopeAsaneedTeacher($query, $teacher_id)
+    {
+        if ($teacher_id) {
+            return $query->whereHas('asaneed', function ($query) use ($teacher_id) {
+                $query->where('teacher_id', $teacher_id);
+            });
+        } else {
+            return $query;
+        }
+    }
+
+
 
     public function scopeSubArea($query, $sub_area_id, $area_id){
         if ($sub_area_id) {
@@ -248,7 +291,7 @@ class Area extends Model
         $completed_num_percentage = $completed_num_percentage > 100 ? 100 : $completed_num_percentage;
 
 
-   
+
 
 
 
@@ -313,7 +356,7 @@ class Area extends Model
 
         $percentage_50 = $percentage_38 + 5 + 2 + 5;
 
-        
+
         $percentage_total = ($percentage_50 * 2);
 
         $review_result = array(
@@ -335,13 +378,13 @@ class Area extends Model
         //     <tr >
         //         <td>' . self::$counter . '</td>
         //         <td>' . $this->name . '</td>
-        
+
         //         <td>' . $percentage_38 . '%</td>
         //         <td>5%</td>
         //         <td>2%</td>
         //         <td>3%</td>
         //         <td><b>' . $percentage_50 . '%</b></td>
-        
+
         //         <td><b>' . $percentage_total . '%</b></td>
         //         <td></td>
         //         <td></td>
@@ -409,6 +452,45 @@ class Area extends Model
 
         return $review_result;
 
+    }
+
+
+    public function getMostAccomplishedAsaneedRowDataAttribute()
+    {
+
+        self::$counter++;
+        $total = 0;
+
+
+        $sub_area_courses = $this->asaneed;
+
+
+        foreach ($sub_area_courses as $key => $course) {
+            $total += $course->manyStudents->count();
+        }
+
+        $most_accomplished =  DB::table('asaneed_course_students')
+            ->leftJoin('asaneed_courses', 'asaneed_courses.id', '=', 'asaneed_course_students.asaneed_course_id')
+            ->leftJoin('asaneed_books', 'asaneed_books.id', '=', 'asaneed_courses.book_id')
+            ->leftJoin('places', 'places.id', '=', 'asaneed_courses.place_id')
+            ->leftJoin('areas', 'areas.id', '=', 'places.area_id')
+            ->where('places.area_id', '=', $this->id)
+            ->selectRaw('asaneed_course_students.asaneed_course_id,asaneed_books.name, count(asaneed_course_students.asaneed_course_id) as times_teached')
+            ->groupBy('asaneed_courses.id')
+            ->orderByDesc('times_teached')
+            ->limit(1)
+            ->get();
+
+        $top_course = ($total > 0) ? $most_accomplished[0]->name . ' (' . $most_accomplished[0]->times_teached . ')' : 0;
+
+        // $top_course = 00;
+        return [
+            'id' => self::$counter,
+            'subarea_name' => $this->name,
+            'total_accomplished_course' => $this->asaneed->count(),
+            'total_accomplished_students' => $total,
+            'most_accomplished_course' => $top_course,
+        ];
     }
 
     public function getMostAccomplishedCourseRowDataAttribute()

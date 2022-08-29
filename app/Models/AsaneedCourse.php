@@ -128,6 +128,10 @@ class AsaneedCourse extends Model
             $this->book->name : '';
     }
 
+    public function manyStudents(){
+        return $this->hasMany(AsaneedCourseStudent::class);
+    }
+
     public function manyStudentsForPermissions(){
         return $this->hasMany(AsaneedCourseStudent::class)->withoutGlobalScope('relatedCourseStudents');
     }
@@ -392,7 +396,13 @@ class AsaneedCourse extends Model
                         return $builder;
                     }else if($user->hasRole('رئيس قسم الاختبارات')){
                         return $builder;
-                    }else{
+                    }else if($user->hasRole('مدير فرع')){
+                        $area = Area::where('branch_supervisor_id',$user->id)->first();
+                        $area_id = $area ? $area->id : 0;
+                        return $builder->permissionssubarea(0,$area_id);
+                    }
+
+                    else{
                         return $builder->whereHas('teacher',function ($query) use($user){
                             $query->whereHas('students',function($query1) use($user){
                                 $query1->where('id',$user->id);

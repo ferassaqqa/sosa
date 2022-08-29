@@ -1057,7 +1057,7 @@ class User extends Authenticatable
     }
     public function getSupervisorAreaAccessorAttribute()
     {
-        
+
         $res = $this->supervisor_area ? $this->supervisor_area->name : ($this->branch_supervisor_area ? $this->branch_supervisor_area->name: '');
         if(!$res){$res = $this->supervisor_sub_area ?   $this->supervisor_sub_area->name : '' ;}
         return $res;
@@ -1069,6 +1069,11 @@ class User extends Authenticatable
     public function getAreaSupervisorAreaIdAttribute()
     {
         return $this->supervisor_area ? $this->supervisor_area->id : 0;
+    }
+
+    public function getBranchSupervisorAreaIdAttribute()
+    {
+        return $this->branch_supervisor_area ? $this->branch_supervisor_area->id : 0;
     }
     public function getUserSearchedResultForCircleAttribute()
     {
@@ -1414,7 +1419,7 @@ class User extends Authenticatable
                 if ($user) {
                     if ($user->hasRole('رئيس الدائرة')) {
                         return $builder;
-                    } elseif ($user->hasRole('مدير الدائرة') || $user->hasRole('مساعد اداري')) {
+                    } elseif ($user->hasRole('مدير الدائرة') || $user->hasRole('مساعد اداري')|| $user->hasRole('مدير فرع')) {
                         // $builder->genderdepartment($user->role);
                         return $builder;
                     } else {

@@ -898,14 +898,13 @@
                         <li>
                             <a href="{{route('users.index')}}" class="waves-effect">
                                 <i class="mdi mdi-account-group text-white"></i>
-                                <span
-                                    class="badge rounded-pill bg-primary float-end">{{\App\Models\User::count()}}</span>
+
                                 <span class="text-white">المستخدمين</span>
                             </a>
                         </li>
                     @endif
                     @if(hasPermissionHelper('فئات الكتب'))
-                        <li>
+                        {{-- <li>
                             <a href="{{route('bookCategory.index')}}">
                                 <i class="mdi mdi-chart-bubble text-white"></i>
                                 <span
@@ -913,7 +912,7 @@
                                 <span class="text-white">فئات الكتب</span>
 
                             </a>
-                        </li>
+                        </li> --}}
                     @endif
                     @if(hasPermissionHelper('اعدادات النظام'))
                         <li>
@@ -922,8 +921,7 @@
                                 <span class="text-white">إعدادات النظام</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="true">
-                                <li><a style="color: white !important;" href="javascript: void(0);" class="has-arrow">المستخدمين</a>
-                                    <ul class="sub-menu" aria-expanded="true">
+
                                         <li>
                                             <a style="color: white !important;" class="text-white"
                                                href="{{route('roles.index')}}">
@@ -936,10 +934,21 @@
                                                 أحداث المستخدمين
                                             </a>
                                         </li>
-                                    </ul>
-                                </li>
+
+                                        <li>
+                                            <a style="color: white !important;" href="{{route('areas.index')}}">
+                                                المناطق
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a style="color: white !important;" href="{{route('places.index')}}">
+                                                الأماكن (مساجد)
+                                            </a>
+                                        </li>
+
+
                             </ul>
-                            <ul class="sub-menu" aria-expanded="true">
+                            {{-- <ul class="sub-menu" aria-expanded="true">
                                 <li><a href="javascript: void(0);" class="has-arrow" style="color: white !important;">المناطق</a>
                                     <ul class="sub-menu" aria-expanded="true">
                                         <li>
@@ -954,7 +963,7 @@
                                         </li>
                                     </ul>
                                 </li>
-                            </ul>
+                            </ul> --}}
                         </li>
                     @endif
                 </ul>

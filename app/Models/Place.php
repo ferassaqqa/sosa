@@ -110,11 +110,50 @@ class Place extends Model
     public function courses(){
         return $this->hasMany(Course::class);
     }
+
+    public function asaneed(){
+        return $this->hasMany(AsaneedCourse::class);
+    }
     public function users(){
 
     }
 
+    public function getMostAsaneedAccomplishedCourseRowDataAttribute(){
 
+
+        $total = 0;
+
+        $place_courses = $this->asaneed;
+
+        // dd($place_courses);
+        foreach ($place_courses as $key => $course) {
+                $total += $course->manyStudents->count();
+        }
+
+
+        self::$counter++;
+        $most_accomplished =  DB::table('asaneed_course_students')
+                    ->leftJoin('asaneed_courses','asaneed_courses.id','=','asaneed_course_students.asaneed_course_id')
+                    ->leftJoin('asaneed_books','asaneed_books.id','=','asaneed_courses.book_id')
+                    ->where('asaneed_courses.place_id','=',$this->id)
+                    ->selectRaw('asaneed_course_students.asaneed_course_id,asaneed_books.name, count(asaneed_course_students.asaneed_course_id) as times_teached')
+                    ->groupBy('asaneed_courses.id','asaneed_course_students.asaneed_course_id')
+                    ->orderByDesc('times_teached')
+                    ->limit(1)
+                    ->get();
+
+
+        $top_course = ($total > 0) ? $most_accomplished[0]->name.' ('.$most_accomplished[0]->times_teached.')' : 0;
+
+
+            return [
+                'id' => self::$counter,
+                'mosque_name' =>$this->name,
+                'total_accomplished_course' => $place_courses->count(),
+                'total_accomplished_students' => $total,
+                'most_accomplished_course' => $top_course,
+            ];
+    }
 
     public function getMostAccomplishedCourseRowDataAttribute(){
 
@@ -128,7 +167,7 @@ class Place extends Model
                 $total += $course->students->count();
         }
 
-    
+
         self::$counter++;
         $most_accomplished =  DB::table('course_students')
                     ->leftJoin('courses','courses.id','=','course_students.course_id')
@@ -151,10 +190,6 @@ class Place extends Model
                 'total_accomplished_students' => $total,
                 'most_accomplished_course' => $top_course,
             ];
-
-
-
-
     }
 
 
@@ -205,7 +240,11 @@ class Place extends Model
                         return $builder->permissionssubarea($user->area_id_for_permissions,$user->area_father_id_for_permissions);
                     }else if($user->hasRole('محفظ') || $user->hasRole('معلم') || $user->hasRole('شيخ اسناد')){
                         return $builder;
-                    }else{
+                    }else if($user->hasRole('مدير فرع')){
+                        return $builder->permissionssubarea(0, $user->branch_supervisor_area_id);
+                    }
+
+                    else{
                         return $builder;
                     }
                 }else {

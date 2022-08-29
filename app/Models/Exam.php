@@ -43,7 +43,7 @@ class Exam extends Model
             return $this->course->is_certifications_exported;
         }
         if($this->examable_type == 'App\Models\AsaneedCourse'){
-            return $this->asaneed->is_certifications_exported;            
+            return $this->asaneed->is_certifications_exported;
         }
     }
 
@@ -53,7 +53,7 @@ class Exam extends Model
             return $this->course->status;
         }
         if($this->examable_type == 'App\Models\AsaneedCourse'){
-            return $this->asaneed->status;            
+            return $this->asaneed->status;
         }
     }
 
@@ -359,7 +359,10 @@ public function getNullStudentsCountAttribute(){
                         $builder->whereHas('examable',function ($query) use($user){
                             $query->where('teacher_id',$user->id)->count();
                         });
-                    }else{
+                    }else if($user->hasRole('مدير فرع')){
+                        return $builder->permissionssubarea(0, $user->branch_supervisor_area_id);
+                    }
+                    else{
 //                        $builder->whereHas('teacher',function ($query) use($user){
 //                            $query->whereHas('students',function($query1) use($user){
 //                                $query1->where('id',$user->id);

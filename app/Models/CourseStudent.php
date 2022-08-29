@@ -326,7 +326,9 @@ class CourseStudent extends Model
                     } else if ($user->hasRole('مدير الدائرة') || $user->hasRole('مساعد اداري')) {
                         // $builder->genderdepartment($user->role);
                         return $builder;
-                    } else if ($user->hasRole('مشرف عام')) {
+                    } else if ($user->hasRole('مدير فرع')) {
+                        return $builder->permissionssubarea(0, $user->branch_supervisor_area_id);
+                    }else if ($user->hasRole('مشرف عام')) {
                         // $builder->genderdepartment($user->role)->permissionssubarea(0, $user->area_supervisor_area_id)
                         //     ->orWhereHas('user',function($query) use($user){
                         //         $query->whereHas('user_roles',function($query){

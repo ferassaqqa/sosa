@@ -565,7 +565,10 @@ class Course extends Model
                         return $builder;
                     }else if($user->hasRole('رئيس قسم الاختبارات')){
                         return $builder;
-                    }else{
+                    }else if($user->hasRole('مدير فرع')){
+                        return $builder->permissionssubarea(0, $user->branch_supervisor_area_id);
+                    }
+                    else{
                         return $builder->whereHas('teacher',function ($query) use($user){
                             $query->whereHas('students',function($query1) use($user){
                                 $query1->where('id',$user->id);

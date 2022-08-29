@@ -627,13 +627,14 @@ class ReportsController extends Controller
 
         $i = 0;
         foreach ($asaneed_result as $key => $row) {
+            $i++;
             $required += $row['required_student_total'];
             $pass += $row['total_pass'];
 
 
             $item = '
                     <tr>
-                        <td>' . $i++ . '</td>
+                        <td>' . $i . '</td>
                         <td>' . $row['name'] . '</td>
                         <td>' . $row['required_student_total'] . '</td>
                         <td>' . $row['total_pass'] . '</td>
@@ -905,14 +906,217 @@ class ReportsController extends Controller
                     if ($analysis_sub_type == 'teachers') {
                         return $this->mostAsaneedAccomplishedTeacherData($request);
                     } elseif ($analysis_sub_type == 'mosques') {
-                        return $this->mostaccomplishedMosquesView($request);
+                        return $this->mostAsaneedAccomplishedMosquesData($request);
                     } elseif ($analysis_sub_type == 'local_areas') {
-                        return $this->mostaccomplishedLocalAreaView($request);
+                        return $this->mostAsaneedAccomplishedLocalAreaData($request);
                     }
                 }
 
                 break;
         }
+    }
+
+    public function mostAsaneedAccomplishedLocalAreaData(Request $request)   {
+
+        $columns = array(
+            array('db' => 'id',        'dt' => 0),
+        );
+
+        $draw = (int)$request->draw;
+        $start = (int)$request->start;
+        $length = (int)$request->length;
+        $order = $request->order[0]["column"];
+        $direction = $request->order[0]["dir"];
+        $search = trim($request->search["value"]);
+
+        $sub_area_id = (int)$request->sub_area_id ? (int)$request->sub_area_id : 0;
+        $area_id = (int)$request->area_id ? (int)$request->area_id : 1;
+
+        $teacher_id = (int)$request->teacher_id ? (int)$request->teacher_id : 0;
+        $book_id = (int)$request->book_id ? (int)$request->book_id : 0;
+        $place_id = (int)$request->place_id ? (int)$request->place_id : 0;
+
+        $start_date = (int)$request->start_date ? (int)$request->start_date : 0;
+        $end_date = (int)$request->end_date ? (int)$request->end_date : 0;
+
+
+
+
+        $value = array();
+
+
+
+        $count = Area::whereNotNull('area_id')
+            ->permissionssubarea($sub_area_id, $area_id)
+            ->asaneedteacher($teacher_id)
+            ->asaneedbook($book_id)
+            ->asaneedplace($place_id)
+            ->count();
+        $sub_areas = Area::whereNotNull('area_id')
+            ->permissionssubarea($sub_area_id, $area_id)
+            ->asaneedteacher($teacher_id)
+            ->asaneedbook($book_id)
+            ->asaneedplace($place_id)
+            ->get();
+
+
+
+        // foreach ($sub_areas as $index => $item) {
+        //     array_push($value, $item->most_accomplished_course_row_data);
+        // }
+
+
+        $result_mostaccomplish_course = array();
+
+        foreach ($sub_areas as $index => $item) {
+                $new_item = $item->most_accomplished_asaneed_row_data;
+                $result_mostaccomplish_course[] = $new_item;
+        }
+
+        $total_accomplished_students = array();
+        foreach ($result_mostaccomplish_course as $key => $row) {
+            $subarea_name[$key]  = $row['subarea_name'];
+            $total_accomplished_course[$key] = $row['total_accomplished_course'];
+            $total_accomplished_students[$key] = $row['total_accomplished_students'];
+            $most_accomplished_course[$key] = $row['most_accomplished_course'];
+            $id[$key] = $row['id'];
+        }
+
+
+        array_multisort($total_accomplished_students, SORT_DESC, $result_mostaccomplish_course);
+
+
+        $i = 0;
+        foreach ($result_mostaccomplish_course as $key => $row) {
+            $i++;
+            $result_mostaccomplish_course[$key]['id'] = $i;
+        }
+
+        return [
+            "draw" => $draw,
+            "recordsTotal" => $count,
+            "recordsFiltered" => $count,
+            "data" => (array)$result_mostaccomplish_course,
+            "order" => $columns[$order]["db"]
+        ];
+    }
+
+
+    public function mostAsaneedAccomplishedMosquesData(Request $request){
+
+        $columns = array(
+            array('db' => 'id',        'dt' => 0),
+        );
+
+        $draw = (int)$request->draw;
+        $start = (int)$request->start;
+        $length = (int)$request->length;
+        $order = $request->order[0]["column"];
+        $direction = $request->order[0]["dir"];
+        $search = trim($request->search["value"]);
+
+        $sub_area_id = (int)$request->sub_area_id ? (int)$request->sub_area_id : 0;
+        $area_id = (int)$request->area_id ? (int)$request->area_id : 0;
+
+        $teacher_id = (int)$request->teacher_id ? (int)$request->teacher_id : 0;
+        $book_id = (int)$request->book_id ? (int)$request->book_id : 0;
+        $place_id = (int)$request->place_id ? (int)$request->place_id : 0;
+
+        $start_date = (int)$request->start_date ? (int)$request->start_date : 0;
+        $end_date = (int)$request->end_date ? (int)$request->end_date : 0;
+
+
+
+        $value = array();
+
+        if (!empty($search)) {
+            $count = Place::select('id', 'name', 'area_id')
+                ->search($search)
+                // ->has('courses')
+                ->whereHas('asaneed', function ($query) {
+                    $query->whereHas('manyStudents', function ($query) {
+                    });
+                })
+
+                ->teacher($teacher_id)
+                ->book($book_id)
+                ->place($place_id)
+                ->permissionssubarea($sub_area_id, $area_id)
+                ->count();
+            $places = Place::select('id', 'name', 'area_id')
+                ->search($search)
+                // ->has('courses')
+                ->whereHas('asaneed', function ($query) {
+                    $query->whereHas('manyStudents', function ($query) {
+                    });
+                })
+                ->teacher($teacher_id)
+                ->book($book_id)
+                ->place($place_id)
+                ->permissionssubarea($sub_area_id, $area_id)
+                ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
+                ->get();
+        } else {
+            $count = Place::select('id', 'name', 'area_id')->teacher($teacher_id)
+                ->book($book_id)
+                // ->has('courses')
+                ->whereHas('asaneed', function ($query) {
+                    $query->whereHas('manyStudents', function ($query) {
+                    });
+                })
+                ->place($place_id)
+                ->permissionssubarea($sub_area_id, $area_id)->count();
+            $places = Place::select('id', 'name', 'area_id')
+                ->teacher($teacher_id)
+                ->book($book_id)
+                // ->has('courses')
+                ->whereHas('asaneed', function ($query) {
+                    $query->whereHas('manyStudents', function ($query) {
+                    });
+                })
+                ->place($place_id)
+                ->permissionssubarea($sub_area_id, $area_id)
+                ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
+                ->get();
+        }
+
+
+
+
+        $result_mostaccomplish_course = array();
+
+        foreach ($places as $index => $item) {
+                $new_item = $item->most_asaneed_accomplished_course_row_data;
+                if($new_item['total_accomplished_students'] > 0)
+                $result_mostaccomplish_course[] = $new_item;
+        }
+
+        $total_accomplished_students = array();
+        foreach ($result_mostaccomplish_course as $key => $row) {
+            $mosque_name[$key]  = $row['mosque_name'];
+            $total_accomplished_course[$key] = $row['total_accomplished_course'];
+            $total_accomplished_students[$key] = $row['total_accomplished_students'];
+            $most_accomplished_course[$key] = $row['most_accomplished_course'];
+            $id[$key] = $row['id'];
+        }
+
+
+        array_multisort($total_accomplished_students, SORT_DESC, $result_mostaccomplish_course);
+
+        $i = 0;
+        foreach ($result_mostaccomplish_course as $key => $row) {
+            $i++;
+            $result_mostaccomplish_course[$key]['id'] = $i;
+        }
+
+        return [
+            "draw" => $draw,
+            "recordsTotal" => $count,
+            "recordsFiltered" => $count,
+            "data" => (array)$result_mostaccomplish_course,
+            "order" => $columns[$order]["db"]
+        ];
+
     }
 
 
@@ -940,15 +1144,8 @@ class ReportsController extends Controller
         $book_id = (int)$request->book_id ? (int)$request->book_id : 0;
         $place_id = (int)$request->place_id ? (int)$request->place_id : 0;
 
-
-
-
-
         $value = array();
-
-
-
-
+        
         $year = date("Y");
         $books_ids = CourseProject::where('year', $year)->limit(1)->pluck('books')->first(); //get safwa project
         $books_ids = json_decode($books_ids);
@@ -1096,6 +1293,13 @@ class ReportsController extends Controller
 
         array_multisort($total_accomplished_students, SORT_DESC, $result_mostaccomplish_course);
 
+
+        $i = 0;
+        foreach ($result_mostaccomplish_course as $key => $row) {
+            $i++;
+            $result_mostaccomplish_course[$key]['id'] = $i;
+        }
+
         return [
             "draw" => $draw,
             "recordsTotal" => $count,
@@ -1207,6 +1411,11 @@ class ReportsController extends Controller
 
         array_multisort($total_accomplished_students, SORT_DESC, $result_mostaccomplish_course);
 
+        $i = 0;
+        foreach ($result_mostaccomplish_course as $key => $row) {
+            $i++;
+            $result_mostaccomplish_course[$key]['id'] = $i;
+        }
 
         return [
             "draw" => $draw,
@@ -1316,8 +1525,13 @@ class ReportsController extends Controller
             $id[$key] = $row['id'];
         }
 
-
         array_multisort($total_accomplished_students, SORT_DESC, $result_mostaccomplish_course);
+
+        $i = 0;
+        foreach ($result_mostaccomplish_course as $key => $row) {
+            $i++;
+            $result_mostaccomplish_course[$key]['id'] = $i;
+        }
 
 
         return [
@@ -1395,15 +1609,36 @@ class ReportsController extends Controller
         }
         User::$counter = $start;
 
+        $result_asaneed_teacher = array();
+
         foreach ($teachers as $index => $item) {
-            array_push($value, $item->most_accomplished_asaneed_row_data);
+            $new_item = $item->most_accomplished_asaneed_row_data;
+           $result_asaneed_teacher [] = $new_item;
         }
+
+        $total_accomplished_students = array();
+        foreach ($result_asaneed_teacher as $key => $row) {
+            $teacher_name[$key]  = $row['teacher_name'];
+            $total_accomplished_course[$key] = $row['total_accomplished_course'];
+            $total_accomplished_students[$key] = $row['total_accomplished_students'];
+            $most_accomplished_course[$key] = $row['most_accomplished_course'];
+            $id[$key] = $row['id'];
+        }
+        array_multisort($total_accomplished_students, SORT_DESC, $result_asaneed_teacher);
+
+        $i = 0;
+        foreach ($result_asaneed_teacher as $key => $row) {
+            $i++;
+            $result_asaneed_teacher[$key]['id'] = $i;
+        }
+
+
 
         return [
             "draw" => $draw,
             "recordsTotal" => $count,
             "recordsFiltered" => $count,
-            "data" => (array)$value,
+            "data" => (array)$result_asaneed_teacher,
             "order" => $columns[$order]["db"]
         ];
     }

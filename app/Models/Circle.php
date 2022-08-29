@@ -29,7 +29,7 @@ class Circle extends Model
         <div>'.$addStudent.'<button type="button" class="btn btn-warning" title="تعديل" data-url="'.route('circles.edit',$this->id).'" data-bs-toggle="modal" data-bs-target=".bs-example-modal-x2" onclick="callApi(this,\'user_modal_content_new\')"><i class="mdi mdi-comment-edit"></i></button>
         <button type="button" class="btn btn-danger" title="حذف" data-url="'.route('circles.destroy',$this->id).'" onclick="deleteItem(this)"><i class="mdi mdi-trash-can"></i></button></div>
     ';
-        
+
         return [
             'id'                    =>$this->id,
             'start_date'            =>$this->start_date,
@@ -335,7 +335,10 @@ class Circle extends Model
                         return $builder;
                     }else if($user->hasRole('رئيس قسم الاختبارات')){
                         return $builder;
-                    }else{
+                    }else if($user->hasRole('مدير فرع')){
+                        return $builder->permissionssubarea(0, $user->branch_supervisor_area_id);
+                    }
+                    else{
                         $builder->whereHas('teacher',function ($query) use($user){
                             $query->whereHas('students',function($query1) use($user){
                                 $query1->where('id',$user->id);

@@ -47,20 +47,20 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Route::bind('course',function($course_id){
-            $model = Course::find($course_id);
-            if($model){
-                return $model;
-            }else{
-                $model = Course::withoutGlobalScope('relatedCourses')->find($course_id);
-//                dd($role);
-                if($model){
-                    return $model;
-                }else{
-                    return null;
-                }
-            }
-        });
+//         Route::bind('course',function($course_id){
+//             $model = Course::find($course_id);
+//             if($model){
+//                 return $model;
+//             }else{
+//                 $model = Course::withoutGlobalScope('relatedCourses')->find($course_id);
+// //                dd($role);
+//                 if($model){
+//                     return $model;
+//                 }else{
+//                     return null;
+//                 }
+//             }
+//         });
 //        Route::bind('area',function($area_id){
 //            $model = Area::find($area_id);
 //            if($model){
