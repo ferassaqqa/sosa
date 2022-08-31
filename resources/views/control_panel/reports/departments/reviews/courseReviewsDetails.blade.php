@@ -21,12 +21,12 @@
 
                         <thead>
                             <tr>
-                                <th colspan="10" scope="col">تفصيل تقييم قسم الدورات</th>
+                                <th colspan="11" scope="col">تفصيل تقييم قسم الدورات</th>
                             </tr>
 
 
                             <col style="background: #f0f0f0">
-                            <colgroup style="background: #f0f0f0" span="5"></colgroup>
+                            <colgroup style="background: #f0f0f0" span="6"></colgroup>
                             <col style="background: #f0f0f0">
                             <col style="background: #f0f0f0">
                             <col style="background: #f0f0f0">
@@ -39,7 +39,7 @@
                                 <td rowspan="2"> <b> المنطقة </b></td>
 
 
-                                <td colspan="5"> <b> بنود تقييم قسم الدورات </b></td>
+                                <td colspan="6"> <b> بنود تقييم قسم الدورات </b></td>
 
                                 <td rowspan="2"> <b>التقييم العام (100%)</b></td>
                                 <td rowspan="2"> <b> الترتيب </b></td>
@@ -53,6 +53,8 @@
                                 <td scope="col1">جودة الاختبارات (5%)</td>
                                 <td scope="col1">تمييز فائض الخريجين (2%)</td>
                                 <td scope="col1">فئات الخريجين (3%)</td>
+                                <td scope="col1"> برنامج الصفوة (2%)</td>
+
                                 <td scope="col1"> <b>التقييم العام (50%)</b></td>
                             </tr>
 
