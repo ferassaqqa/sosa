@@ -1342,32 +1342,31 @@ class User extends Authenticatable
         return $row;
     }
 
-    // public function getStudentSafwaReviewsDataAttribute()
-    // {
+    public function getStudentSafwaReviewsDataAttribute()
+    {
 
 
-    //     if (Cache::has('safwa_books_ids')) {
-    //         $books_ids = Cache::get('safwa_books_ids');
-    //     } else {
-    //         $year = date("Y");
-    //         $books_ids = CourseProject::where('year', $year)->limit(1)->pluck('books')->first(); //get safwa project
-    //         $books_ids = json_decode($books_ids);
-    //         Cache::put('safwa_books_ids', $books_ids, 600);
-    //     }
+        // if (Cache::has('safwa_books_ids')) {
+        //     $books_ids = Cache::get('safwa_books_ids');
+        // } else {
+            $year = date("Y");
+            $books_ids = CourseProject::where('year', $year)->limit(1)->pluck('books')->first(); //get safwa project
+            $books_ids = json_decode($books_ids);
+        //     Cache::put('safwa_books_ids', $books_ids, 600);
+        // }
 
 
-    //     $completed_books =  DB::table('course_students')
-    //         ->leftJoin('courses', 'courses.id', '=', 'course_students.course_id')
-    //         ->leftJoin('books', 'books.id', '=', 'courses.book_id')
-    //         ->whereIn('courses.book_id', $books_ids)
-    //         ->where('course_students.user_id', '=', $this->id)
-    //         ->select('books.name')
-    //         ->groupBy('books.name')
-    //         ->get();
+        $completed_books =  DB::table('course_students')
+            ->leftJoin('courses', 'courses.id', '=', 'course_students.course_id')
+            ->where('course_students.user_id', '=', $this->id)
+            ->whereIn('courses.book_id', $books_ids)
+            ->select('courses.id')
+            ->groupBy('courses.id')
+            ->get();
 
 
-    //     return count($completed_books);
-    // }
+        return count($completed_books);
+    }
 
 
     public function getStudentSafwaProjectCompelationDataAttribute()

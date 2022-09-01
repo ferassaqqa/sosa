@@ -22,7 +22,7 @@ class ReportsController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        ini_set('max_execution_time', 360); //6 minutes
+        ini_set('max_execution_time', 1440); //12 minutes
 
     }
     public function allReports()
@@ -49,10 +49,10 @@ class ReportsController extends Controller
         // if (Cache::has('reviews_acheivment_reports')) {
         //     $value = Cache::get('reviews_acheivment_reports');
         // } else {
-        foreach ($areas as $index => $item) {
-            $new_item = $item->all_reviews_row_data;
-            array_push($value, $new_item);
-        }
+        // foreach ($areas as $index => $item) {
+        //     $new_item = $item->all_reviews_row_data;
+        //     array_push($value, $new_item);
+        // }
         //     Cache::put('reviews_acheivment_reports', $value,600);
         // }
 
@@ -1167,7 +1167,7 @@ class ReportsController extends Controller
         $place_id = (int)$request->place_id ? (int)$request->place_id : 0;
 
         $value = array();
-        
+
         if ($book_id) {
             $books_ids = [$book_id];
         } else {

@@ -483,27 +483,21 @@ class Area extends Model
     private function getSafwaPassedStudentsByArea($area_id,$safwa_books_ids){
 
 
-            $users = User::subarea(0, $area_id)
+            $users = User::subarea(0, $area_id)->department(4)
             ->whereHas('courses', function ($query) use ($safwa_books_ids) {
-                $query->whereHas('book', function ($query) use ($safwa_books_ids) {
-                    $query->whereIn('book_id', $safwa_books_ids);
-                })->whereBetween('mark', [60, 101]);
+                    $query->whereIn("courses.book_id",$safwa_books_ids);
+                    $query->whereBetween('mark', [60, 101]);
             })
             ->get();
+
+            // dd($users);
+
             $result = array();
             foreach ($users as $index => $item) {
-
-                $completed_books =  DB::table('course_students')
-                ->leftJoin('courses', 'courses.id', '=', 'course_students.course_id')
-                ->leftJoin('books', 'books.id', '=', 'courses.book_id')
-                ->whereIn('courses.book_id', $safwa_books_ids)
-                ->where('course_students.user_id', '=', $item->id)
-                ->select('books.name')
-                ->groupBy('books.name')
-                ->get();
-
-                array_push($result, count($completed_books));
+                array_push($result, $item->student_safwa_reviews_data);
             }
+
+            // dd($result);
 
             $result =array_count_values($result);
             ksort($result);
