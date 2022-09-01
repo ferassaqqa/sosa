@@ -135,6 +135,9 @@ class ReportsController extends Controller
 
         foreach ($result_review as $key => $row) {
             $name[$key]  = $row['name'];
+            $test_quality_5[$key] = $row['test_quality_5'];
+            $surplus_graduates_2[$key] = $row['surplus_graduates_2'];
+            $safwa_graduates_2[$key] = $row['safwa_graduates_2'];
             $percentage_38[$key] = $row['percentage_38'];
             $percentage_50[$key] = $row['percentage_50'];
             $percentage_total[$key] = $row['percentage_total'];
@@ -168,9 +171,11 @@ class ReportsController extends Controller
                 <td>' . $row['name'] . '</td>
 
                 <td>' . $row['percentage_38'] . '%</td>
-                <td>5%</td>
-                <td>2%</td>
+                <td>'.$row['test_quality_5'].'%</td>
+                <td>'.$row['surplus_graduates_2'].'%</td>
                 <td>3%</td>
+                <td>'.$row['safwa_graduates_2'].'%</td>
+
                 <td><b>' . $row['percentage_50'] . '%</b></td>
 
                 <td><b>' . $row['percentage_total'] . '%</b></td>
@@ -582,15 +587,15 @@ class ReportsController extends Controller
 
 
 
-        $course_project = CourseProject::where('year', $year)->limit(1)->pluck('books')->first(); //get safwa project
-        $course_project = json_decode($course_project);
+        $project = CourseProject::where('year', $year)->limit(1)->pluck('books')->first(); //get safwa project
+        $project = json_decode($project);
         $project_books_value = array();
 
 
 
-        $in_plane_books_value = $this->getTotalRowCourseAreaPlanProgress($in_plane_books, false, $course_project);
-        $project_books_value = $this->getTotalRowCourseAreaPlanProgress($in_plane_books, true, $course_project);
-        $out_plane_books_value = $this->getTotalRowCourseAreaPlanProgress($out_plane_books, true, $course_project);
+        $in_plane_books_value = $this->getTotalRowCourseAreaPlanProgress($in_plane_books, false, $project);
+        $project_books_value = $this->getTotalRowCourseAreaPlanProgress($in_plane_books, true, $project);
+        $out_plane_books_value = $this->getTotalRowCourseAreaPlanProgress($out_plane_books, false, $project);
 
 
 

@@ -38,8 +38,8 @@ class Book extends Model
         $completed_num_percentage = $this->required_students_number
             ? round((($this->courses_passed_students_count / $this->required_students_number) * 100), 2)
             : 0;
-        $completed_num_percentage = $completed_num_percentage > 100 ? 100 : $completed_num_percentage;
         $excess_num_percentage = $completed_num_percentage > 100 ? $completed_num_percentage - 100 : 0;
+        $completed_num_percentage = $completed_num_percentage > 100 ? 100 : $completed_num_percentage;
         return [
             'id' => $this->id,
             'book_name' => $this->name,
@@ -91,9 +91,6 @@ class Book extends Model
 
 
 
-
-
-
         $rest = 0;
         // $all_areas_total_array = array();
         foreach ($areas as $key => $area) {
@@ -103,8 +100,20 @@ class Book extends Model
                     ->course('منتهية')
                     ->whereBetween('mark', [60, 101])->count();
 
-                $rest = $pass - floor(($area->percentage * $this->required_students_number)) / 100;
+
+                    // $ss = floor(($area->percentage / 100)  * $this->required_students_number);
+                    // dd($ss);
+
+                 if($area_id){
+                    $required = $this->required_students_number;
+                 }else{
+                    $required = floor(($area->percentage * $this->required_students_number)) / 100;
+                 }   
+
+                $rest = $pass - $required;
                 $rest = $this->required_students_number ? floor($rest) : 0;
+
+              
 
                 $icon = '';
                 if ($rest < 0) {
@@ -123,6 +132,8 @@ class Book extends Model
 
         }
 
+        // dd($data);
+
         $pass_percentage = $this->required_students_number ? round((($total_pass / $this->required_students_number) * 100), 2) : 0;
         $plus_percentage = $this->required_students_number ? round((($total_plus / $this->required_students_number) * 100), 2) : 0;
 
@@ -131,7 +142,7 @@ class Book extends Model
             $pass_percentage = 100;
         }
 
-        // dd($total_plus);
+        // dd($total_rest);
 
         $review_result = array(
             'name' => $this->name,

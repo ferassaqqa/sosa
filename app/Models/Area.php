@@ -16,7 +16,7 @@ class Area extends Model
     use HasFactory;
     public static $counter = 0;
 
-    protected $fillable = ['name', 'area_id','branch_supervisor_id', 'area_supervisor_id', 'sub_area_supervisor_id', 'percentage', 'student_marks_export_count', 'student_marks_export_year'];
+    protected $fillable = ['name', 'area_id', 'branch_supervisor_id', 'area_supervisor_id', 'sub_area_supervisor_id', 'percentage', 'student_marks_export_count', 'student_marks_export_year'];
     public function subArea()
     {
         return $this->hasMany(Area::class, 'area_id', 'id')->withoutGlobalScope('relatedAreas');
@@ -259,15 +259,15 @@ class Area extends Model
 
 
 
-    public function scopeSubArea($query, $sub_area_id, $area_id){
+    public function scopeSubArea($query, $sub_area_id, $area_id)
+    {
         if ($sub_area_id) {
-           return $query->where('id', $sub_area_id);
-        }elseif($area_id){
-           return $query->where('id', $sub_area_id);
-        }else {
+            return $query->where('id', $sub_area_id);
+        } elseif ($area_id) {
+            return $query->where('id', $sub_area_id);
+        } else {
             return $query;
         }
-
     }
 
     public function getAllReviewsRowDataAttribute()
@@ -370,26 +370,6 @@ class Area extends Model
 
 
         return $review_result;
-
-
-
-        // return '
-
-        //     <tr >
-        //         <td>' . self::$counter . '</td>
-        //         <td>' . $this->name . '</td>
-
-        //         <td>' . $percentage_38 . '%</td>
-        //         <td>5%</td>
-        //         <td>2%</td>
-        //         <td>3%</td>
-        //         <td><b>' . $percentage_50 . '%</b></td>
-
-        //         <td><b>' . $percentage_total . '%</b></td>
-        //         <td></td>
-        //         <td></td>
-        //     </tr>
-        //         ';
     }
 
     public function getCourseReviewsRowDataAttribute()
@@ -398,13 +378,20 @@ class Area extends Model
 
         $year = date("Y");
         $books = Book::where('year', $year)->get();
+        $books_ids = CourseProject::where('year', $year)->limit(1)->pluck('books')->first(); //get safwa project
+        $books_ids = json_decode($books_ids);
+
+
         self::$counter++;
 
 
         $total_pass = 0;
         $total_required  = 0;
         $pass = 0;
-
+        $avg = 0;
+        $total_avg = array();
+        $required_student_total = 0;
+        $total_pass_all = 0;
 
 
         foreach ($books as $key => $book) {
@@ -413,14 +400,14 @@ class Area extends Model
                 continue;
             } else {
 
+                /* start percenage_38*/
                 $rest = 0;
                 $pass = CourseStudent::book($book->id)
                     ->subarea(0, $this->id)
                     ->whereBetween('mark', [60, 101])->count();
 
+                $total_pass_all +=  $pass;
                 $total_required += floor(($this->percentage * $book->required_students_number)  / 100);
-
-
 
                 $rest =  $pass - floor(($this->percentage * $book->required_students_number)  / 100);
                 if ($rest > 0) {
@@ -428,20 +415,59 @@ class Area extends Model
                 } elseif ($rest < 0) {
                     $total_pass += $pass;
                 }
+                /*end percentage 38 */
+
+                /*start avg */
+                $avg = CourseStudent::book($book->id)
+                    ->subarea(0, $this->id)
+                    ->whereBetween('mark', [60, 101])->pluck('mark')->toArray();
+                $total_avg += $avg;
+                /* end avg*/
+
+                // /* */
+              
+                // /*end surplus graduates */
+
+
             }
         }
 
 
+
+
         $sucess_percentage = round($total_pass / $total_required, 2) * 100;
+        $percentage_38 = ($sucess_percentage * 38) / 100;
+        $percentage_38 = sprintf('%.2f', $percentage_38);
 
-        $percentage_38 = floor(($sucess_percentage * 38) / 100);
 
-        $percentage_50 = $percentage_38 + 5 + 2 + 5;
+        $total_avg = array_sum($total_avg) / count($total_avg);
+        $test_quality_5 = $total_avg * 0.05;
+        $test_quality_5 = sprintf('%.2f', $test_quality_5);
+
+
+        $total_surplus_graduates_by_area =  $total_pass_all - $total_required;
+        $total_surplus_graduates_all_area = $this->getSurplusGraduatesForAllAreas();
+
+        $surplus_graduates_2 = ($total_surplus_graduates_by_area / $total_surplus_graduates_all_area) * 2;
+        $surplus_graduates_2 = sprintf('%.2f', $surplus_graduates_2);
+
+        $safwa_program = 2;
+
+
+
+        $percentage_50 = $percentage_38 + $test_quality_5 + $surplus_graduates_2 + 3 + $safwa_program;
 
         $percentage_total = ($percentage_50 * 2);
 
+
+        $safwa_graduates_2 = $this->getSafwaPassedStudentsByArea($this->id,$books_ids);
+
+
         $review_result = array(
             'name' => $this->name,
+            'safwa_graduates_2' =>  $safwa_graduates_2,
+            'surplus_graduates_2' =>  $surplus_graduates_2,
+            'test_quality_5' =>  $test_quality_5,
             'percentage_38' =>  $percentage_38,
             'percentage_50' =>  $percentage_50,
             'percentage_total' => $percentage_total,
@@ -451,6 +477,69 @@ class Area extends Model
 
 
         return $review_result;
+    }
+
+
+    private function getSafwaPassedStudentsByArea($area_id,$safwa_books_ids){
+
+
+            $users = User::subarea(0, $area_id)
+            ->whereHas('courses', function ($query) use ($safwa_books_ids) {
+                $query->whereHas('book', function ($query) use ($safwa_books_ids) {
+                    $query->whereIn('book_id', $safwa_books_ids);
+                })->whereBetween('mark', [60, 101]);
+            })
+            ->get();
+            $result = array();
+            foreach ($users as $index => $item) {
+                array_push($result, $item->student_safwa_reviews_data);
+            }
+
+            $result =array_count_values($result);
+            ksort($result);
+
+            $key = array_key_last($result);
+            $value = $result[array_key_last($result)];
+            if($value >= 15 ){$value = 15;}
+
+            // echo $key.' '.$value; exit;
+
+          return   round((($key * $value) / 90)*2,2);
+
+
+
+
+
+    }
+
+    private function getSurplusGraduatesForAllAreas()
+    {
+
+        $year = date("Y");
+        $books = Book::where('year', $year)->get();
+
+        $pass = 0;
+        $total_pass_all = 0;
+        $total_required = 0;
+
+            foreach ($books as $key => $book) {
+                if ($book->required_students_number == 0) {
+                    continue;
+                } else {
+                $pass = CourseStudent::book($book->id)                 
+                    ->whereBetween('mark', [60, 101])->count();
+
+                $total_pass_all +=  $pass;
+                $total_required +=  $book->required_students_number;
+
+                }
+        }
+
+
+        return $total_pass_all - $total_required;
+
+            // echo $total_pass_all.' '.$total_required;  exit;
+
 
     }
 
