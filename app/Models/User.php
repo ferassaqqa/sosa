@@ -1346,7 +1346,6 @@ class User extends Authenticatable
     public function getStudentSafwaProjectCompelationDataAttribute()
     {
 
-
         if (Cache::has('safwa_books_ids')) {
             $books_ids = Cache::get('safwa_books_ids');
         } else {

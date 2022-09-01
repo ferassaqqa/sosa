@@ -61,11 +61,29 @@
         </select>
     </div>
 
-    <div class="col-md-2">
-        <select class="form-control select2" id="books_select">
+    <div class="col-md-2 course_books">
+        <select class="form-control " id="books_select">
             <option value="0">اختر الكتاب</option>
             @foreach ($in_plane_books as $book)
                 <option value="{{ $book->id }}">{{ $book->name }}</option>
+            @endforeach
+        </select>
+    </div>
+
+    <div class="col-md-2 asaneed_books" style="display: none">
+        <select class="form-control " id="asaneed_books_select">
+            <option value="0">اختر الكتاب</option>
+            @foreach ($asaneed_books as $asaneedBook)
+                <option value="{{ $asaneedBook->id }}">{{ $asaneedBook->name }}</option>
+            @endforeach
+        </select>
+    </div>
+
+    <div class="col-md-2 safwa_books" style="display: none">
+        <select class="form-control " id="safwa_books_select">
+            <option value="0">اختر الكتاب</option>
+            @foreach ($safwa_books as $safwaBook)
+                <option value="{{ $safwaBook->id }}">{{ $safwaBook->name }}</option>
             @endforeach
         </select>
     </div>
@@ -123,7 +141,6 @@
                             '<option value="coursePlanProgress">انجاز خطة الدورات</option>' +
                             '<option value="mostAccomplished">الأكثر إنجازًا</option>'+
                             '<option value="safwaProgram">برنامج الصفوة</option>'
-
                         );
 
                         // $('#teachers_select').parent().css('display','none');
@@ -145,8 +162,8 @@
                     $('#analysis_type').empty().html(
                         '<option value="0">اختر التحليل المناسب</option>' +
                         '<option value="asaneedAreaPlanProgress">انجاز المناطق الكبرى</option>' +
-                            '<option value="asaneedPlanProgress">انجاز خطة الدورات</option>' +
-                            '<option value="asaneedMostAccomplished">الأكثر إنجازًا</option>' 
+                            '<option value="asaneedPlanProgress">انجاز خطة الاسانيد</option>' +
+                            '<option value="asaneedMostAccomplished">الأكثر إنجازًا</option>'
                     );
 
                 }
@@ -208,7 +225,9 @@
                 '&place_id=' + $('#place_area').val() +
                 '&area_id=' + $('#report_area_select').val() +
                 '&analysis_sub_type=' + $('#analysis_sub_type').val() +
-                '&book_id=' + $('#books_select').val();
+                '&book_id=' + $('#books_select').val() +
+                '&asaneed_book_id=' + $('#asaneed_books_select').val() +
+                '&safwa_books_id=' + $('#safwa_books_select').val();
 
             $('#tableContainer')
                 .html(
@@ -223,6 +242,7 @@
                 // $('#custom_filters').empty().html(data.filters);
             });
         }
+        
 
 
         $(document).ready(function() {
@@ -234,6 +254,42 @@
 
                 }
             });
+
+            $('body').on('change','#reports_department_id', function(){
+                if ($(this).find(":selected").val() == 'قسم الدورات العلمية'){
+                    $('.course_books').css('display','block');
+                    $('.asaneed_books').css('display','none');
+                    $('.safwa_books').css('display','none');
+
+                }else if($(this).find(":selected").val() == 'قسم أسانيد السنة النبوية'){
+                    $('.course_books').css('display','none');
+                    $('.safwa_books').css('display','none');
+                    $('.asaneed_books').css('display','block');
+                }
+            });
+
+
+            $('body').on('change','#analysis_type', function(){
+                if ($(this).find(":selected").val() == 'safwaProgram'){
+                    $('.course_books').css('display','none');
+                    $('.asaneed_books').css('display','none');
+                    $('.safwa_books').css('display','block');
+                }else{
+                    if ($('#reports_department_id').find(":selected").val() == 'قسم الدورات العلمية'){
+                    $('.course_books').css('display','block');
+                    $('.asaneed_books').css('display','none');
+                    $('.safwa_books').css('display','none');
+
+                }else if($('#reports_department_id').find(":selected").val() == 'قسم أسانيد السنة النبوية'){
+                    $('.course_books').css('display','none');
+                    $('.safwa_books').css('display','none');
+                    $('.asaneed_books').css('display','block');
+                }
+                }
+            });
+
+
+
         });
 
 
