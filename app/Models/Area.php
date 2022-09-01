@@ -402,9 +402,11 @@ class Area extends Model
 
                 /* start percenage_38*/
                 $rest = 0;
-                $pass = CourseStudent::book($book->id)
+                $coll = CourseStudent::book($book->id)
                     ->subarea(0, $this->id)
-                    ->whereBetween('mark', [60, 101])->count();
+                    ->whereBetween('mark', [60, 101]);
+
+                $pass = $coll->count();
 
                 $total_pass_all +=  $pass;
                 $total_required += floor(($this->percentage * $book->required_students_number)  / 100);
@@ -418,9 +420,11 @@ class Area extends Model
                 /*end percentage 38 */
 
                 /*start avg */
-                $avg = CourseStudent::book($book->id)
-                    ->subarea(0, $this->id)
-                    ->whereBetween('mark', [60, 101])->pluck('mark')->toArray();
+                // $avg = CourseStudent::book($book->id)
+                //     ->subarea(0, $this->id)
+                //     ->whereBetween('mark', [60, 101])->pluck('mark')->toArray();
+
+                $avg = $coll->pluck('mark')->toArray();
                 $total_avg += $avg;
                 /* end avg*/
 
