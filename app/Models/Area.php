@@ -425,7 +425,7 @@ class Area extends Model
                 /* end avg*/
 
                 // /* */
-              
+
                 // /*end surplus graduates */
 
 
@@ -492,7 +492,17 @@ class Area extends Model
             ->get();
             $result = array();
             foreach ($users as $index => $item) {
-                array_push($result, $item->student_safwa_reviews_data);
+
+                $completed_books =  DB::table('course_students')
+                ->leftJoin('courses', 'courses.id', '=', 'course_students.course_id')
+                ->leftJoin('books', 'books.id', '=', 'courses.book_id')
+                ->whereIn('courses.book_id', $safwa_books_ids)
+                ->where('course_students.user_id', '=', $item->id)
+                ->select('books.name')
+                ->groupBy('books.name')
+                ->get();
+
+                array_push($result, count($completed_books));
             }
 
             $result =array_count_values($result);
@@ -526,7 +536,7 @@ class Area extends Model
                 if ($book->required_students_number == 0) {
                     continue;
                 } else {
-                $pass = CourseStudent::book($book->id)                 
+                $pass = CourseStudent::book($book->id)
                     ->whereBetween('mark', [60, 101])->count();
 
                 $total_pass_all +=  $pass;
