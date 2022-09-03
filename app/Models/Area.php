@@ -452,15 +452,16 @@ class Area extends Model
         $surplus_graduates_2 = sprintf('%.2f', $surplus_graduates_2);
 
         $safwa_program = 2;
+        $safwa_graduates_2 = $this->getSafwaPassedStudentsByArea($this->id,$books_ids);
 
 
 
-        $percentage_50 = $percentage_38 + $test_quality_5 + $surplus_graduates_2 + 3 + $safwa_program;
+
+        $percentage_50 = $percentage_38 + $test_quality_5 + $surplus_graduates_2 + 3 + $safwa_graduates_2;
 
         $percentage_total = ($percentage_50 * 2);
 
 
-        $safwa_graduates_2 = $this->getSafwaPassedStudentsByArea($this->id,$books_ids);
 
 
         $review_result = array(
@@ -482,17 +483,29 @@ class Area extends Model
 
     private function getSafwaPassedStudentsByArea($area_id,$safwa_books_ids){
 
-
+            $limit = 500;
             $users = User::subarea(0, $area_id)
             ->whereHas('courses', function ($query) use ($safwa_books_ids) {
-                $query->whereHas('book', function ($query) use ($safwa_books_ids) {
                     $query->whereIn('book_id', $safwa_books_ids);
-                })->whereBetween('mark', [60, 101]);
-            })
-            ->get();
+                    $query->whereBetween('mark', [60, 101]);
+                })
+                ->limit($limit)
+                ->get();
+        
+           
             $result = array();
-            foreach ($users as $index => $item) {
-                array_push($result, $item->student_safwa_reviews_data);
+            foreach ($users as $index => $user) {
+
+                $count =  DB::table('course_students')
+                ->leftJoin('courses', 'courses.id', '=', 'course_students.course_id')
+                ->whereIn('courses.book_id', $safwa_books_ids)
+                ->where('course_students.user_id', '=', $user->id)
+                ->select('courses.book_id')
+                ->distinct('courses.book_id')
+                ->count();
+
+
+                array_push($result, $count);
             }
 
             $result =array_count_values($result);
