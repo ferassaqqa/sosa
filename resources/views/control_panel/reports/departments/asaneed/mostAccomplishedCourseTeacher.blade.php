@@ -57,7 +57,7 @@ var table = '';
                 "ajax": "{{ route('reports.getAnalysisData').'?analysis_type=asaneedMostAccomplished'}}"+ filters,
                 language: {
                     search: "بحث",
-                    processing:     "جاري معالجة البيانات" ,
+                    processing:     "جاي معالجة البيانات" ,
                     lengthMenu:    "عدد _MENU_ الصفوف",
                     info:           "من _START_ الى _END_ من أصل _TOTAL_ صفحة",
                     infoEmpty: "لا يوجد بيانات",

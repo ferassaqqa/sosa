@@ -402,9 +402,11 @@ class Area extends Model
 
                 /* start percenage_38*/
                 $rest = 0;
-                $pass = CourseStudent::book($book->id)
+                $coll = CourseStudent::book($book->id)
                     ->subarea(0, $this->id)
-                    ->whereBetween('mark', [60, 101])->count();
+                    ->whereBetween('mark', [60, 101]);
+
+                $pass = $coll->count();
 
                 $total_pass_all +=  $pass;
                 $total_required += floor(($this->percentage * $book->required_students_number)  / 100);
@@ -418,14 +420,16 @@ class Area extends Model
                 /*end percentage 38 */
 
                 /*start avg */
-                $avg = CourseStudent::book($book->id)
-                    ->subarea(0, $this->id)
-                    ->whereBetween('mark', [60, 101])->pluck('mark')->toArray();
+                // $avg = CourseStudent::book($book->id)
+                //     ->subarea(0, $this->id)
+                //     ->whereBetween('mark', [60, 101])->pluck('mark')->toArray();
+
+                $avg = $coll->pluck('mark')->toArray();
                 $total_avg += $avg;
                 /* end avg*/
 
                 // /* */
-              
+
                 // /*end surplus graduates */
 
 
@@ -483,6 +487,7 @@ class Area extends Model
 
     private function getSafwaPassedStudentsByArea($area_id,$safwa_books_ids){
 
+
             $limit = 500;
             $users = User::subarea(0, $area_id)
             ->whereHas('courses', function ($query) use ($safwa_books_ids) {
@@ -493,6 +498,7 @@ class Area extends Model
                 ->get();
         
            
+
             $result = array();
             foreach ($users as $index => $user) {
 
@@ -507,6 +513,8 @@ class Area extends Model
 
                 array_push($result, $count);
             }
+
+            // dd($result);
 
             $result =array_count_values($result);
             ksort($result);
@@ -539,7 +547,7 @@ class Area extends Model
                 if ($book->required_students_number == 0) {
                     continue;
                 } else {
-                $pass = CourseStudent::book($book->id)                 
+                $pass = CourseStudent::book($book->id)
                     ->whereBetween('mark', [60, 101])->count();
 
                 $total_pass_all +=  $pass;

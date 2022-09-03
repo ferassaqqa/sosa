@@ -1346,14 +1346,11 @@ class User extends Authenticatable
     // {
 
 
-        // if (Cache::has('safwa_books_ids')) {
-        //     $books_ids = Cache::get('safwa_books_ids');
-        // } else {
-        //     $year = date("Y");
-        //     $books_ids = CourseProject::where('year', $year)->limit(1)->pluck('books')->first(); //get safwa project
-        //     $books_ids = json_decode($books_ids);
-        //     Cache::put('safwa_books_ids', $books_ids, 600);
-        // }
+
+            // $year = date("Y");
+            // $books_ids = CourseProject::where('year', $year)->limit(1)->pluck('books')->first(); //get safwa project
+            // $books_ids = json_decode($books_ids);
+
 
 
     //     $completed_books =  DB::table('course_students')
@@ -1366,13 +1363,14 @@ class User extends Authenticatable
     //         ->get();
 
 
+
+
     //     return count($completed_books);
     // }
 
 
     public function getStudentSafwaProjectCompelationDataAttribute()
     {
-
 
         if (Cache::has('safwa_books_ids')) {
             $books_ids = Cache::get('safwa_books_ids');

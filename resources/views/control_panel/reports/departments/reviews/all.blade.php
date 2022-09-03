@@ -73,7 +73,7 @@
                             </thead>
                             <tbody>
 
-                                <tr>
+                                {{-- <tr>
                                     <tr>
                                         <th style="background: #f0f0f0; width:50px; ">#</th>
                                         <th style="background: #f0f0f0">المنطقة</th>
@@ -90,7 +90,7 @@
                                 @foreach ($value as $index => $val)
                                              {!! $val !!}
                                 @endforeach
-                                @endif
+                                @endif --}}
 
 
 
