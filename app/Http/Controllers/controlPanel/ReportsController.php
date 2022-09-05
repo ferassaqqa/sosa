@@ -43,21 +43,8 @@ class ReportsController extends Controller
 
 
         $areas = Area::whereNull('area_id')->get();
-        $year = date("Y");
-        $value = array();
 
-        // if (Cache::has('reviews_acheivment_reports')) {
-        //     $value = Cache::get('reviews_acheivment_reports');
-        // } else {
-        // foreach ($areas as $index => $item) {
-        //     $new_item = $item->all_reviews_row_data;
-        //     array_push($value, $new_item);
-        // }
-        //     Cache::put('reviews_acheivment_reports', $value,600);
-        // }
-
-
-        return view('control_panel.reports.departments.reviews.all', compact('areas', 'value'));
+        return view('control_panel.reports.departments.reviews.all', compact('areas'));
     }
 
     public function getReviewsAnalysisView(Request $request)
@@ -150,8 +137,9 @@ class ReportsController extends Controller
         }
         $duplicates = array_unique(array_diff_assoc($scores, array_unique($scores)));
 
-
+        $i=0;
         foreach ($result_review as $key1 => $row) {
+            $i++;
             $label = $this->getOrderLabel($key1);
             $key = 0;
             if (array_key_exists($key1, $duplicates)) {
@@ -167,7 +155,7 @@ class ReportsController extends Controller
 
             $item = '
             <tr >
-                <td>' . $key . '</td>
+                <td>' . $i . '</td>
                 <td>' . $row['name'] . '</td>
 
                 <td>' . $row['percentage_38'] . '%</td>
@@ -202,40 +190,48 @@ class ReportsController extends Controller
 
         $areas = Area::permissionssubarea($sub_area_id, $area_id)
             ->whereNull('area_id')->get();
+
+        $asaneed_books = AsaneedBook::all();
         $value = array();
         $result_review = array();
-
-        // foreach ($areas as $index => $item) {
-        //     $new_item = $item->asaneed_reviews_row_data;
-        //     array_push($value, $new_item);
-        // }
-
+        $scores = array();
 
         foreach ($areas as $index => $item) {
             $new_item = $item->asaneed_reviews_row_data;
-            $result_review[] = $new_item;
-        }
-        foreach ($result_review as $key => $row) {
-            $name[$key]  = $row['name'];
-            $percentage_38[$key] = $row['percentage_38'];
-            $percentage_50[$key] = $row['percentage_50'];
-            $percentage_total[$key] = $row['percentage_total'];
-            $id[$key] = $row['id'];
+            array_push($result_review, $new_item);
         }
 
-        array_multisort($percentage_total, SORT_DESC, $result_review);
+
         foreach ($result_review as $key => $row) {
-            $scores[] = $row['percentage_total'];
+
+            $name[$key]  = $row['name'];
+            $superplus_graduates[$key]  = $row['superplus_graduates'];
+            $total_score_10[$key]  = $row['total_score_10'];
+            $id[$key]  = $row['id'];
+            $total_score_100[$key]  = $row['total_score_100'];
+
+        }
+
+        array_multisort($total_score_100, SORT_DESC, $result_review);
+
+        // dd($result_review);
+
+
+        foreach ($value as $key => $row) {
+            $scores[] = $row['total_score_100'];
         }
         $duplicates = array_unique(array_diff_assoc($scores, array_unique($scores)));
 
+
+        $i=0;
         foreach ($result_review as $key => $row) {
+            $i++;
             $label = $this->getOrderLabel($key);
             // if (array_key_exists($key, $duplicates)) {
             //     $label =$this->getOrderLabel($key-1).' مكرر';
             // }
-            if (in_array($row['percentage_total'], $scores)) {
-                $key = array_search($row['percentage_total'], $duplicates);
+            if (in_array($row['total_score_100'], $scores)) {
+                $key = array_search($row['total_score_100'], $duplicates);
                 $label = $this->getOrderLabel($key - 1) . ' مكرر';
             }
 
@@ -243,27 +239,25 @@ class ReportsController extends Controller
 
             $item = '
             <tr >
-                <td>' . $key . '</td>
-                <td>' . $row['name'] . '</td>
+                <td>' . $i . '</td>
+                <td>' . $row['name'] . '</td>';
 
-                <td>' . $row['percentage_38'] . '%</td>
-                <td>5%</td>
-                <td>2%</td>
-                <td>3%</td>
-                <td><b>' . $row['percentage_50'] . '%</b></td>
+            foreach ($asaneed_books as $key => $book) {
+                    $item.=  '<td>' . $row[$book->id] . '%</td>';
+            }
 
-                <td><b>' . $row['percentage_total'] . '%</b></td>
+            $item.='<td><b>' . $row['superplus_graduates'] . '%</b></td>
+                <td><b>' . $row['total_score_10'] . '%</b></td>
+                <td><b>' . $row['total_score_100'] . '%</b></td>
                 <td>' . $label . '</td>
                 <td></td>
-            </tr>
-
-            ';
+            </tr>';
 
             array_push($value, $item);
         }
 
         return [
-            'view' => view('control_panel.reports.departments.reviews.asaneedReviewsDetails', compact('areas', 'value'))->render()
+            'view' => view('control_panel.reports.departments.reviews.asaneedReviewsDetails', compact('areas', 'asaneed_books','value'))->render()
         ];
     }
 

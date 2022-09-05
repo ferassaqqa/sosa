@@ -108,12 +108,12 @@ class Book extends Model
                     $required = $this->required_students_number;
                  }else{
                     $required = floor(($area->percentage * $this->required_students_number)) / 100;
-                 }   
+                 }
 
                 $rest = $pass - $required;
                 $rest = $this->required_students_number ? floor($rest) : 0;
 
-              
+
 
                 $icon = '';
                 if ($rest < 0) {
@@ -165,6 +165,15 @@ class Book extends Model
     public function getStudentsReportsByStudentsCategoriesRowDataAttribute()
     {
 
+        /* get deleted users */
+        // $usersIds = CourseStudent::all()->pluck('user_id');
+        // foreach ($usersIds as $key => $id) {
+        //     if (User::where('id', '=', $id)->exists()) {
+        //     }else{
+        //         $aa[] = $id;
+        //     }
+        // }
+        // dd($aa);
 
 
         $sub_area_id = $_REQUEST ? $_REQUEST['sub_area_id'] : 0;
@@ -233,9 +242,10 @@ class Book extends Model
 
 
         $primary = CourseStudent::whereHas('user', function ($query) {
-            $to = Carbon::now()->subYears(7)->startOfYear()->format('d-m-Y');
+            $to = Carbon::now()->subYears(4)->startOfYear()->format('d-m-Y');
             $from = Carbon::now()->subYears(12)->startOfYear()->format('d-m-Y');
             $query->whereBetween('dob', [$from, $to]);
+
         })->book($this->id)
             ->coursebookorteacher($teacher_id, $book_id, $place_id)
             ->subarea($sub_area_id, $area_id)
