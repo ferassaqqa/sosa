@@ -273,9 +273,9 @@
                         }
                         if (response.msg) {
                             Swal.fire(
-                                'تم استيراد الملف',
+                                '',
                                 response.msg,
-                                'success'
+                               response.status
                             ).then(function(value) {
                                 ShowCourseStudents(course_id);
                             });

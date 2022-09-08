@@ -101,7 +101,7 @@ class CourseStudentsImport implements ToModel, WithUpserts, WithValidation, With
                             'user_id' => $user->id,
                             'course_id' => $course->id
                         ]);
-                    } 
+                    }
                 }
 
               }
@@ -119,7 +119,7 @@ class CourseStudentsImport implements ToModel, WithUpserts, WithValidation, With
     {
         // TODO: Implement rules() method.
         return [
-            'rkm_alhoy' => 'required|numeric|is_id_valid' //|can_exclude_student:'.SELF::$course->id,
+            'rkm_alhoy' => 'required|numeric' //|can_exclude_student:'.SELF::$course->id,
             //            'almsgd' => 'required|string|exists:places,name',
             //            'rkm_algoal' => 'required|numeric',
         ];

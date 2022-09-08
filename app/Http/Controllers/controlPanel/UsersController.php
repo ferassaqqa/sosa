@@ -226,7 +226,7 @@ class UsersController extends Controller
                             }
                             break;
 
-                            
+
                         case 'مدير فرع':
                             {
                                 if ($request->area_id) {
@@ -234,7 +234,7 @@ class UsersController extends Controller
                                     // $area->update(['area_supervisor_id' => $user->id]);
                                 $area->update(['branch_supervisor_id' => $user->id]);
 
-                                    
+
                                     $place_id = $area->first_place_id ? $area->first_place_id : null;
                                     $user->update(['supervisor_area_id' => $request->area_id,'place_id'=>$place_id]);
                                 }
@@ -344,7 +344,7 @@ class UsersController extends Controller
                         }
                         break;
 
-                        
+
                     case 'مدير فرع':
                         {
                             if ($request->area_id) {

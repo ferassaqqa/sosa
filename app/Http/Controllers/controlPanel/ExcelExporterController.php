@@ -70,7 +70,7 @@ class ExcelExporterController extends Controller
         $students_count = $asaneedCourse->students->count();
         if($students_count >= 10 && !$exam){
             $asaneedCourse->exam()->create($request->all());
-     
+
         }
 
         $asaneedCourse->exam()->update([
@@ -117,33 +117,29 @@ class ExcelExporterController extends Controller
     public function importCourseStudentsExcel(Course $course,Excel $excel,ImportExcelRequest $request){
         $import = new CourseStudentsImport($course);
         $import->import(request()->file('file'));
-        $course->update(['status'=>'قائمة']);
         $students_count = $course->students->count();
-
-        $has_exam = Exam::where('examable_id','=', $course->id)->withoutGlobalScopes()->first();
-
-        if($students_count >= 10 && !$has_exam){
-            $course->exam()->create($request->all());
-        }
 
 
         if($import->failures()->count()) {
             $excel->store(
                 new CourseStudentsFaultsExport($import->failures())
                 , 'public/ اخطاء استيراد الطلاب من ملف الاكسل لدورة ' . $course->book_name . ' للمعلم ' . $course->name . '.xlsx');
-            return response()->json(['msg'=>'تم استيراد ملف دورة '. $course->book_name . ' للمعلم ' . $course->name.' <br><span>
-           <div class="swal2-icon swal2-error swal2-icon-show" style="display: flex;"><div class="swal2-icon-content">!</div></div>
-            ويوجد عدد '.$import->failures()->count().' طلاب لم يتم استيرادهم ، لمعرفة الارقام <a  style="color: red;" href="'.asset('storage/ اخطاء استيراد الطلاب من ملف الاكسل لدورة ' . $course->book_name . ' للمعلم ' . $course->name . '.xlsx').'">اضغط هنا</a> لتحميل الملف.</span> ']);
+                return response()->json(['status'=>'warning','msg'=>'تم استيراد ملف دورة '. $course->book_name . ' للمعلم ' . $course->name.' <br><span>
+                        ويوجد عدد '.$import->failures()->count().' طلاب لم يتم استيرادهم ، لمعرفة الارقام <a  style="color: red;" href="'.asset('storage/ اخطاء استيراد الطلاب من ملف الاكسل لدورة ' . $course->book_name . ' للمعلم ' . $course->name . '.xlsx').'">اضغط هنا</a> لتحميل الملف.</span> ']);
         }else{
 
             if($students_count < 10 ){
-                   return response()->json(['msg'=>'<span>
-                            <div class="swal2-icon swal2-error swal2-icon-show" style="display: flex;"><div class="swal2-icon-content">!</div></div>
+                return response()->json(['status'=>'info','msg'=>'<span>
                             تم استيراد ملف الدورة بنجاح. يرجى العلم بان الحد الادنى لحجز موعد اختيار هو 10 طلاب للدورة الواحدة</span> ']);
             }else{
+            $course->update(['status'=>'قائمة']);
+            $has_exam = Exam::where('examable_id', $course->id )->exists();
+            if(!$has_exam){$course->exam()->create($request->all());}
 
-                    return response()->json(['msg'=>'تم استيراد ملف دورة '. $course->book_name . ' للمعلم ' . $course->name.' بنجاح.']);
+            return response()->json(['status'=>'success','msg'=>'تم استيراد ملف دورة '. $course->book_name . ' للمعلم ' . $course->name.' بنجاح.']);
             }
+
+
         }
     }
 
