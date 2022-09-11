@@ -515,37 +515,37 @@
     </script>
 
 <script type="module">
-    var iteration = 1;
+    // var iteration = 1;
 
-    import {
-        initializeApp
-    } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-    import {
-        getAnalytics
-    } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics.js";
+    // import {
+    //     initializeApp
+    // } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+    // import {
+    //     getAnalytics
+    // } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyBSi08DoXXU5rNvK7chgObzLi_l1_807VM",
-        authDomain: "sunna-b0909.firebaseapp.com",
-        projectId: "sunna-b0909",
-        storageBucket: "sunna-b0909.appspot.com",
-        messagingSenderId: "141645051731",
-        appId: "1:141645051731:web:11c4995110408f7a4993a6",
-        measurementId: "G-D7XE883R18"
-    };
+    // const firebaseConfig = {
+    //     apiKey: "AIzaSyBSi08DoXXU5rNvK7chgObzLi_l1_807VM",
+    //     authDomain: "sunna-b0909.firebaseapp.com",
+    //     projectId: "sunna-b0909",
+    //     storageBucket: "sunna-b0909.appspot.com",
+    //     messagingSenderId: "141645051731",
+    //     appId: "1:141645051731:web:11c4995110408f7a4993a6",
+    //     measurementId: "G-D7XE883R18"
+    // };
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
+    // // Initialize Firebase
+    // const app = initializeApp(firebaseConfig);
+    // const analytics = getAnalytics(app);
 
 
-    messaging.onMessage(function(payload) {
-        iteration = parseInt($('#students_count').html());
-        iteration++;
+    // messaging.onMessage(function(payload) {
+    //     iteration = parseInt($('#students_count').html());
+    //     iteration++;
 
-        $('#students').append(payload.notification.title);
-        $('#students_count').empty().html(iteration);
-    });
+    //     $('#students').append(payload.notification.title);
+    //     $('#students_count').empty().html(iteration);
+    // });
 </script>
 
 @endsection

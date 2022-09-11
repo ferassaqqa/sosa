@@ -61,22 +61,22 @@ class AsaneedStudentsImport implements ToModel,WithUpserts,WithValidation,WithHe
 //                                    '<td>'. $user->deleteCourseStudent($course->id) .'</td>' : '').'
 //                                        </tr>'
 //                        ]);
-                        Auth::user()->sendFCM(
-                            [
-                                'title'=>'
-                                        <tr>
-                                            <td></td>
-                                            <td style="text-align:right;">'. $user->name .'</td>
-                                            <td>'. $user->id_num .'</td>
-                                            <td>'. $user->dob .'</td>
-                                            <td>'. $user->pob .'</td>
-                                            <td>'. $user->student_category .'</td>
-                                            <td>'. (in_array($user->student_category,$asaneedCourse->student_categories) ? '<i class="mdi mdi-checkbox-marked-circle-outline" style="color:green"></i>' : '<i class="mdi mdi-close-circle-outline" style="color:red"></i>').'</td>
-                                            '.(hasPermissionHelper('حذف طالب من دورة علمية') ?
-                                                '<td>'.  $user->deleteAsaneedCourseStudent($user->id,$asaneedCourse->id) .'</td>' : '').'
-                                        </tr>'
-                            ]
-                        );
+                        // Auth::user()->sendFCM(
+                        //     [
+                        //         'title'=>'
+                        //                 <tr>
+                        //                     <td></td>
+                        //                     <td style="text-align:right;">'. $user->name .'</td>
+                        //                     <td>'. $user->id_num .'</td>
+                        //                     <td>'. $user->dob .'</td>
+                        //                     <td>'. $user->pob .'</td>
+                        //                     <td>'. $user->student_category .'</td>
+                        //                     <td>'. (in_array($user->student_category,$asaneedCourse->student_categories) ? '<i class="mdi mdi-checkbox-marked-circle-outline" style="color:green"></i>' : '<i class="mdi mdi-close-circle-outline" style="color:red"></i>').'</td>
+                        //                     '.(hasPermissionHelper('حذف طالب من دورة علمية') ?
+                        //                         '<td>'.  $user->deleteAsaneedCourseStudent($user->id,$asaneedCourse->id) .'</td>' : '').'
+                        //                 </tr>'
+                        //     ]
+                        // );
                         $user->assignRole('طالب دورات أسانيد وإجازات');
                         // TODO: Implement model() method.
                         return new AsaneedCourseStudent([
@@ -105,22 +105,22 @@ class AsaneedStudentsImport implements ToModel,WithUpserts,WithValidation,WithHe
                             $old_user->assignRole('طالب دورات أسانيد وإجازات');
                         }
 
-                        Auth::user()->sendFCM(
-                            [
-                                'title'=>'
-                                        <tr>
-                                            <td></td>
-                                            <td style="text-align:right;">'. $old_user->name .'</td>
-                                            <td>'. $old_user->id_num .'</td>
-                                            <td>'. $old_user->dob .'</td>
-                                            <td>'. $old_user->pob .'</td>
-                                            <td>'. $old_user->student_category .'</td>
-                                            <td>'. (in_array($old_user->student_category,$asaneedCourse->student_categories) ? '<i class="mdi mdi-checkbox-marked-circle-outline" style="color:green"></i>' : '<i class="mdi mdi-close-circle-outline" style="color:red"></i>').'</td>
-                                            '.(hasPermissionHelper('حذف طالب من دورة علمية') ?
-                                        '<td>'. $old_user->deleteAsaneedCourseStudent($old_user->id,$asaneedCourse->id) .'</td>' : '').'
-                                        </tr>'
-                            ]
-                        );
+                        // Auth::user()->sendFCM(
+                        //     [
+                        //         'title'=>'
+                        //                 <tr>
+                        //                     <td></td>
+                        //                     <td style="text-align:right;">'. $old_user->name .'</td>
+                        //                     <td>'. $old_user->id_num .'</td>
+                        //                     <td>'. $old_user->dob .'</td>
+                        //                     <td>'. $old_user->pob .'</td>
+                        //                     <td>'. $old_user->student_category .'</td>
+                        //                     <td>'. (in_array($old_user->student_category,$asaneedCourse->student_categories) ? '<i class="mdi mdi-checkbox-marked-circle-outline" style="color:green"></i>' : '<i class="mdi mdi-close-circle-outline" style="color:red"></i>').'</td>
+                        //                     '.(hasPermissionHelper('حذف طالب من دورة علمية') ?
+                        //                 '<td>'. $old_user->deleteAsaneedCourseStudent($old_user->id,$asaneedCourse->id) .'</td>' : '').'
+                        //                 </tr>'
+                        //     ]
+                        // );
                         $studentCourses = AsaneedCourseStudent::where([
                             'user_id' => $old_user->id,
                             'asaneed_course_id' => $asaneedCourse->id

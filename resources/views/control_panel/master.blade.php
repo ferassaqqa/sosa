@@ -1710,55 +1710,55 @@
 
     // console.log(document.styleSheets);
 </script>
-<script src="https://www.gstatic.com/firebasejs/7.23.0/firebase.js"></script>
+{{-- <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase.js"></script> --}}
 <script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyBSi08DoXXU5rNvK7chgObzLi_l1_807VM",
-        authDomain: "sunna-b0909.firebaseapp.com",
-        projectId: "sunna-b0909",
-        storageBucket: "sunna-b0909.appspot.com",
-        messagingSenderId: "141645051731",
-        appId: "1:141645051731:web:11c4995110408f7a4993a6",
-        measurementId: "G-D7XE883R18"
-    };
+    // const firebaseConfig = {
+    //     apiKey: "AIzaSyBSi08DoXXU5rNvK7chgObzLi_l1_807VM",
+    //     authDomain: "sunna-b0909.firebaseapp.com",
+    //     projectId: "sunna-b0909",
+    //     storageBucket: "sunna-b0909.appspot.com",
+    //     messagingSenderId: "141645051731",
+    //     appId: "1:141645051731:web:11c4995110408f7a4993a6",
+    //     measurementId: "G-D7XE883R18"
+    // };
 
-    firebase.initializeApp(firebaseConfig);
-    const messaging = firebase.messaging();
+    // firebase.initializeApp(firebaseConfig);
+    // const messaging = firebase.messaging();
 
-    (function(){
-        messaging
-            .requestPermission()
-            .then(function () {
-                return messaging.getToken()
-            })
-            .then(function(token) {
-                // console.log(token);
+    // (function(){
+    //     messaging
+    //         .requestPermission()
+    //         .then(function () {
+    //             return messaging.getToken()
+    //         })
+    //         .then(function(token) {
+    //             // console.log(token);
 
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
-                });
+    //             $.ajaxSetup({
+    //                 headers: {
+    //                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
+    //                 }
+    //             });
 
-                $.ajax({
-                    url: '{{ route("save-token") }}',
-                    type: 'POST',
-                    data: {
-                        token: token
-                    },
-                    dataType: 'JSON',
-                    success: function (response) {
-                        alert('Token saved successfully.');
-                    },
-                    error: function (err) {
-                        console.log('User Chat Token Error'+ err);
-                    },
-                });
+    //             $.ajax({
+    //                 url: '{{ route("save-token") }}',
+    //                 type: 'POST',
+    //                 data: {
+    //                     token: token
+    //                 },
+    //                 dataType: 'JSON',
+    //                 success: function (response) {
+    //                     alert('Token saved successfully.');
+    //                 },
+    //                 error: function (err) {
+    //                     console.log('User Chat Token Error'+ err);
+    //                 },
+    //             });
 
-            }).catch(function (err) {
-            console.log('User Chat Token Error'+ err);
-        });
-    })();
+    //         }).catch(function (err) {
+    //         console.log('User Chat Token Error'+ err);
+    //     });
+    // })();
 
 
 </script>

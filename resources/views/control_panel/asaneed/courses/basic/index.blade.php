@@ -522,48 +522,48 @@ $(document).ready(function() {
 
 
 <script type="module">
-    var iteration = 1;
-    // Import the functions you need from the SDKs you need
-    import {
-        initializeApp
-    } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-    import {
-        getAnalytics
-    } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics.js";
-    // TODO: Add SDKs for Firebase products that you want to use
-    // https://firebase.google.com/docs/web/setup#available-libraries
+    // var iteration = 1;
+    // // Import the functions you need from the SDKs you need
+    // import {
+    //     initializeApp
+    // } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+    // import {
+    //     getAnalytics
+    // } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics.js";
+    // // TODO: Add SDKs for Firebase products that you want to use
+    // // https://firebase.google.com/docs/web/setup#available-libraries
 
-    // Your web app's Firebase configuration
-    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-    const firebaseConfig = {
-        apiKey: "AIzaSyBSi08DoXXU5rNvK7chgObzLi_l1_807VM",
-        authDomain: "sunna-b0909.firebaseapp.com",
-        projectId: "sunna-b0909",
-        storageBucket: "sunna-b0909.appspot.com",
-        messagingSenderId: "141645051731",
-        appId: "1:141645051731:web:11c4995110408f7a4993a6",
-        measurementId: "G-D7XE883R18"
-    };
+    // // Your web app's Firebase configuration
+    // // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    // const firebaseConfig = {
+    //     apiKey: "AIzaSyBSi08DoXXU5rNvK7chgObzLi_l1_807VM",
+    //     authDomain: "sunna-b0909.firebaseapp.com",
+    //     projectId: "sunna-b0909",
+    //     storageBucket: "sunna-b0909.appspot.com",
+    //     messagingSenderId: "141645051731",
+    //     appId: "1:141645051731:web:11c4995110408f7a4993a6",
+    //     measurementId: "G-D7XE883R18"
+    // };
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    //
-    // firebase.initializeApp(firebaseConfig);
-    // const messaging = firebase.messaging();
+    // // Initialize Firebase
+    // const app = initializeApp(firebaseConfig);
+    // const analytics = getAnalytics(app);
+    // //
+    // // firebase.initializeApp(firebaseConfig);
+    // // const messaging = firebase.messaging();
 
-    messaging.onMessage(function(payload) {
-        iteration = parseInt($('#students_count').html()); // const noteTitle = payload.notification.title;
-        // console.log(iteration,$('#students_count').html());
-        // const noteOptions = {
-        //     body: payload.notification.body,
-        //     icon: payload.notification.icon,
-        // };
-        iteration++;
-        $('#students').append(payload.notification.title);
-        $('#students_count').empty().html(iteration);
-        // new Notification(noteTitle, noteOptions);
-    });
+    // messaging.onMessage(function(payload) {
+    //     iteration = parseInt($('#students_count').html()); // const noteTitle = payload.notification.title;
+    //     // console.log(iteration,$('#students_count').html());
+    //     // const noteOptions = {
+    //     //     body: payload.notification.body,
+    //     //     icon: payload.notification.icon,
+    //     // };
+    //     iteration++;
+    //     $('#students').append(payload.notification.title);
+    //     $('#students_count').empty().html(iteration);
+    //     // new Notification(noteTitle, noteOptions);
+    // });
 </script>
 
 @endsection

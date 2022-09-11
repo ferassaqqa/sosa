@@ -54,19 +54,19 @@ class CircleStudentsImport implements ToModel, WithUpserts, WithValidation, With
                 if (!$old_user->hasRole('طالب تحفيظ')) {
                     $old_user->assignRole('طالب تحفيظ');
                 }
-                Auth::user()->sendFCM(
-                    [
-                        'title' => '
-                                <tr>
-                                    <td></td>
-                                    <td style="text-align:right;">' . $old_user->name . '</td>
-                                    <td>' . $old_user->id_num . '</td>
-                                    <td>' . $old_user->dob . '</td>
-                                    <td>' . $old_user->pob . '</td>
+                // Auth::user()->sendFCM(
+                //     [
+                //         'title' => '
+                //                 <tr>
+                //                     <td></td>
+                //                     <td style="text-align:right;">' . $old_user->name . '</td>
+                //                     <td>' . $old_user->id_num . '</td>
+                //                     <td>' . $old_user->dob . '</td>
+                //                     <td>' . $old_user->pob . '</td>
 
-                                </tr>'
-                    ]
-                );
+                //                 </tr>'
+                //     ]
+                // );
             } else { // empty old_user
 
 
@@ -85,18 +85,18 @@ class CircleStudentsImport implements ToModel, WithUpserts, WithValidation, With
                         $user->userExtraData()->create(['mobile' => $id_num]);
                     }
 
-                    Auth::user()->sendFCM(
-                        [
-                            'title' => '
-                                        <tr>
-                                            <td></td>
-                                            <td style="text-align:right;">' . $user->name . '</td>
-                                            <td>' . $user->id_num . '</td>
-                                            <td>' . $user->dob . '</td>
-                                            <td>' . $user->pob . '</td>
-                                        </tr>'
-                        ]
-                    );
+                    // Auth::user()->sendFCM(
+                    //     [
+                    //         'title' => '
+                    //                     <tr>
+                    //                         <td></td>
+                    //                         <td style="text-align:right;">' . $user->name . '</td>
+                    //                         <td>' . $user->id_num . '</td>
+                    //                         <td>' . $user->dob . '</td>
+                    //                         <td>' . $user->pob . '</td>
+                    //                     </tr>'
+                    //     ]
+                    // );
                     $user->assignRole('طالب تحفيظ');
                 }
             }

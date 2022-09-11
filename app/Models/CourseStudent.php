@@ -321,6 +321,9 @@ class CourseStudent extends Model
             }
             static::addGlobalScope('relatedCourseStudents', function (Builder $builder) use ($user) {
                 if ($user) {
+                    $builder->whereHas('user');
+                    // $builder->whereHas('course');
+
                     if ($user->hasRole('رئيس الدائرة')) {
                         return $builder;
                     } else if ($user->hasRole('مدير الدائرة') || $user->hasRole('مساعد اداري')) {

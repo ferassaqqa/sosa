@@ -115,19 +115,25 @@ class ExcelExporterController extends Controller
 
 
     public function importCourseStudentsExcel(Course $course,Excel $excel,ImportExcelRequest $request){
+
+        $file = $request->file('file')->store('import');
         $import = new CourseStudentsImport($course);
-        $import->import(request()->file('file'));
-        $students_count = $course->students->count();
+        $import->import($file);
 
 
-        if($import->failures()->count()) {
+        if ($import->failures()->isNotEmpty()) {
+
             $excel->store(
                 new CourseStudentsFaultsExport($import->failures())
                 , 'public/ اخطاء استيراد الطلاب من ملف الاكسل لدورة ' . $course->book_name . ' للمعلم ' . $course->name . '.xlsx');
-                return response()->json(['status'=>'warning','msg'=>'تم استيراد ملف دورة '. $course->book_name . ' للمعلم ' . $course->name.' <br><span>
-                        ويوجد عدد '.$import->failures()->count().' طلاب لم يتم استيرادهم ، لمعرفة الارقام <a  style="color: red;" href="'.asset('storage/ اخطاء استيراد الطلاب من ملف الاكسل لدورة ' . $course->book_name . ' للمعلم ' . $course->name . '.xlsx').'">اضغط هنا</a> لتحميل الملف.</span> ']);
+
+            $failures = $import->failures();
+            $errors =  view('control_panel.courses.basic.failures',compact('failures'));
+            return response()->json(['status'=>'warning','msg'=>'تم استيراد ملف دورة '. $course->book_name . ' للمعلم ' . $course->name.' <br><span>
+                        ويوجد عدد '.$import->failures()->count().' طلاب لم يتم استيرادهم ، لمعرفة الارقام <a  style="color: red;" href="'.asset('storage/ اخطاء استيراد الطلاب من ملف الاكسل لدورة ' . $course->book_name . ' للمعلم ' . $course->name . '.xlsx').'">اضغط هنا</a> لتحميل الملف.</span> '. $errors]);
         }else{
 
+            $students_count = $course->students->count();
             if($students_count < 10 ){
                 return response()->json(['status'=>'info','msg'=>'<span>
                             تم استيراد ملف الدورة بنجاح. يرجى العلم بان الحد الادنى لحجز موعد اختيار هو 10 طلاب للدورة الواحدة</span> ']);
@@ -138,9 +144,11 @@ class ExcelExporterController extends Controller
 
             return response()->json(['status'=>'success','msg'=>'تم استيراد ملف دورة '. $course->book_name . ' للمعلم ' . $course->name.' بنجاح.']);
             }
-
-
         }
+
+
+
+
     }
 
 

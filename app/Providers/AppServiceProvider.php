@@ -14,6 +14,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\View;
 
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -169,6 +170,16 @@ class AppServiceProvider extends ServiceProvider
                 return false;
             }
         },'رقم الهوية خطأ');
+        Validator::extend('not_teacher', function ($attribute, $value, $parameters, $validator) {
+            $course = Course::find($parameters[0]);
+            if ($course->teacher_id_num == $value) {
+                return false;
+            }else{
+                return true;
+            }
+        }, ' لا يمكن اضافة المعلم  كطالب في دورته ');
+
+
         Validator::extend('can_exclude_student', function ($attribute, $value, $parameters, $validator) {
             $course = Course::find($parameters[0]);
             $user_validity_check = getGetDataFromIdentityNum($value);

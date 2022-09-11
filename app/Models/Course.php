@@ -589,11 +589,11 @@ class Course extends Model
             if($course->exam) {
                 $course->exam->delete();
             }
-            if($course->students) {
-                $course->students()->each(function($student){
-                    $student->delete();
-                });
-            }
+            // if($course->students) {
+            //     $course->students()->each(function($student){
+            //         $student->delete();
+            //     });
+            // }
 
         });
     }
