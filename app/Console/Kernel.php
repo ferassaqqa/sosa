@@ -25,6 +25,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('safwa:update')->daily();
+        $schedule->command('review:update')->daily();
     }
 
     /**

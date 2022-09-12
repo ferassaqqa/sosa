@@ -88,7 +88,7 @@ class SafwaUpdate extends Command
 
               Area::where('id', $area->id)
                     ->update([
-                        'safwa_score' => $safwa_score
+                        'safwa_score_2' => $safwa_score
                         ]);
 
 

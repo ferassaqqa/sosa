@@ -386,81 +386,15 @@ class Area extends Model
     public function getCourseReviewsRowDataAttribute()
     {
 
-
-        $year = date("Y");
-        $books = Book::where('year', $year)->get();
-        $books_ids = CourseProject::where('year', $year)->limit(1)->pluck('books')->first(); //get safwa project
-        $books_ids = json_decode($books_ids);
-
-
         self::$counter++;
 
-        $total_pass = 0;
-        $total_required  = 0;
-        $pass = 0;
-        $avg = 0;
-        $total_avg = array();
-        $total_pass_all = 0;
+        $percentage_38 = $this->plan_score_38;
 
+        $test_quality_5 = $this->test_quality_5;
 
-        foreach ($books as $key => $book) {
+        $surplus_graduates_2 = $this->super_plus_2;
 
-            if ($book->required_students_number == 0) {
-                continue;
-            } else {
-
-                /* start percenage_38*/
-                $rest = 0;
-                $coll = CourseStudent::book($book->id)
-                    ->subarea(0, $this->id)
-                    ->whereBetween('mark', [60, 101]);
-
-                $pass = $coll->count();
-
-                $total_pass_all +=  $pass;
-                $total_required += floor(($this->percentage * $book->required_students_number)  / 100);
-
-                $rest =  $pass - floor(($this->percentage * $book->required_students_number)  / 100);
-                if ($rest > 0) {
-                    $total_pass += floor(($this->percentage * $book->required_students_number)  / 100);
-                } elseif ($rest < 0) {
-                    $total_pass += $pass;
-                }
-                /*end percentage 38 */
-
-                /*start avg */
-                $avg = $coll->pluck('mark')->toArray();
-                $total_avg += $avg;
-                /* end avg*/
-
-
-
-            }
-        }
-
-
-
-
-        $sucess_percentage = round($total_pass / $total_required, 2) * 100;
-        $percentage_38 = ($sucess_percentage * 38) / 100;
-        $percentage_38 = sprintf('%.2f', $percentage_38);
-
-
-        $total_avg = array_sum($total_avg) / count($total_avg);
-        $test_quality_5 = $total_avg * 0.05;
-        $test_quality_5 = sprintf('%.2f', $test_quality_5);
-
-
-        $total_surplus_graduates_by_area =  $total_pass_all - $total_required;
-        $total_surplus_graduates_all_area = $this->getSurplusGraduatesForAllAreas();
-
-        $surplus_graduates_2 = ($total_surplus_graduates_by_area / $total_surplus_graduates_all_area) * 2;
-        $surplus_graduates_2 = sprintf('%.2f', $surplus_graduates_2);
-
-
-        // $safwa_graduates_2 = $this->getSafwaPassedStudentsByArea($this->id,$books_ids);
-        $safwa_graduates_2 = $this->safwa_score;
-
+        $safwa_graduates_2 = $this->safwa_score_2;
 
         $percentage_50 = $percentage_38 + $test_quality_5 + $surplus_graduates_2 + 3 + $safwa_graduates_2;
 
@@ -526,7 +460,7 @@ class Area extends Model
 
     }
 
-    private function getSurplusGraduatesForAllAreas()
+    public function getSurplusGraduatesForAllAreas()
     {
 
         $year = date("Y");
