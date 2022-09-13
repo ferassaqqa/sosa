@@ -24,17 +24,24 @@
     </div>
 
 
+{{-- <style>
+    #datepicker1{z-index: 99 !important};
 
+</style> --}}
 
     <div class="col-md-3" >
-        <select class="form-control" id="analysis_sub_type">
+
+        <input name="report_date" id="report_date" type="date" class="form-control" date-format="yyyy-mm-dd"/>
+
+
+        {{-- <select class="form-control" id="analysis_sub_type">
             <option value=""> اختر نوع التقييم </option>
             <option>التقييم السنوي</option>
             <option value="teachers">تقييم الفصل الاول</option>
             <option value="mosques">تقييم الفصل الثاني</option>
             <option value="local_areas"> تقييم الفصل الثالث</option>
 
-        </select>
+        </select> --}}
     </div>
 
 
@@ -67,7 +74,7 @@
         function updateDateTable() {
             var filters = '?analysis_type=' + $('#analysis_type').val() +
                 '&area_id=' + $('#report_area_select').val() +
-                '&analysis_sub_type=' + $('#analysis_sub_type').val();
+                '&report_date=' + $('#report_date').val();
 
             $('#tableContainer')
                 .html(

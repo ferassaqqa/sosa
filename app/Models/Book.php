@@ -165,15 +165,6 @@ class Book extends Model
     public function getStudentsReportsByStudentsCategoriesRowDataAttribute()
     {
 
-        /* get deleted users */
-        // $usersIds = CourseStudent::all()->pluck('user_id');
-        // foreach ($usersIds as $key => $id) {
-        //     if (User::where('id', '=', $id)->exists()) {
-        //     }else{
-        //         $aa[] = $id;
-        //     }
-        // }
-        // dd($aa);
 
 
         $sub_area_id = $_REQUEST ? $_REQUEST['sub_area_id'] : 0;

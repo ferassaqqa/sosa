@@ -386,35 +386,49 @@ class Area extends Model
     public function getCourseReviewsRowDataAttribute()
     {
 
-        self::$counter++;
+        $report_date = $_REQUEST['report_date'] ? $_REQUEST['report_date'] : 0;
+        $query = Review::where('area_id',$this->id);
+        if ($report_date) {
+            $query->whereRaw('DATE(created_at) = ?', [$report_date]);
+        }
+        $review = $query->latest()->first();
 
-        $percentage_38 = $this->plan_score_38;
-
-        $test_quality_5 = $this->test_quality_5;
-
-        $surplus_graduates_2 = $this->super_plus_2;
-
-        $safwa_graduates_2 = $this->safwa_score_2;
-
-        $percentage_50 = $percentage_38 + $test_quality_5 + $surplus_graduates_2 + 3 + $safwa_graduates_2;
-
-        $percentage_total = ($percentage_50 * 2);
-
-
-        $review_result = array(
-            'name' => $this->name,
-            'safwa_graduates_2' =>  $safwa_graduates_2,
-            'surplus_graduates_2' =>  $surplus_graduates_2,
-            'test_quality_5' =>  $test_quality_5,
-            'percentage_38' =>  $percentage_38,
-            'percentage_50' =>  $percentage_50,
-            'percentage_total' => $percentage_total,
-            'id' => $this->id
-        );
-
+        if($review){
+            $percentage_38 = $review->plan_score_38;
+            $test_quality_5 = $review->test_quality_5;
+            $surplus_graduates_2 = $review->super_plus_2;
+            $safwa_graduates_2 = $review->safwa_score_2;
+            $students_category_3 = $review->students_category_3;
+            $percentage_50 = $percentage_38 + $test_quality_5 + $surplus_graduates_2 + $students_category_3 + $safwa_graduates_2;
+            $percentage_total = ($percentage_50 * 2);
+        }else{
+            $percentage_38 = 0;
+            $test_quality_5 = 0;
+            $surplus_graduates_2 = 0;
+            $safwa_graduates_2 = 0;
+            $students_category_3 = 0;
+            $percentage_50 = $percentage_38 + $test_quality_5 + $surplus_graduates_2 + $students_category_3 + $safwa_graduates_2;
+            $percentage_total = ($percentage_50 * 2);
+        }
 
 
-        return $review_result;
+            $review_result = array(
+                'name' => $this->name,
+                'safwa_graduates_2' =>  $safwa_graduates_2,
+                'surplus_graduates_2' =>  $surplus_graduates_2,
+                'students_category_3' =>  $students_category_3,
+                'test_quality_5' =>  $test_quality_5,
+                'percentage_38' =>  $percentage_38,
+                'percentage_50' =>  $percentage_50,
+                'percentage_total' => $percentage_total,
+                'id' => $this->id
+            );
+
+
+            return $review_result;
+
+
+
     }
 
 

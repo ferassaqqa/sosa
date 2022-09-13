@@ -126,6 +126,7 @@ class ReportsController extends Controller
             $surplus_graduates_2[$key] = $row['surplus_graduates_2'];
             $safwa_graduates_2[$key] = $row['safwa_graduates_2'];
             $percentage_38[$key] = $row['percentage_38'];
+            $students_category_3[$key] = $row['students_category_3'];
             $percentage_50[$key] = $row['percentage_50'];
             $percentage_total[$key] = $row['percentage_total'];
             $id[$key] = $row['id'];
@@ -146,12 +147,7 @@ class ReportsController extends Controller
                 $key = array_search($row['percentage_total'], $duplicates);
                 $label = $this->getOrderLabel($key - 1) . ' مكرر';
             }
-            // if(in_array($row['percentage_total'],$scores)){
-            //     $key = array_search ($row['percentage_total'], $duplicates);
-            //     $label =$this->getOrderLabel($key-1).' مكرر';
-            // }
-
-
+            if($row['percentage_total'] == 0){$label = '-';}
 
             $item = '
             <tr >
@@ -161,7 +157,7 @@ class ReportsController extends Controller
                 <td>' . $row['percentage_38'] . '%</td>
                 <td>'.$row['test_quality_5'].'%</td>
                 <td>'.$row['surplus_graduates_2'].'%</td>
-                <td>3%</td>
+                <td>'.$row['students_category_3'].'%</td>
                 <td>'.$row['safwa_graduates_2'].'%</td>
 
                 <td><b>' . $row['percentage_50'] . '%</b></td>
