@@ -49,10 +49,6 @@ class CourseStudentsImport implements
         Self::$course = $course;
     }
 
-    // public function onError(Throwable $e)
-    // {
-    //         dd($e);
-    // }
     public function batchSize(): int
     {
         return 1000;
@@ -62,15 +58,6 @@ class CourseStudentsImport implements
         return 1000;
     }
 
-    // public static function afterImport(AfterImport $event){
-    //     // here we can send the notifications to the users
-
-    // }
-
-    // public function onFailure(Failure ...$failure)
-    // {
-    //     dd($failure);
-    // }
 
     public function model(array $row)
     {
@@ -114,10 +101,7 @@ class CourseStudentsImport implements
             }
         }
     }
-    // public function uniqueBy()
-    // {
-    //     return 'rkm_alhoy';
-    // }
+
 
     /**
      * @return array
@@ -125,8 +109,7 @@ class CourseStudentsImport implements
     public function rules(): array
     {
         return [
-            // '*.rkm_alhoy' => 'required|numeric|unique:users,id_num|not_teacher:'.SELF::$course->id,
-            '*.rkm_alhoy' => 'required|numeric|not_teacher:' . SELF::$course->id,
+            '*.rkm_alhoy' => 'required|numeric|not_teacher:' . SELF::$course->id.'|is_id_valid:' . SELF::$course->id,
         ];
     }
     public function customValidationMessages()
