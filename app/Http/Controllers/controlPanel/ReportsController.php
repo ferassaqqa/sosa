@@ -113,6 +113,8 @@ class ReportsController extends Controller
 
         $areas = Area::permissionssubarea($sub_area_id, $area_id)
             ->whereNull('area_id')->get();
+
+            
         $value = array();
         $result_review = array();
 

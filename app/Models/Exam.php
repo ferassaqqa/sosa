@@ -325,6 +325,16 @@ public function getNullStudentsCountAttribute(){
         }
     }
 
+    public static function isDuplicatedCourse($inputs)
+    {
+        $exists = self::where('examable_id', $inputs['parameter_001'])
+                       ->where('parameter_002', $inputs['parameter_002'])
+                       ->where('parameter_003', $inputs['parameter_003'])
+                       ->where('parameter_004', $inputs['parameter_004'])
+                       ->count();
+        return $exists ? true : false;
+    }
+
     protected static function booted()
     {
         parent::booted();

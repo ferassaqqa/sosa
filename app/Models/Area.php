@@ -387,7 +387,8 @@ class Area extends Model
     {
 
         $report_date = $_REQUEST['report_date'] ? $_REQUEST['report_date'] : 0;
-        $query = Review::where('area_id',$this->id);
+        // $query = Review::where('area_id',$this->id)->whereNull('sub_area_id');
+        $query = Review::where('area_id',$this->id)->whereNull('sub_area_id');
         if ($report_date) {
             $query->whereRaw('DATE(created_at) = ?', [$report_date]);
         }

@@ -1,10 +1,7 @@
+<div class=" row">
 
 
-
-<div class=" row" >
-
-
-    <div class="col-md-3" >
+    <div class="col-md-2">
         <select class="form-control" id="analysis_type">
             <option value=""> اختر اقسام الادارة </option>
             <option value="all">جميع الاقسام</option>
@@ -14,8 +11,8 @@
         </select>
     </div>
 
-    <div class="col-md-3">
-        <select class="form-control" id="report_area_select">
+    <div class="col-md-2">
+        <select class="form-control"  onchange="getSubArea(this)" id="report_area_select">
             <option value="0">اختر المنطقة</option>
             @foreach ($areas as $key => $area)
                 <option value="{{ $area->id }}">{{ $area->name }}</option>
@@ -24,14 +21,22 @@
     </div>
 
 
-{{-- <style>
+    <div class="col-md-2">
+        <select class="form-control" id="report_sub_area_select">
+            <option value="0">اختر المنطقة المحلية</option>
+
+        </select>
+    </div>
+
+
+    {{-- <style>
     #datepicker1{z-index: 99 !important};
 
 </style> --}}
 
-    <div class="col-md-3" >
+    <div class="col-md-3">
 
-        <input name="report_date" id="report_date" type="date" class="form-control" date-format="yyyy-mm-dd"/>
+        <input name="report_date" id="report_date" type="date" class="form-control" date-format="yyyy-mm-dd" />
 
 
         {{-- <select class="form-control" id="analysis_sub_type">
@@ -66,8 +71,16 @@
 
 @section('script')
     <script>
+        function getSubArea(obj) {
+            if (obj.value) {
+                $.get('/getSubAreas/' + obj.value, function(data) {
+                    $('#report_sub_area_select').empty().html(data);
+                    $('#report_sub_area_select').append('<option value="all">الكل</option>');
 
+                });
 
+            }
+        }
 
 
 
