@@ -10,11 +10,8 @@
 </style>
 <h3>تقرير انجاز المناطق الكبرى للدورات العلمية</h3>
 
-@if ($_REQUEST['area_id'])
-    {{ $colspan = 2 }}
-@else
-    {{ $colspan = 14 }}
-@endif
+{{ $colspan = ($_REQUEST['area_id'] || Auth::user()->hasRole('مشرف عام'))? 2 : 14; }}
+
 
 <div class="row">
     <div class="col-lg-12">

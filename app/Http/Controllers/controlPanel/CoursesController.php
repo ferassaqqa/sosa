@@ -39,8 +39,8 @@ class CoursesController extends Controller
 
     public function addReservationOrder(Course $course){
 
-        if($course->exam){   
-            
+        if($course->exam){
+
             // dd($course->exam);
                 return response()->json(['msg'=>'يوجد طلب مسبق لهذه الدورة','title'=>'خطأ','type'=>'info']);
         }else{
@@ -50,7 +50,7 @@ class CoursesController extends Controller
                 $course->exam()->create();
                 return response()->json(['msg'=>'تم ارسال الطلب بنجاح','title'=>'اضافة','type'=>'success']);
 
-            }else{            
+            }else{
                 return response()->json(['msg'=>'يجب ان تحتوى الدورة على 10 طلاب على الاقل ليتم حجز موعد للدورة','title'=>'خطأ','type'=>'danger']);
             }
         }
@@ -303,9 +303,9 @@ class CoursesController extends Controller
         $sub_areas = Area::where('area_id',$course->area_father_id)->get();
         $places = Place::where('area_id',$course->area_id)->get();
         $books_object = Book::
-            where('department',2)
-            ->where('included_in_plan',$course->included_in_plan)
-            ->where('year',(int)$year)
+            // where('department',2)
+            // ->where('included_in_plan',$course->included_in_plan)
+            where('year',(int)$year)
             ->get();
         foreach($books_object as $book){
             $selected = $book->id == $course->book_id ? 'selected' : '';

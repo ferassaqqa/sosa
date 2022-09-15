@@ -547,13 +547,19 @@ class Course extends Model
             $area_supervisor_area_id = $father_area ? $father_area->id : 0;
             static::addGlobalScope('relatedCourses', function (Builder $builder) use ($user,$sub_area_supervisor_area_father_id,$area_supervisor_area_id,$sub_area_supervisor_area_id) {
                 if ($user) {
+
+
                     if ($user->hasRole('رئيس الدائرة')){
                         return $builder;
                     } else if($user->hasRole('مدير الدائرة') || $user->hasRole('مساعد اداري')){
-                        return $builder->genderdepartment($user->role);
+                        // return $builder->genderdepartment($user->role);
+                        return $builder;
+
                     }else if($user->hasRole('مشرف عام')){
 //                        dd($area_supervisor_area_id);
                         return $builder->permissionssubarea(0,$area_supervisor_area_id);
+                        // return $builder;
+
                         // return $builder->permissionssubarea($sub_area_supervisor_area_id,0);
                     }else if($user->hasRole('مشرف ميداني')){
 //                        dd($user->sub_area_supervisor_area_id,$user);

@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use App\Models\Place;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
 
 
 class ReportsController extends Controller
@@ -514,7 +515,7 @@ class ReportsController extends Controller
                                 <td>' . $required_students_number . '</td>';
 
 
-        if ($_REQUEST['area_id']) {
+        if ($_REQUEST['area_id']  || Auth::user()->hasRole('مشرف عام')) {
             $total_in_plan_row .= '<td colspan="2"></td>';
         } else {
             $total_in_plan_row .= '<td colspan="14"></td>';
