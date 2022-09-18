@@ -4,7 +4,7 @@
     <div class="col-md-2">
         <select class="form-control" id="analysis_type">
             <option value=""> اختر اقسام الادارة </option>
-            <option value="all">جميع الاقسام</option>
+            {{-- <option value="all">جميع الاقسام</option> --}}
             <option value="courses">قسم الدورات العلمية</option>
             <option value="asaneed"> قسم الاسانيد و الاجازات</option>
 
@@ -72,14 +72,17 @@
 @section('script')
     <script>
         function getSubArea(obj) {
-            if (obj.value) {
+
+            // console.log(obj.value);
+
+            if (obj.value && obj.value > 0) {
                 $.get('/getSubAreas/' + obj.value, function(data) {
                     $('#report_sub_area_select').empty().html(data);
                     $('#report_sub_area_select').append('<option value="all">الكل</option>');
-
-
                 });
-
+            }else{
+                $('#report_sub_area_select').empty().append('<option value="0">-- اختر المنطقة المحلية --</option>');
+                $('#report_sub_area_select').append('<option value="allSubAreas">كل المناطق المحلية</option>');
             }
         }
 

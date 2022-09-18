@@ -113,6 +113,25 @@ class ReportsController extends Controller
         return $rate;
     }
 
+
+    private function getLevel($mark){
+        if (60 <= $mark && $mark < 70) {
+            return '<span style="color:#b3b300">متوسط</span>';
+        } elseif (70 <= $mark && $mark < 75) {
+            return '<span style="color:green">جيد</span>';
+        } elseif (75 <= $mark && $mark < 80) {
+            return '<span style="color:green">جيد مرتفع</span>';
+        } elseif (80 <= $mark && $mark < 85) {
+            return '<span style="color:forestgreen">جيد جداً</span>';
+        } elseif (85 <= $mark && $mark < 90) {
+            return '<span style="color:green">جيد جداً مرتفع</span>';
+        } elseif (90 <= $mark && $mark <= 100) {
+            return '<span style="color:darkgreen">ممتاز</span>';
+        } else {
+            return '<span style="color:red">ضعيف</span>';
+        }
+    }
+
     public function courseReviewDetailsView(Request $request)
     {
 
@@ -120,22 +139,27 @@ class ReportsController extends Controller
         $area_id = (int)$request->area_id ? (int)$request->area_id : 0;
 
 
-
-
-        if($sub_area_id){
-            if($sub_area_id == 'all'){
-                $areas = Area::where('area_id', $area_id)->get();
-            }else{
-                $areas = Area::where('id', $sub_area_id)->get();
-            }
-
-        }else{
+        if(!$area_id && !$sub_area_id){
             $areas = Area::permissionssubarea($sub_area_id, $area_id)
             ->whereNull('area_id')->get();
         }
 
-        // dd($areas);
+        if($area_id && !$sub_area_id){
+            $areas = Area::permissionssubarea($sub_area_id, $area_id)
+            ->whereNull('area_id')->get();
+        }
 
+        if($area_id && $sub_area_id == 'all'){
+            $areas = Area::where('area_id',$area_id)->get();
+        }
+
+        if($area_id && $sub_area_id != 'all' && $sub_area_id > 0){
+            $areas = Area::permissionssubarea($sub_area_id, $area_id)->where('area_id',$area_id)->get();
+        }
+
+        if(!$area_id && $sub_area_id == 'allSubAreas'){
+            $areas = Area::where('area_id','>',0)->get();
+        }
 
         $value = array();
         $result_review = array();
@@ -158,20 +182,20 @@ class ReportsController extends Controller
         }
 
         array_multisort($percentage_total, SORT_DESC, $result_review);
-        foreach ($result_review as $key => $row) {
-            $scores[] = $row['percentage_total'];
-        }
-        $duplicates = array_unique(array_diff_assoc($scores, array_unique($scores)));
+        // foreach ($result_review as $key => $row) {
+        //     $scores[] = $row['percentage_total'];
+        // }
+        // $duplicates = array_unique(array_diff_assoc($scores, array_unique($scores)));
 
         $i=0;
         foreach ($result_review as $key1 => $row) {
             $i++;
-            $label = $this->getOrderLabel($key1);
+            $label = $this->getLevel($row['percentage_total']);
             $key = 0;
-            if (array_key_exists($key1, $duplicates)) {
-                $key = array_search($row['percentage_total'], $duplicates);
-                $label = $this->getOrderLabel($key - 1) . ' مكرر';
-            }
+            // if (array_key_exists($key1, $duplicates)) {
+            //     $key = array_search($row['percentage_total'], $duplicates);
+            //     $label = $this->getOrderLabel($key - 1) . ' مكرر';
+            // }
             if($row['percentage_total'] == 0){$label = '-';}
 
             $item = '

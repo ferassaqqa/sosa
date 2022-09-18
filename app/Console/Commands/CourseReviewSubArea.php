@@ -178,7 +178,7 @@ class CourseReviewSubArea extends Command
                 $total_surplus_graduates_all_area = $area->getSurplusGraduatesForAllSubArea($area->id,$area->percentage);
 
 
-                $surplus_graduates_2 = ($total_surplus_graduates_by_area > 0) ? ($total_surplus_graduates_by_area / $total_surplus_graduates_all_area) * 2 : 0;
+                $surplus_graduates_2 = ($total_surplus_graduates_all_area > 0) ? ($total_surplus_graduates_by_area / $total_surplus_graduates_all_area) * 2 : 0;
                 $surplus_graduates_2 = sprintf('%.2f', $surplus_graduates_2);
 
 

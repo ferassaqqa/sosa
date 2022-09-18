@@ -138,9 +138,9 @@ class ExcelExporterController extends Controller
                 return response()->json(['status'=>'info','msg'=>'<span>
                             تم استيراد ملف الدورة بنجاح. يرجى العلم بان الحد الادنى لحجز موعد اختيار هو 10 طلاب للدورة الواحدة</span> ']);
             }else{
-            $course->update(['status'=>'قائمة']);
-            $has_exam = Exam::where('examable_id', $course->id )->exists();
-            if(!$has_exam){$course->exam()->create($request->all());}
+            // $course->update(['status'=>'قائمة']);
+            // $has_exam = Exam::where('examable_id', $course->id )->exists();
+            // if(!$has_exam){$course->exam()->create($request->all());}
 
             return response()->json(['status'=>'success','msg'=>'تم استيراد ملف دورة '. $course->book_name . ' للمعلم ' . $course->name.' بنجاح.']);
             }

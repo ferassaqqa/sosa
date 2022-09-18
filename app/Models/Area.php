@@ -390,10 +390,25 @@ class Area extends Model
         $area_id = $_REQUEST['area_id'] ? $_REQUEST['area_id'] : 0;
         $sub_area_id = $_REQUEST['sub_area_id'] ? $_REQUEST['sub_area_id'] : 0;
 
-        if($sub_area_id && $area_id){
+
+        if(!$area_id && !$sub_area_id){
+            $query = Review::where('area_id',$this->id)->where('sub_area_id',0);
+        }
+
+        if($area_id && !$sub_area_id){
+            $query = Review::where('area_id',$area_id)->where('sub_area_id',0);
+        }
+
+        if($area_id && $sub_area_id == 'all'){
             $query = Review::where('sub_area_id',$this->id);
-        }else{
-            $query = Review::where('area_id',$this->id);
+        }
+
+        if($area_id && $sub_area_id != 'all' && $sub_area_id > 0){
+            $query = Review::where('area_id',$area_id)->where('sub_area_id',$sub_area_id);
+        }
+
+        if(!$area_id && $sub_area_id == 'allSubAreas'){
+            $query = Review::where('sub_area_id',$this->id);
         }
 
         if ($report_date) {
