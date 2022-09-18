@@ -387,8 +387,15 @@ class Area extends Model
     {
 
         $report_date = $_REQUEST['report_date'] ? $_REQUEST['report_date'] : 0;
-        // $query = Review::where('area_id',$this->id)->whereNull('sub_area_id');
-        $query = Review::where('area_id',$this->id)->whereNull('sub_area_id');
+        $area_id = $_REQUEST['area_id'] ? $_REQUEST['area_id'] : 0;
+        $sub_area_id = $_REQUEST['sub_area_id'] ? $_REQUEST['sub_area_id'] : 0;
+
+        if($sub_area_id && $area_id){
+            $query = Review::where('sub_area_id',$this->id);
+        }else{
+            $query = Review::where('area_id',$this->id);
+        }
+
         if ($report_date) {
             $query->whereRaw('DATE(created_at) = ?', [$report_date]);
         }
@@ -471,6 +478,37 @@ class Area extends Model
 
 
 
+
+
+    }
+
+    public function getSurplusGraduatesForAllSubArea($area_id = 0,$arae_percentage = 0)
+    {
+
+        $year = date("Y");
+        $books = Book::where('year', $year)->get();
+
+        $pass = 0;
+        $total_pass_all = 0;
+        $total_required = 0;
+
+            foreach ($books as $key => $book) {
+                if ($book->required_students_number == 0) {
+                    continue;
+                } else {
+                $pass = CourseStudent::book($book->id)->subarea(0, $area_id)
+                    ->whereBetween('mark', [60, 101])->count();
+                $area_required_number = floor(($arae_percentage * $book->required_students_number)  / 100);
+                $total_pass_all +=  $pass;
+                $total_required +=  $area_required_number;
+
+                }
+        }
+
+
+        return $total_pass_all - $total_required;
+
+            // echo $total_pass_all.' '.$total_required;  exit;
 
 
     }

@@ -100,6 +100,14 @@ class ReportsController extends Controller
                 $rate = 'السابع';
 
                 break;
+            case 7:
+                # code...
+                $rate = 'الثامن';
+                break;
+            case 8:
+                # code...
+                $rate = 'التاسع';
+                break;
         }
 
         return $rate;
@@ -108,13 +116,27 @@ class ReportsController extends Controller
     public function courseReviewDetailsView(Request $request)
     {
 
-        $sub_area_id = (int)$request->sub_area_id ? (int)$request->sub_area_id : 0;
+        $sub_area_id = $request->sub_area_id ? $request->sub_area_id : 0;
         $area_id = (int)$request->area_id ? (int)$request->area_id : 0;
 
-        $areas = Area::permissionssubarea($sub_area_id, $area_id)
-            ->whereNull('area_id')->get();
 
-            
+
+
+        if($sub_area_id){
+            if($sub_area_id == 'all'){
+                $areas = Area::where('area_id', $area_id)->get();
+            }else{
+                $areas = Area::where('id', $sub_area_id)->get();
+            }
+
+        }else{
+            $areas = Area::permissionssubarea($sub_area_id, $area_id)
+            ->whereNull('area_id')->get();
+        }
+
+        // dd($areas);
+
+
         $value = array();
         $result_review = array();
 

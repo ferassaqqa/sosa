@@ -94,13 +94,14 @@ class CourseReviewSubArea extends Command
                             ->whereBetween('mark', [60, 101]);
 
                         $pass = $coll->count();
+                        $area_required_number = floor(($area->percentage * $book->required_students_number)  / 100);
 
                         $total_pass_all +=  $pass;
-                        $total_required += floor(($area->percentage * $book->required_students_number)  / 100);
+                        $total_required += floor(($sub_area->percentage * $area_required_number)  / 100);
 
-                        $rest =  $pass - floor(($area->percentage * $book->required_students_number)  / 100);
+                        $rest =  $pass - floor(($sub_area->percentage * $area_required_number)  / 100);
                         if ($rest > 0) {
-                            $total_pass += floor(($area->percentage * $book->required_students_number)  / 100);
+                            $total_pass += floor(($sub_area->percentage * $area_required_number)  / 100);
                         } elseif ($rest < 0) {
                             $total_pass += $pass;
                         }
@@ -146,7 +147,7 @@ class CourseReviewSubArea extends Command
                         $total_high_points = $high * $total_point;
 
                         $total_points = $total_primary_points + $total_middle_points + $total_high_points;
-                        $required_student_total = floor($book->required_students_number * ($area->percentage / 100));
+                        $required_student_total = floor($area_required_number * ($sub_area->percentage / 100));
                         $total_required_point = $required_student_total * $total_point;
 
 
@@ -162,7 +163,7 @@ class CourseReviewSubArea extends Command
 
 
 
-                $sucess_percentage = round($total_pass / $total_required, 2) * 100;
+                $sucess_percentage = ($total_required > 0) ? round($total_pass / $total_required, 2) * 100 : 0;
                 $percentage_38 = ($sucess_percentage * 38) / 100;
                 $percentage_38 = sprintf('%.2f', $percentage_38);
 
@@ -174,7 +175,7 @@ class CourseReviewSubArea extends Command
 
 
                 $total_surplus_graduates_by_area =  $total_pass_all - $total_required;
-                $total_surplus_graduates_all_area = $area->getSurplusGraduatesForAllAreas();
+                $total_surplus_graduates_all_area = $area->getSurplusGraduatesForAllSubArea($area->id,$area->percentage);
 
 
                 $surplus_graduates_2 = ($total_surplus_graduates_by_area > 0) ? ($total_surplus_graduates_by_area / $total_surplus_graduates_all_area) * 2 : 0;

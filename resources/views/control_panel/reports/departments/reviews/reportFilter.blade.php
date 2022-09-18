@@ -77,16 +77,16 @@
                     $('#report_sub_area_select').empty().html(data);
                     $('#report_sub_area_select').append('<option value="all">الكل</option>');
 
+
                 });
 
             }
         }
 
-
-
         function updateDateTable() {
             var filters = '?analysis_type=' + $('#analysis_type').val() +
                 '&area_id=' + $('#report_area_select').val() +
+                '&sub_area_id=' + $('#report_sub_area_select').val() +
                 '&report_date=' + $('#report_date').val();
 
             $('#tableContainer')
