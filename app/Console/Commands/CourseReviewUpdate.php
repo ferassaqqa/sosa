@@ -216,8 +216,19 @@ class CourseReviewUpdate extends Command
             /*end safwa*/
 
 
+            // Review::insert([
+            //     'area_id' => $area->id,
+            //     'plan_score_38' => $percentage_38,
+            //     'test_quality_5' => $test_quality_5,
+            //     'super_plus_2' => $surplus_graduates_2,
+            //     'students_category_3' => $graduate_class,
+            //     'safwa_score_2' => $safwa_score,
+            //     'created_at' => Carbon::now()
+            // ]);
+            
             Review::insert([
                 'area_id' => $area->id,
+                'sub_area_id' => 0,
                 'plan_score_38' => $percentage_38,
                 'test_quality_5' => $test_quality_5,
                 'super_plus_2' => $surplus_graduates_2,

@@ -164,7 +164,7 @@ class CourseReviewSubArea extends Command
 
 
                 $sucess_percentage = ($total_required > 0) ? round($total_pass / $total_required, 2) * 100 : 0;
-                $percentage_38 = ($sucess_percentage * 38) / 100;
+                $percentage_38 = ($sucess_percentage * 40) / 100;
                 $percentage_38 = sprintf('%.2f', $percentage_38);
 
 
@@ -190,43 +190,43 @@ class CourseReviewSubArea extends Command
 
 
                 /* start safwa */
-                $limit = 500;
-                $users = User::subarea($sub_area->id, $area->id)->limit($limit)
-                    ->whereHas('courses', function ($query) use ($project) {
-                        $query->whereIntegerInRaw('book_id', $project);
-                        $query->whereBetween('mark', [60, 101]);
-                    })
-                    ->pluck('id')->toArray();
+                // $limit = 500;
+                // $users = User::subarea($sub_area->id, $area->id)->limit($limit)
+                //     ->whereHas('courses', function ($query) use ($project) {
+                //         $query->whereIntegerInRaw('book_id', $project);
+                //         $query->whereBetween('mark', [60, 101]);
+                //     })
+                //     ->pluck('id')->toArray();
 
 
-                $result = array();
-                foreach ($users as $index => $user) {
-                    $count =  DB::table('course_students')
-                        ->leftJoin('courses', 'courses.id', '=', 'course_students.course_id')
-                        ->whereIntegerInRaw('book_id', $project)
-                        ->where('course_students.user_id', '=', $user)
-                        ->select('courses.book_id')
-                        ->distinct('courses.book_id')
-                        ->count();
+                // $result = array();
+                // foreach ($users as $index => $user) {
+                //     $count =  DB::table('course_students')
+                //         ->leftJoin('courses', 'courses.id', '=', 'course_students.course_id')
+                //         ->whereIntegerInRaw('book_id', $project)
+                //         ->where('course_students.user_id', '=', $user)
+                //         ->select('courses.book_id')
+                //         ->distinct('courses.book_id')
+                //         ->count();
 
-                    array_push($result, $count);
-                }
+                //     array_push($result, $count);
+                // }
 
-                if (!empty($result)) {
+                // if (!empty($result)) {
 
-                    $result = array_count_values($result);
-                    ksort($result);
+                //     $result = array_count_values($result);
+                //     ksort($result);
 
-                    $key = array_key_last($result);
-                    $value = $result[array_key_last($result)];
-                    if ($value >= 15) {
-                        $value = 15;
-                    }
-                    $safwa_score =   round((($key * $value) / 90) * 2, 2);
-                    /*end safwa*/
-                }else{
-                    $safwa_score = 0;
-                }
+                //     $key = array_key_last($result);
+                //     $value = $result[array_key_last($result)];
+                //     if ($value >= 15) {
+                //         $value = 15;
+                //     }
+                //     $safwa_score =   round((($key * $value) / 90) * 2, 2);
+                //     /*end safwa*/
+                // }else{
+                     $safwa_score = 0;
+                // }
 
 
                 Review::insert([

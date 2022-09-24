@@ -322,7 +322,7 @@ class Area extends Model
         $pass = 0;
         $book_score = array();
 
-
+        $total__pass = 0;
         foreach ($books as $key => $book) {
 
             if ($book->required_students_number == 0) {
@@ -333,16 +333,20 @@ class Area extends Model
                 $score = 0;
                 $required = 0;
 
+
                 $pass = AsaneedCourseStudent::book($book->id)
                     ->subarea(0, $this->id)
                     ->count();
+                $total__pass += $pass;
 
-                $required = floor(($this->percentage * $book->required_students_number)  / 100);
+
+
+                $required = floor($book->required_students_number /7 );
                 $total_required += $required;
 
-                $rest =  $pass - floor(($this->percentage * $book->required_students_number)  / 100);
+                $rest =  $pass - $required;
                 if ($rest > 0) {
-                    $total_pass += floor(($this->percentage * $book->required_students_number)  / 100);
+                    $total_pass += $required;
                 } elseif ($rest < 0) {
                     $total_pass += $pass;
                 }
@@ -357,11 +361,28 @@ class Area extends Model
             }
         }
 
-        $total_surplus_graduates_by_area =  $total_pass - $total_required;
-        $total_surplus_graduates_all_area = $this->getSurplusGraduatesForAllAreasAsaneed();
+        // $total_surplus_graduates_by_area =  $total_pass - $total_required;
+        $requeried_number_to_get_20 = round($total_required * 0.2 , 2 );
+        $total_surplus_graduates_by_area =  $total__pass - $total_required;
 
-        $surplus_graduates_2 = ($total_surplus_graduates_by_area > 0) ? ($total_surplus_graduates_by_area / $total_surplus_graduates_all_area) * 2 : 0;
+
+        $surplus_graduates_2 = 0;
+        if($total_surplus_graduates_by_area >= $requeried_number_to_get_20){
+            $surplus_graduates_2 = 2;
+        }elseif($total_surplus_graduates_by_area >0 && $total_surplus_graduates_by_area < $requeried_number_to_get_20){
+            $surplus_graduates_2 = round(
+                ($total_surplus_graduates_by_area * 2) / $requeried_number_to_get_20
+                ,2);
+        }
+
+
+        // $total_surplus_graduates_all_area = $this->getSurplusGraduatesForAllAreasAsaneed();
+        // $surplus_graduates_2 = ($total_surplus_graduates_by_area > 0) ? ($total_surplus_graduates_by_area / $total_surplus_graduates_all_area) * 2 : 0;
         $surplus_graduates_2 = round($surplus_graduates_2,2);
+
+
+
+
 
         $total_score = 0;
         foreach ($book_score as $key => $score) {
@@ -393,19 +414,19 @@ class Area extends Model
 
         if(!$area_id && !$sub_area_id){
             $query = Review::where('area_id',$this->id)->where('sub_area_id',0);
-        }
+        }else
 
         if($area_id && !$sub_area_id){
             $query = Review::where('area_id',$area_id)->where('sub_area_id',0);
-        }
+        }else
 
         if($area_id && $sub_area_id == 'all'){
             $query = Review::where('sub_area_id',$this->id);
-        }
+        }else
 
         if($area_id && $sub_area_id != 'all' && $sub_area_id > 0){
             $query = Review::where('area_id',$area_id)->where('sub_area_id',$sub_area_id);
-        }
+        }else
 
         if(!$area_id && $sub_area_id == 'allSubAreas'){
             $query = Review::where('sub_area_id',$this->id);
@@ -414,6 +435,8 @@ class Area extends Model
         if ($report_date) {
             $query->whereRaw('DATE(created_at) = ?', [$report_date]);
         }
+
+
         $review = $query->latest()->first();
 
         if($review){
@@ -434,6 +457,8 @@ class Area extends Model
             $percentage_total = ($percentage_50 * 2);
         }
 
+        $created_at = $review ? $review->created_at : '';
+        $is_sub_area = ($review && $review->sub_area_id > 0) ? true : false;
 
             $review_result = array(
                 'name' => $this->name,
@@ -444,6 +469,8 @@ class Area extends Model
                 'percentage_38' =>  $percentage_38,
                 'percentage_50' =>  $percentage_50,
                 'percentage_total' => $percentage_total,
+                'created_at' => $created_at,
+                'is_sub_area' => $is_sub_area,
                 'id' => $this->id
             );
 
@@ -578,7 +605,7 @@ class Area extends Model
                     ->count();
 
                 $total_pass_all +=  $pass;
-                $total_required +=  $book->required_students_number;
+                $total_required +=  floor($book->required_students_number/7);
 
                 }
         }

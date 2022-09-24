@@ -1442,41 +1442,41 @@ class User extends Authenticatable
             //                dd($user);
             //            }
             static::addGlobalScope('relatedUsers', function (Builder $builder) use ($user) {
-                if ($user) {
-                    if ($user->hasRole('رئيس الدائرة')) {
-                        return $builder;
-                    } elseif ($user->hasRole('مدير الدائرة') || $user->hasRole('مساعد اداري')|| $user->hasRole('مدير فرع')) {
-                        // $builder->genderdepartment($user->role);
-                        return $builder;
-                    } else {
-                        //                        $builder->whereHas('user_roles',function($query){
-                        //                            $query->where('name','!=','مشرف جودة');
-                        //                        });
-                        if ($user->hasRole('مشرف عام')) {
-                            //  $builder->genderdepartment($user->role)->permissionssubarea(0, $user->area_supervisor_area_id);
-                            return $builder->permissionssubarea(0, $user->area_supervisor_area_id);
+                // if ($user) {
+                //     if ($user->hasRole('رئيس الدائرة')) {
+                //         return $builder;
+                //     } elseif ($user->hasRole('مدير الدائرة') || $user->hasRole('مساعد اداري')|| $user->hasRole('مدير فرع')) {
+                //         // $builder->genderdepartment($user->role);
+                //         return $builder;
+                //     } else {
+                //         //                        $builder->whereHas('user_roles',function($query){
+                //         //                            $query->where('name','!=','مشرف جودة');
+                //         //                        });
+                //         if ($user->hasRole('مشرف عام')) {
+                //             //  $builder->genderdepartment($user->role)->permissionssubarea(0, $user->area_supervisor_area_id);
+                //             return $builder->permissionssubarea(0, $user->area_supervisor_area_id);
 
-                            // return $builder;
+                //             // return $builder;
 
 
-                        } else if ($user->hasRole('مشرف ميداني')) {
-                            // $builder->genderdepartment($user->role)->permissionssubarea($user->sub_area_supervisor_area_id, 0);
-                            return  $builder->permissionssubarea($user->sub_area_supervisor_area_id, 0);
+                //         } else if ($user->hasRole('مشرف ميداني')) {
+                //             // $builder->genderdepartment($user->role)->permissionssubarea($user->sub_area_supervisor_area_id, 0);
+                //             return  $builder->permissionssubarea($user->sub_area_supervisor_area_id, 0);
 
-                            // return $builder;
+                //             // return $builder;
 
-                        } else if ($user->hasRole('محفظ') || $user->hasRole('معلم') || $user->hasRole('شيخ اسناد')) {
-                            $builder->where('teacher_id', $user->id)->orWhere('id', $user->id);
-                        } else if ($user->hasRole('مدير دائرة التخطيط والجودة')) {
-                            return $builder;
-                        } else if ($user->hasRole('رئيس قسم الاختبارات')) {
-                            return $builder;
-                        } else {
-                            $builder->where('id', $user->id);
-                        }
-                    }
-                } else {
-                }
+                //         } else if ($user->hasRole('محفظ') || $user->hasRole('معلم') || $user->hasRole('شيخ اسناد')) {
+                //             $builder->where('teacher_id', $user->id)->orWhere('id', $user->id);
+                //         } else if ($user->hasRole('مدير دائرة التخطيط والجودة')) {
+                //             return $builder;
+                //         } else if ($user->hasRole('رئيس قسم الاختبارات')) {
+                //             return $builder;
+                //         } else {
+                //             $builder->where('id', $user->id);
+                //         }
+                //     }
+                // } else {
+                // }
             });
         }
     }

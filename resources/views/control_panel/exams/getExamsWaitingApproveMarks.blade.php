@@ -69,7 +69,7 @@
                         <thead>
                             <th>#</th>
                             <th>عنوان الدورة\المجلس</th>
-                            <th>الحالة</th>
+                            <!--<th>الحالة</th>-->
 
                             <th>نوع الإختبار</th>
                             <th>عدد الطلاب</th>
@@ -140,7 +140,7 @@
 
                 "columnDefs": [{
                     "sortable": false,
-                    "targets": [1, 2, 3, 4, 5, 6, 7, 8]
+                    "targets": [1, 2, 3, 4, 5, 6, 7]
                 }],
 
                 "aoColumns": [{
@@ -149,9 +149,9 @@
                     {
                         "mData": "course_book_name"
                     },
-                    {
-                        "mData": "course_status"
-                    },
+                    // {
+                    //     "mData": "course_status"
+                    // },
                     {
                         "mData": "exam_type"
                     },

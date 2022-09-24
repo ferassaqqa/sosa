@@ -114,8 +114,9 @@ class ReportsController extends Controller
     }
 
 
-    private function getLevel($mark){
-        if (60 <= $mark && $mark < 70) {
+    private function getLevel($mark)
+    {
+        if (58 <= $mark && $mark < 70) {
             return '<span style="color:#b3b300">متوسط</span>';
         } elseif (70 <= $mark && $mark < 75) {
             return '<span style="color:green">جيد</span>';
@@ -128,7 +129,7 @@ class ReportsController extends Controller
         } elseif (90 <= $mark && $mark <= 100) {
             return '<span style="color:darkgreen">ممتاز</span>';
         } else {
-            return '<span style="color:red">ضعيف</span>';
+            return '<span style="color:red">جيد</span>';
         }
     }
 
@@ -139,26 +140,26 @@ class ReportsController extends Controller
         $area_id = (int)$request->area_id ? (int)$request->area_id : 0;
 
 
-        if(!$area_id && !$sub_area_id){
+        if (!$area_id && !$sub_area_id) {
             $areas = Area::permissionssubarea($sub_area_id, $area_id)
-            ->whereNull('area_id')->get();
-        }
+                ->whereNull('area_id')->get();
+        } else
 
-        if($area_id && !$sub_area_id){
+        if ($area_id && !$sub_area_id) {
             $areas = Area::permissionssubarea($sub_area_id, $area_id)
-            ->whereNull('area_id')->get();
-        }
+                ->whereNull('area_id')->get();
+        } else
 
-        if($area_id && $sub_area_id == 'all'){
-            $areas = Area::where('area_id',$area_id)->get();
-        }
+        if ($area_id && $sub_area_id == 'all') {
+            $areas = Area::where('area_id', $area_id)->get();
+        } else
 
-        if($area_id && $sub_area_id != 'all' && $sub_area_id > 0){
-            $areas = Area::permissionssubarea($sub_area_id, $area_id)->where('area_id',$area_id)->get();
-        }
+        if ($area_id && $sub_area_id != 'all' && $sub_area_id > 0) {
+            $areas = Area::permissionssubarea($sub_area_id, $area_id)->where('area_id', $area_id)->get();
+        } else
 
-        if(!$area_id && $sub_area_id == 'allSubAreas'){
-            $areas = Area::where('area_id','>',0)->get();
+        if (!$area_id && $sub_area_id == 'allSubAreas') {
+            $areas = Area::where('area_id', '>', 0)->get();
         }
 
         $value = array();
@@ -178,6 +179,8 @@ class ReportsController extends Controller
             $students_category_3[$key] = $row['students_category_3'];
             $percentage_50[$key] = $row['percentage_50'];
             $percentage_total[$key] = $row['percentage_total'];
+            $created_at[$key] = $row['created_at'];
+            $is_sub_area[$key] = $row['is_sub_area'];
             $id[$key] = $row['id'];
         }
 
@@ -187,7 +190,10 @@ class ReportsController extends Controller
         // }
         // $duplicates = array_unique(array_diff_assoc($scores, array_unique($scores)));
 
-        $i=0;
+        $created_at = $result_review[0]['created_at'] ? $result_review[0]['created_at']->todatestring() : '';
+
+        $i = 0;
+        $is_sub_area = true;
         foreach ($result_review as $key1 => $row) {
             $i++;
             $label = $this->getLevel($row['percentage_total']);
@@ -196,7 +202,9 @@ class ReportsController extends Controller
             //     $key = array_search($row['percentage_total'], $duplicates);
             //     $label = $this->getOrderLabel($key - 1) . ' مكرر';
             // }
-            if($row['percentage_total'] == 0){$label = '-';}
+            if ($row['percentage_total'] == 0) {
+                $label = '-';
+            }
 
             $item = '
             <tr >
@@ -204,12 +212,16 @@ class ReportsController extends Controller
                 <td>' . $row['name'] . '</td>
 
                 <td>' . $row['percentage_38'] . '%</td>
-                <td>'.$row['test_quality_5'].'%</td>
-                <td>'.$row['surplus_graduates_2'].'%</td>
-                <td>'.$row['students_category_3'].'%</td>
-                <td>'.$row['safwa_graduates_2'].'%</td>
+                <td>' . $row['test_quality_5'] . '%</td>
+                <td>' . $row['surplus_graduates_2'] . '%</td>
+                <td>' . $row['students_category_3'] . '%</td>';
 
-                <td><b>' . $row['percentage_50'] . '%</b></td>
+            if (!$row['is_sub_area']) {
+                $item .= '<td>' . $row['safwa_graduates_2'] . '%</td>';
+                $is_sub_area = false;
+            }
+
+            $item .= '<td><b>' . $row['percentage_50'] . '%</b></td>
 
                 <td><b>' . $row['percentage_total'] . '%</b></td>
                 <td>' . $label . '</td>
@@ -225,7 +237,7 @@ class ReportsController extends Controller
         // dd($result_review);
 
         return [
-            'view' => view('control_panel.reports.departments.reviews.courseReviewsDetails', compact('areas', 'value'))->render()
+            'view' => view('control_panel.reports.departments.reviews.courseReviewsDetails', compact('areas', 'value', 'created_at','is_sub_area'))->render()
         ];
     }
     public function asaneedReviewDetailsView(Request $request)
@@ -254,7 +266,6 @@ class ReportsController extends Controller
             $total_score_10[$key]  = $row['total_score_10'];
             $id[$key]  = $row['id'];
             $total_score_100[$key]  = $row['total_score_100'];
-
         }
 
         array_multisort($total_score_100, SORT_DESC, $result_review);
@@ -268,10 +279,11 @@ class ReportsController extends Controller
         $duplicates = array_unique(array_diff_assoc($scores, array_unique($scores)));
 
 
-        $i=0;
+        $i = 0;
         foreach ($result_review as $key => $row) {
             $i++;
             $label = $this->getOrderLabel($key);
+            // $label = $this->getLevel($row['total_score_100']);
             // if (array_key_exists($key, $duplicates)) {
             //     $label =$this->getOrderLabel($key-1).' مكرر';
             // }
@@ -288,10 +300,10 @@ class ReportsController extends Controller
                 <td>' . $row['name'] . '</td>';
 
             foreach ($asaneed_books as $key => $book) {
-                    $item.=  '<td>' . $row[$book->id] . '%</td>';
+                $item .=  '<td>' . $row[$book->id] . '%</td>';
             }
 
-            $item.='<td><b>' . $row['superplus_graduates'] . '%</b></td>
+            $item .= '<td><b>' . $row['superplus_graduates'] . '%</b></td>
                 <td><b>' . $row['total_score_10'] . '%</b></td>
                 <td><b>' . $row['total_score_100'] . '%</b></td>
                 <td>' . $label . '</td>
@@ -302,7 +314,7 @@ class ReportsController extends Controller
         }
 
         return [
-            'view' => view('control_panel.reports.departments.reviews.asaneedReviewsDetails', compact('areas', 'asaneed_books','value'))->render()
+            'view' => view('control_panel.reports.departments.reviews.asaneedReviewsDetails', compact('areas', 'asaneed_books', 'value'))->render()
         ];
     }
 

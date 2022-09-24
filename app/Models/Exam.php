@@ -475,10 +475,8 @@ public function getNullStudentsCountAttribute(){
         }
     }
     public function scopeQualityIncluded($query,$user_id){
-//        dd($user_id);
-//        $supervisors = $this->quality_supervisors_array;
-        return $query;//->whereRaw("JSON_CONTAINS(quality_supervisor_id, '[".$user_id."]' )");
-//        $query->whereJsonContains('quality_supervisor_id',[$user_id]);
+    // return $query->where('quality_supervisor_id', 'LIKE', '%'.$user_id.'%');
+    return $query;
     }
     public function scopeArea($query,$area_id,$sub_area_id=0){
 

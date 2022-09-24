@@ -320,49 +320,54 @@ class CourseStudent extends Model
                 //                dd($user);
             }
             static::addGlobalScope('relatedCourseStudents', function (Builder $builder) use ($user) {
-                if ($user) {
-                    $builder->whereHas('user');
-                    // $builder->whereHas('course');
+                
+                $builder->whereHas('course');
+                 $builder->whereHas('user');
 
-                    if ($user->hasRole('رئيس الدائرة')) {
-                        return $builder;
-                    } else if ($user->hasRole('مدير الدائرة') || $user->hasRole('مساعد اداري')) {
-                        // $builder->genderdepartment($user->role);
-                        return $builder;
-                    } else if ($user->hasRole('مدير فرع')) {
-                        return $builder->permissionssubarea(0, $user->branch_supervisor_area_id);
-                    }else if ($user->hasRole('مشرف عام')) {
-                        // $builder->genderdepartment($user->role)->permissionssubarea(0, $user->area_supervisor_area_id)
-                        //     ->orWhereHas('user',function($query) use($user){
-                        //         $query->whereHas('user_roles',function($query){
-                        //             $query->where('name','مشرف جودة');
-                        //         });
-                        //     });
-                        return $builder->permissionssubarea(0, $user->area_supervisor_area_id);
-                    } else if ($user->hasRole('مشرف ميداني')) {
-                        // $builder->genderdepartment($user->role)->permissionssubarea($user->sub_area_supervisor_area_id, 0)
-                        //     ->orWhereHas('user',function($query) use($user){
-                        //         $query->whereHas('user_roles',function($query){
-                        //             $query->where('name','مشرف جودة');
-                        //         });
-                        //     });
-                        return $builder->permissionssubarea($user->sub_area_supervisor_area_id, 0);
-                    } else if ($user->hasRole('محفظ') || $user->hasRole('معلم') || $user->hasRole('شيخ اسناد')) {
-                        $builder->whereHas('course', function ($query) use ($user) {
-                            $query->whereHas('teacher', function ($query) use ($user) {
 
-                                $query->where('teacher_id', $user->id)->orWhere('id', $user->id);
-                            });
-                        });
-                    } else if ($user->hasRole('مدير دائرة التخطيط والجودة')) {
-                        return $builder;
-                    } else if ($user->hasRole('رئيس قسم الاختبارات')) {
-                        return $builder;
-                    } else {
-                        $builder->where('id', $user->id);
-                    }
-                } else {
-                }
+                // if ($user) {
+                //     $builder->whereHas('user');
+                //     // $builder->whereHas('course');
+
+                //     if ($user->hasRole('رئيس الدائرة')) {
+                //         return $builder;
+                //     } else if ($user->hasRole('مدير الدائرة') || $user->hasRole('مساعد اداري')) {
+                //         // $builder->genderdepartment($user->role);
+                //         return $builder;
+                //     } else if ($user->hasRole('مدير فرع')) {
+                //         return $builder->permissionssubarea(0, $user->branch_supervisor_area_id);
+                //     }else if ($user->hasRole('مشرف عام')) {
+                //         // $builder->genderdepartment($user->role)->permissionssubarea(0, $user->area_supervisor_area_id)
+                //         //     ->orWhereHas('user',function($query) use($user){
+                //         //         $query->whereHas('user_roles',function($query){
+                //         //             $query->where('name','مشرف جودة');
+                //         //         });
+                //         //     });
+                //         return $builder->permissionssubarea(0, $user->area_supervisor_area_id);
+                //     } else if ($user->hasRole('مشرف ميداني')) {
+                //         // $builder->genderdepartment($user->role)->permissionssubarea($user->sub_area_supervisor_area_id, 0)
+                //         //     ->orWhereHas('user',function($query) use($user){
+                //         //         $query->whereHas('user_roles',function($query){
+                //         //             $query->where('name','مشرف جودة');
+                //         //         });
+                //         //     });
+                //         return $builder->permissionssubarea($user->sub_area_supervisor_area_id, 0);
+                //     } else if ($user->hasRole('محفظ') || $user->hasRole('معلم') || $user->hasRole('شيخ اسناد')) {
+                //         $builder->whereHas('course', function ($query) use ($user) {
+                //             $query->whereHas('teacher', function ($query) use ($user) {
+
+                //                 $query->where('teacher_id', $user->id)->orWhere('id', $user->id);
+                //             });
+                //         });
+                //     } else if ($user->hasRole('مدير دائرة التخطيط والجودة')) {
+                //         return $builder;
+                //     } else if ($user->hasRole('رئيس قسم الاختبارات')) {
+                //         return $builder;
+                //     } else {
+                //         $builder->where('id', $user->id);
+                //     }
+                // } else {
+                // }
             });
         }
     }

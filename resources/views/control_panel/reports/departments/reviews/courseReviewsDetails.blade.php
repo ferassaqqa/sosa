@@ -4,14 +4,25 @@
             <div class="card-body">
 
 
-                <style>                  
+                <style>
                     th,
                     td {
                         border: 1px solid rgb(161, 161, 161) !important;
                     }
                 </style>
 
-                <div class="row mb-3" id="custom_filters"></div>
+
+                @if (!empty($created_at))
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                                <h4 class="mb-sm-0">تاريخ التحديث {{ $created_at }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
+
                 <div id="tableContainer">
 
 
@@ -38,8 +49,12 @@
                                 <td rowspan="2" style="width:50px; ">#</td>
                                 <td rowspan="2"> <b> المنطقة </b></td>
 
+                                @if (!$is_sub_area)
+                                    <td colspan="6"> <b> بنود تقييم قسم الدورات </b></td>
+                                @else
+                                <td colspan="5"> <b> بنود تقييم قسم الدورات </b></td>
+                                @endif
 
-                                <td colspan="6"> <b> بنود تقييم قسم الدورات </b></td>
 
                                 <td rowspan="2"> <b>التقييم العام (100%)</b></td>
                                 <td rowspan="2"> <b> الترتيب </b></td>
@@ -49,13 +64,22 @@
 
 
                             <tr>
-                                <td scope="col1">دورات الخطة (38%)</td>
-                                <td scope="col1">جودة الاختبارات (5%)</td>
-                                <td scope="col1">تمييز فائض الخريجين (2%)</td>
-                                <td scope="col1">فئات الخريجين (3%)</td>
-                                <td scope="col1"> برنامج الصفوة (2%)</td>
 
-                                <td scope="col1"> <b>التقييم العام (50%)</b></td>
+                                @if (!$is_sub_area)
+                                    <td scope="col1">دورات الخطة (38%)</td>
+                                    <td scope="col1">جودة الاختبارات (5%)</td>
+                                    <td scope="col1">تمييز فائض الخريجين (2%)</td>
+                                    <td scope="col1">فئات الخريجين (3%)</td>
+                                    <td scope="col1"> برنامج الصفوة (2%)</td>
+                                    <td scope="col1"> <b>التقييم العام (50%)</b></td>
+                                @else
+                                    <td scope="col1">دورات الخطة (40%)</td>
+                                    <td scope="col1">جودة الاختبارات (5%)</td>
+                                    <td scope="col1">تمييز فائض الخريجين (2%)</td>
+                                    <td scope="col1">فئات الخريجين (3%)</td>
+                                    <td scope="col1"> <b>التقييم العام (50%)</b></td>
+                                @endif
+
                             </tr>
 
                         </thead>
@@ -63,7 +87,7 @@
                         <tbody>
 
 
-                       
+
 
 
 

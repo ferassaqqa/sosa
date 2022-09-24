@@ -531,6 +531,23 @@ class Course extends Model
         return $this->CreatedBy ? $this->CreatedBy->where('log_name','created')[0]->causer : 0 ;
     }
 
+    // public function getQualitySupervisorsArrayAttribute(){
+    //             return $this->exam->quality_supervisor_id ? (array)json_decode($this->exam->quality_supervisor_id) : [];
+    // }
+
+//     public function scopeQualityIncluded($query,$user_id){
+//         // dd($this->exam);
+//         // $supervisors = $this->quality_supervisors_array;
+
+//         // dd($supervisors);
+
+
+//          return $query->whereRaw("JSON_CONTAINS(quality_supervisor_id, '[".$user_id."]' )");
+//  //        $query->whereJsonContains('quality_supervisor_id',[$user_id]);
+//      }
+
+
+
     /**
      * End activities functions
      */
@@ -547,23 +564,13 @@ class Course extends Model
             $area_supervisor_area_id = $father_area ? $father_area->id : 0;
             static::addGlobalScope('relatedCourses', function (Builder $builder) use ($user,$sub_area_supervisor_area_father_id,$area_supervisor_area_id,$sub_area_supervisor_area_id) {
                 if ($user) {
-
-
                     if ($user->hasRole('رئيس الدائرة')){
                         return $builder;
                     } else if($user->hasRole('مدير الدائرة') || $user->hasRole('مساعد اداري')){
-                        // return $builder->genderdepartment($user->role);
                         return $builder;
-
                     }else if($user->hasRole('مشرف عام')){
-//                        dd($area_supervisor_area_id);
                         return $builder->permissionssubarea(0,$area_supervisor_area_id);
-                        // return $builder;
-
-                        // return $builder->permissionssubarea($sub_area_supervisor_area_id,0);
                     }else if($user->hasRole('مشرف ميداني')){
-//                        dd($user->sub_area_supervisor_area_id,$user);
-                        // return $builder->permissionssubarea($user->area_supervisor_area_id,0);
                         return $builder->permissionssubarea($sub_area_supervisor_area_id,0);
                     }else if($user->hasRole('محفظ') || $user->hasRole('معلم') || $user->hasRole('شيخ اسناد')){
                         return $builder->where('teacher_id',$user->id);
@@ -571,6 +578,10 @@ class Course extends Model
                         return $builder;
                     }else if($user->hasRole('رئيس قسم الاختبارات')){
                         return $builder;
+                    }else if($user->hasRole('مشرف جودة')) {
+                            return $builder->whereHas('exam',function ($query) use($user){
+                                $query->qualityincluded($user->id);
+                            });
                     }else if($user->hasRole('مدير فرع')){
                         return $builder->permissionssubarea(0, $user->branch_supervisor_area_id);
                     }
@@ -595,13 +606,8 @@ class Course extends Model
             if($course->exam) {
                 $course->exam->delete();
             }
-            // if($course->students) {
-            //     $course->students()->each(function($student){
-            //         $student->delete();
-            //     });
-            // }
-
         });
     }
 
 }
+

@@ -710,7 +710,7 @@ class ExamsController extends Controller
                     'students_count' => $item->students_count,
                     'course_name' => $item->course_name,
                     'teacher_mobile' => $item->teacher_mobile,
-                    'course_status' => $item->course->status,
+                    'course_status' => '',
                     // 'course_area_father_name'=>$item->course_area_father_name,
                     // 'course_area_name'=>$item->course_area_name,
                     'area' => $item->course_area_father_name . ' - ' . $item->course_area_name,

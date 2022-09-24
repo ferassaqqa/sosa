@@ -240,7 +240,7 @@ class CourseStudentsImport implements
        {
            return [
             // '*.rkm_alhoy' => 'required|numeric|not_teacher:' . SELF::$course->id.'|is_id_valid:' . SELF::$course->id,
-            '*.rkm_alhoy' => 'required|numeric|not_teacher:' . SELF::$course->id.'|is_id_valid:' . SELF::$course->id,
+            '*.rkm_alhoy' => 'required|numeric|not_teacher:' . SELF::$course->id,
            ];
        }
 
