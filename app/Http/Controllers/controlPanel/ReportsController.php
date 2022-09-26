@@ -237,7 +237,7 @@ class ReportsController extends Controller
         // dd($result_review);
 
         return [
-            'view' => view('control_panel.reports.departments.reviews.courseReviewsDetails', compact('areas', 'value', 'created_at','is_sub_area'))->render()
+            'view' => view('control_panel.reports.departments.reviews.courseReviewsDetails', compact('areas', 'value', 'created_at', 'is_sub_area'))->render()
         ];
     }
     public function asaneedReviewDetailsView(Request $request)
@@ -494,7 +494,7 @@ class ReportsController extends Controller
         ];
     }
 
-    private function getTotalRowCourseAreaPlanProgress($required_result = array(), $safwa_flag = false, $safwa_array = array())
+    private function getTotalRowCourseAreaPlanProgress($required_result = array(), $safwa_flag = false, $safwa_array = array(),$colspan)
     {
 
         $result_report_in_plane = array();
@@ -575,11 +575,11 @@ class ReportsController extends Controller
                                 <td>' . $required_students_number . '</td>';
 
 
-        if ($_REQUEST['area_id']  || Auth::user()->hasRole('مشرف عام')) {
-            $total_in_plan_row .= '<td colspan="2"></td>';
-        } else {
-            $total_in_plan_row .= '<td colspan="14"></td>';
-        }
+        // if ($_REQUEST['area_id']  || Auth::user()->hasRole('مشرف عام')) {
+        //     $total_in_plan_row .= '<td colspan="2"></td>';
+        // } else {
+            $total_in_plan_row .= '<td colspan="'.$colspan.'"></td>';
+        // }
 
         $total_percentage =  ($required_students_number > 0) ? round((($pass_students_number / $required_students_number) * 100), 2) : 0;
         if ($total_percentage > 100) {
@@ -614,6 +614,11 @@ class ReportsController extends Controller
 
         $area_id = $_REQUEST ? $_REQUEST['area_id'] : 0;
         $book_id = $_REQUEST ? $_REQUEST['book_id'] : 0;
+        $sub_area_id = $_REQUEST ? $_REQUEST['sub_area_id'] : 0;
+        $book_id = $_REQUEST ? $_REQUEST['book_id'] : 0;
+
+
+        $area_des = '';
 
         $year = date("Y");
         $in_plane_books_value = array();
@@ -629,32 +634,63 @@ class ReportsController extends Controller
 
         if ($area_id) {
             $areas = Area::where('id', $area_id)->get();
-        } else {
+            $area_des = 'منطقة ' . $areas[0]->name;
+        }
+        else {
             $areas = Area::whereNull('area_id')->get();
+            $area_des = 'جميع المناطق الكبرى';
         }
 
-
-
+        if($sub_area_id){
+            if($sub_area_id == 'all'){
+                $areas = Area::where('area_id', $area_id)->get();
+            }else{
+                $areas = Area::where('id', $sub_area_id)->get();
+                $area_des .= ' - ' . $areas[0]->name;
+            }
+        }
 
 
 
         $project = CourseProject::where('year', $year)->limit(1)->pluck('books')->first(); //get safwa project
         $project = json_decode($project);
         $project_books_value = array();
+        $colspan = count($areas) * 2;
+
+
+        if (count($in_plane_books)) {
+            $in_plane_books_value = $this->getTotalRowCourseAreaPlanProgress($in_plane_books, false, $project,$colspan);
+        }
+        if (count($in_plane_books)) {
+            $project_books_value = $this->getTotalRowCourseAreaPlanProgress($in_plane_books, true, $project,$colspan);
+        }
+        if (count($out_plane_books)) {
+            $out_plane_books_value = $this->getTotalRowCourseAreaPlanProgress($out_plane_books, false, $project,$colspan);
+        }
 
 
 
-        $in_plane_books_value = $this->getTotalRowCourseAreaPlanProgress($in_plane_books, false, $project);
-        $project_books_value = $this->getTotalRowCourseAreaPlanProgress($in_plane_books, true, $project);
-        $out_plane_books_value = $this->getTotalRowCourseAreaPlanProgress($out_plane_books, false, $project);
+        $status = 'منتهية'; if($sub_area_id == 'all'){$sub_area_id =0;}
+        $all_students = CourseStudent::book($book_id)->subarea($sub_area_id, $area_id)->course($status)->where('mark', '>', 0)->count();
+        $passed_students =  CourseStudent::book($book_id)->subarea($sub_area_id, $area_id)->course($status)->whereBetween('mark', [60, 101])->count();
+        $failed_students = CourseStudent::book($book_id)->subarea($sub_area_id, $area_id)->course($status)->whereBetween('mark', [0, 59])->count();
 
 
 
 
         return [
-            'view' => view('control_panel.reports.departments.courses.courseAreaPlanProgress', compact('areas', 'in_plane_books_value', 'in_plane_books', 'out_plane_books_value', 'project_books_value'))->render()
-            // ,
-            // 'filters'=>$filters
+            'view' => view('control_panel.reports.departments.courses.courseAreaPlanProgress', compact(
+                'all_students',
+                'passed_students',
+                'failed_students',
+                'colspan',
+                'area_des',
+                'areas',
+                'in_plane_books_value',
+                'in_plane_books',
+                'out_plane_books_value',
+                'project_books_value'
+            ))->render()
         ];
     }
 
@@ -767,7 +803,6 @@ class ReportsController extends Controller
 
             $out_plane_books = Book::where('year', $year)->where('id', $book_id)->where('required_students_number', '>', 0)->where('included_in_plan', 'خارج الخطة')->get();
         } else {
-            // $books = Book::where('year', $year)->where('required_students_number' ,'>',0)->get();
 
             $in_plane_books = Book::where('year', $year)->where('required_students_number', '>', 0)->where('included_in_plan', 'داخل الخطة')->get();
 
@@ -777,12 +812,6 @@ class ReportsController extends Controller
         $in_plane_books_value = $this->getTotalRowCoursePlanProgress($in_plane_books, false, $course_project);
         $out_plane_books_value = $this->getTotalRowCoursePlanProgress($in_plane_books, true, $course_project);
         $project_books_value = $this->getTotalRowCoursePlanProgress($out_plane_books, true, $course_project);
-
-
-        // dd($in_plane_books_value);
-
-
-
 
 
         return [

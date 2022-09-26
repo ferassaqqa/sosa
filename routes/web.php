@@ -82,6 +82,7 @@ Route::group(['middleware' => 'auth'], function () {
      */
 
     Route::resource('circles', \App\Http\Controllers\controlPanel\CirclesController::class);
+
     Route::get('getSubAreaCircleTeachers/{area_id}', [\App\Http\Controllers\controlPanel\CirclesController::class, 'getSubAreaCircleTeachers'])->name('circles.getSubAreaCircleTeachers');
     Route::get('getCirclesDate', [\App\Http\Controllers\controlPanel\CirclesController::class, 'getData'])->name('circles.getData');
     Route::get('changeCircleStatus/{circle}/{status}/{note?}', [\App\Http\Controllers\controlPanel\CirclesController::class, 'changeCircleStatus'])->name('circles.changeCircleStatus');

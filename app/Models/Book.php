@@ -58,8 +58,9 @@ class Book extends Model
     {
 
         $year = date("Y");
-        // $books = Book::where('year', $year)->get();
+
         self::$counter++;
+        $sub_areas = [];
 
 
         $data = '';
@@ -76,44 +77,78 @@ class Book extends Model
         $book_id = $_REQUEST ? $_REQUEST['book_id'] : '';
         $place_id = $_REQUEST ? $_REQUEST['place_id'] : '';
 
-        if($area_id){
-            $areas = Area::where('id',$area_id)->get();
-            $this->required_students_number  = floor(floor($this->required_students_number * $areas[0]->percentage)/100);
 
-        }else{
+
+
+        if ($area_id) {
+            $areas = Area::where('id', $area_id)->get();
+            $this->required_students_number  = floor(floor($this->required_students_number * $areas[0]->percentage) / 100);
+        } else {
             $areas = Area::whereNull('area_id')->get();
         }
 
-        if($sub_area_id){
-            $areas = Area::where('id',$sub_area_id)->get();
-            $this->required_students_number  = floor(floor($this->required_students_number * $areas[0]->percentage)/100);
+        if ($sub_area_id) {
+            if ($sub_area_id == 'all') {
+                $sub_areas = Area::where('area_id', $area_id)->get();
+            } else {
+                $sub_areas = Area::where('id', $sub_area_id)->get();
+                // $this->required_students_number  = floor(floor($this->required_students_number * $sub_areas[0]->percentage) / 100);
+            }
         }
 
 
 
         $rest = 0;
+        $subarea_required = 0;
         // $all_areas_total_array = array();
         foreach ($areas as $key => $area) {
 
+            if ($sub_areas) {
+                $required = floor(($area->percentage * $this->required_students_number)) / 100;
+                foreach ($sub_areas as $key => $sub_area) {
+                    $pass = CourseStudent::book($this->id)
+                        ->subarea($sub_area->id, $area->id)
+                        ->course('منتهية')
+                        ->whereBetween('mark', [60, 101])->count();
+
+
+                    $subarea_required = floor(($sub_area->percentage *   $this->required_students_number)) / 100;
+
+                    $rest = $pass - $subarea_required;
+                    $rest = $this->required_students_number ? floor($rest) : 0;
+
+                    $icon = '';
+                    if ($rest < 0) {
+                        $color = '#cc0000';
+                        $total_rest += $rest;
+                        $icon = '-';
+                    } else {
+                        $color =  '#009933';
+                        $total_plus += $rest;
+                        $icon = '+';
+                    }
+
+                    $total_pass += $pass;
+                    $data .= '<td>' . $pass .'</td>
+                    <td  style="color:' . $color . '"><b>' . $icon . ' ' . abs($rest) . '</b></td>';
+                }
+            } else {
                 $pass = CourseStudent::book($this->id)
-                    ->subarea($sub_area_id, $area->id)
+                    ->subarea(0, $area->id)
                     ->course('منتهية')
                     ->whereBetween('mark', [60, 101])->count();
 
 
-                    // $ss = floor(($area->percentage / 100)  * $this->required_students_number);
-                    // dd($ss);
 
-                 if($area_id){
+                if($area_id){
                     $required = $this->required_students_number;
-                 }else{
+                }else{
                     $required = floor(($area->percentage * $this->required_students_number)) / 100;
-                 }
+                }
+
 
                 $rest = $pass - $required;
                 $rest = $this->required_students_number ? floor($rest) : 0;
-
-
 
                 $icon = '';
                 if ($rest < 0) {
@@ -127,12 +162,12 @@ class Book extends Model
                 }
 
                 $total_pass += $pass;
-                $data .= '<td>' . $pass . '</td>
-                        <td  style="color:' . $color . '"><b>' . $icon . ' ' . abs($rest) . '</b></td>';
-
+                $data .= '<td>' . $pass. '</td>
+                    <td  style="color:' . $color . '"><b>' . $icon . ' ' . abs($rest) . '</b></td>';
+            }
         }
 
-        // dd($data);
+
 
         $pass_percentage = $this->required_students_number ? round((($total_pass / $this->required_students_number) * 100), 2) : 0;
         $plus_percentage = $this->required_students_number ? round((($total_plus / $this->required_students_number) * 100), 2) : 0;
@@ -142,11 +177,17 @@ class Book extends Model
             $pass_percentage = 100;
         }
 
-        // dd($total_rest);
+
+        if($subarea_required && $sub_area_id !='all'){
+            $required = floor($subarea_required);
+        }else{
+            $required = $this->required_students_number;
+        }
+
 
         $review_result = array(
             'name' => $this->name,
-            'required_students_number' =>  $this->required_students_number,
+            'required_students_number' =>  $required,
             'data' =>  $data,
             'total_pass' => $total_pass,
             'total_rest' => abs($total_rest),
@@ -236,7 +277,6 @@ class Book extends Model
             $to = Carbon::now()->subYears(4)->startOfYear()->format('d-m-Y');
             $from = Carbon::now()->subYears(12)->startOfYear()->format('d-m-Y');
             $query->whereBetween('dob', [$from, $to]);
-
         })->book($this->id)
             ->coursebookorteacher($teacher_id, $book_id, $place_id)
             ->subarea($sub_area_id, $area_id)

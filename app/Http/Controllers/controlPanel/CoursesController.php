@@ -217,13 +217,11 @@ class CoursesController extends Controller
                 $item->course_display_data
             );
         }
-
-        $moallems_count = User::department(2)->subarea($sub_area_id,$area_id)->coursebookorteacher($teacher_id,$book_id,$place_area)->course($status)->count();
-        $course_students_count = CourseStudent::book($book_id)->exportstatus($export_status)->coursebookorteacher($teacher_id,$book_id,$place_area)->subarea($sub_area_id,$area_id)->course($status)->count();
-
-
-        $passed_students =  CourseStudent::book($book_id)->exportstatus($export_status)->coursebookorteacher($teacher_id,$book_id,$place_area)->subarea($sub_area_id,$area_id)->course('منتهية')->whereBetween('mark', [60, 101])->count();
-        $failed_students = CourseStudent::book($book_id)->exportstatus($export_status)->coursebookorteacher($teacher_id,$book_id,$place_area)->subarea($sub_area_id,$area_id)->course('منتهية')->whereBetween('mark', [0, 59])->count();
+        $status = $status ? $status : 'منتهية';
+        $moallems_count = User::department(2)->subarea($sub_area_id,$area_id)->coursebookorteacher($teacher_id,$book_id,$place_area)->count();
+        $course_students_count = CourseStudent::book($book_id)->exportstatus($export_status)->coursebookorteacher($teacher_id,$book_id,$place_area)->subarea($sub_area_id,$area_id)->course($status)->where('mark','>',0)->count();
+        $passed_students =  CourseStudent::book($book_id)->exportstatus($export_status)->coursebookorteacher($teacher_id,$book_id,$place_area)->subarea($sub_area_id,$area_id)->course($status)->whereBetween('mark', [60, 101])->count();
+        $failed_students = CourseStudent::book($book_id)->exportstatus($export_status)->coursebookorteacher($teacher_id,$book_id,$place_area)->subarea($sub_area_id,$area_id)->course($status)->whereBetween('mark', [0, 59])->count();
 
 
         return [

@@ -137,8 +137,8 @@
                     case 'قسم الدورات العلمية': {
                         $('#analysis_type').empty().html(
                             '<option value="0">اختر التحليل المناسب</option>' +
-                            '<option value="courseAreaPlanProgress">انجاز المناطق الكبرى</option>' +
-                            '<option value="coursePlanProgress">انجاز خطة الدورات</option>' +
+                            '<option value="courseAreaPlanProgress">الإنجاز العام للخطة</option>' +
+                            '<option value="coursePlanProgress">الإنجاز التفصيلي للخطة</option>' +
                             '<option value="mostAccomplished">الأكثر إنجازًا</option>'+
                             '<option value="safwaProgram">برنامج الصفوة</option>'
                         );
@@ -161,7 +161,7 @@
                 case 'قسم أسانيد السنة النبوية': {
                     $('#analysis_type').empty().html(
                         '<option value="0">اختر التحليل المناسب</option>' +
-                        '<option value="asaneedAreaPlanProgress">انجاز المناطق الكبرى</option>' +
+                        '<option value="asaneedAreaPlanProgress">الإنجاز العام للخطة</option>' +
                             '<option value="asaneedPlanProgress">انجاز خطة الاسانيد</option>' +
                             '<option value="asaneedMostAccomplished">الأكثر إنجازًا</option>'
                     );
@@ -195,6 +195,7 @@
             if (obj.value) {
                 $.get('getSubAreas/' + obj.value, function(data) {
                     $('#report_sub_area_select').empty().html(data);
+                    $('#report_sub_area_select').append('<option value="all">الكل</option>');
                 });
 
                 $.get('/getSubAreaTeachers/' + obj.value, function(data) {
@@ -242,7 +243,7 @@
                 // $('#custom_filters').empty().html(data.filters);
             });
         }
-        
+
 
 
         $(document).ready(function() {

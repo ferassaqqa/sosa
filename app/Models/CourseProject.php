@@ -9,7 +9,7 @@ class CourseProject extends Model
 {
     use HasFactory;
     protected $fillable = ['name','date','books'];
-
+    
     public static $counter = 0;
     public function getProjectDisplayDataAttribute(){
 //        dd($this->books_array);
