@@ -38,8 +38,11 @@ class CircleMonthlyReportStudent extends Model
     public function getStudentNameAttribute(){
         return $this->student ? $this->student->name : '';
     }
+    // public function getCurrentStorageAttribute(){
+    //     return ($this->current_to ? $this->current_to : 0) - ($this->current_from ? $this->current_from : 0 );
+    // }
     public function getCurrentStorageAttribute(){
-        return ($this->current_to ? $this->current_to : 0) - ($this->current_from ? $this->current_from : 0 );
+        return $this->previous_to + $this->current_to;
     }
     public function getCurrentCategoryAttribute(){
 //        dd($this);

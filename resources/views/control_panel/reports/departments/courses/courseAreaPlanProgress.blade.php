@@ -18,16 +18,16 @@
                 <table class="table table-centered table_bordered">
                     <thead>
                         <tr>
-                            <th>عدد الطلاب الاجمالي</th>
-                            <th>عدد الطلاب الناجحين</th>
-                            <th>عدد الطلاب الراسبين</th>
+                            <th>العدد المطلوب</th>
+                            <th>العدد المنجز</th>
+                            <th>نسبة الانجاز</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr id="main_statistics" style="font-size: 18px; ">
-                            <td>{{ $all_students }}</td>
-                            <td>{{ $passed_students }}</td>
-                            <td>{{ $failed_students }}</td>
+                            <td>{{ $plan_total_required }}</td>
+                            <td>{{ $plan_total_passed }}</td>
+                            <td>{{ $total_plan_percentage }}</td>
                         </tr>
                     </tbody>
                 </table>

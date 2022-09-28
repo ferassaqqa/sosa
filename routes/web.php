@@ -371,6 +371,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('circleStudents', \App\Http\Controllers\controlPanel\users\circleStudentsController::class)->except('create');
     Route::get('getCircleStudentsData', [\App\Http\Controllers\controlPanel\users\circleStudentsController::class, 'getData'])->name('circleStudents.getData');
     Route::get('/circleStudents/create/{id_num}', [\App\Http\Controllers\controlPanel\users\circleStudentsController::class, 'create'])->name('circleStudents.create');
+    Route::delete('circleStudents/destroy/{user}/{circle}', [\App\Http\Controllers\controlPanel\users\CircleStudentsController::class, 'destroy'])->name('circleStudents.destroy');
 
     /**
      *  End circleStudents Operations
@@ -383,7 +384,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('getTeacherMonthlyReports/{user}', [\App\Http\Controllers\controlPanel\CircleMonthlyReportsController::class, 'getTeacherMonthlyReports'])->name('circleMonthlyReports.getTeacherMonthlyReports');
     Route::get('getTeacherMonthlyReportsData/{user}', [\App\Http\Controllers\controlPanel\CircleMonthlyReportsController::class, 'getTeacherMonthlyReportsData'])->name('circleMonthlyReports.getTeacherMonthlyReportsData');
     Route::get('getCircleMonthlyReportsData/{circle}', [\App\Http\Controllers\controlPanel\CircleMonthlyReportsController::class, 'getCircleMonthlyReportsData'])->name('circleMonthlyReports.getCircleMonthlyReportsData');
-    Route::get('createCircleMonthlyReports/{circle}/{date}', [\App\Http\Controllers\controlPanel\CircleMonthlyReportsController::class, 'createCircleMonthlyReports'])->name('circleMonthlyReports.createCircleMonthlyReports');
+    Route::get('createCircleMonthlyReports/{circle}', [\App\Http\Controllers\controlPanel\CircleMonthlyReportsController::class, 'createCircleMonthlyReports'])->name('circleMonthlyReports.createCircleMonthlyReports');
+    // Route::get('createCircleMonthlyReportsOld/{circle}/{date}', [\App\Http\Controllers\controlPanel\CircleMonthlyReportsController::class, 'createCircleMonthlyReports'])->name('circleMonthlyReports.createCircleMonthlyReports');
     Route::get('updateCircleMonthlyReports/{circleMonthlyReport}', [\App\Http\Controllers\controlPanel\CircleMonthlyReportsController::class, 'updateCircleMonthlyReports'])->name('circleMonthlyReports.updateCircleMonthlyReports');
     Route::get('makeReportDelivered/{circleMonthlyReport}', [\App\Http\Controllers\controlPanel\CircleMonthlyReportsController::class, 'makeReportDelivered'])->name('circleMonthlyReports.makeReportDelivered');
     Route::get('makeReportApproved/{circleMonthlyReport}', [\App\Http\Controllers\controlPanel\CircleMonthlyReportsController::class, 'makeReportApproved'])->name('circleMonthlyReports.makeReportApproved');

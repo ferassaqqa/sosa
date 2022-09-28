@@ -100,17 +100,28 @@ class ExcelExporterController extends Controller
     public function importCircleStudentsExcel(Circle $circle,Excel $excel,ImportExcelRequest $request){
         $import = new CircleStudentsImport($circle);
         $import->import(request()->file('file'));
-        $circle->update(['status'=>'قائمة']);
-        if($import->failures()->count()) {
+
+
+        if ($import->failures()->isNotEmpty()) {
+
             $excel->store(
                 new CircleStudentsFaultsExport($import->failures())
                 , 'public/ اخطاء استيراد الطلاب من ملف الاكسل للحلقة  للمعلم ' . $circle->teacher_name . '.xlsx');
+
+            $failures = $import->failures();
+
+            // dd($failures);
+
+            $errors =  view('control_panel.courses.basic.failures',compact('failures'));
             return response()->json(['msg'=>'تم استيراد ملف دورة '. $circle->teacher_name . ' للمعلم ' . $circle->teacher_name.' <br><span>
            <div class="swal2-icon swal2-error swal2-icon-show" style="display: flex;"><div class="swal2-icon-content">!</div></div>
-            ويوجد عدد '.$import->failures()->count().' طلاب لم يتم استيرادهم ، لمعرفة الارقام <a  style="color: red;" href="'.asset('storage/ اخطاء استيراد الطلاب من ملف الاكسل لدورة ' . $circle->teacher_name . ' للمعلم ' . $circle->teacher_name . '.xlsx').'">اضغط هنا</a> لتحميل الملف.</span> ']);
+            ويوجد عدد '.$import->failures()->count().' طلاب لم يتم استيرادهم ، لمعرفة الارقام <a  style="color: red;" href="'.asset('storage/ اخطاء استيراد الطلاب من ملف الاكسل لدورة ' . $circle->teacher_name . ' للمعلم ' . $circle->teacher_name . '.xlsx').'">اضغط هنا</a> لتحميل الملف.</span> '. $errors]);
         }else{
             return response()->json(['msg'=>'تم استيراد ملف دورة '. $circle->teacher_name . ' للمعلم ' . $circle->teacher_name.' بنجاح.']);
         }
+
+
+
     }
 
 

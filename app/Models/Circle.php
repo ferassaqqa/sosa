@@ -33,6 +33,7 @@ class Circle extends Model
         return [
             'id'                    =>$this->id,
             'start_date'            =>$this->start_date,
+            'student_count'            =>$this->students->count(),
             'place_name'            =>$this->place_name,
             'teacher_name'          =>$this->teacher_name,
             'area_father_name'      => $this->place ? $this->place->area_father_name : 0,
@@ -78,8 +79,13 @@ class Circle extends Model
     public function teacher(){
         return $this->belongsTo(User::class,'teacher_id')->withoutGlobalScope('relatedUsers');
     }
-    public function getStudentsAttribute(){
-        return $this->teacher ? $this->teacher->students: [];
+    // public function getStudentsAttribute(){
+    //     return $this->teacher ? $this->teacher->students: [];
+    // }
+    public function students(){
+        // return $this->belongsToMany(User::class,CircleStudent::class)->withPivot('id','student_id','circle_id');
+        return $this->belongsToMany(User::class,'circle_students','circle_id','student_id');
+
     }
     public function getTeacherNameAttribute(){
         return $this->teacher ? $this->teacher->name : '';
@@ -316,6 +322,16 @@ class Circle extends Model
         parent::booted();
         if(!Auth::guest()) {
             $user = Auth::user();
+
+            static::deleting(function($circle) {
+                // $circle->reports()->circleMonthlyReportStudents()->delete();
+                $reports = $circle->reports();
+                foreach ($reports as $key => $report) {
+                    $report->circleMonthlyReportStudents()->delete();
+                }
+                $circle->reports()->delete();
+           });
+
 //            dd($user);
             static::addGlobalScope('relatedCircles', function (Builder $builder) use ($user) {
                 if ($user) {

@@ -184,13 +184,32 @@ class Book extends Model
             $required = $this->required_students_number;
         }
 
+        $total_rest = abs($total_rest);
+        if($total_rest > 0 && $pass_percentage == 100){
+            $total_rest_per = round((($total_rest / $this->required_students_number) * 100), 1);
+            $pass_percentage -= $total_rest_per;
+        }elseif($total_rest > 0 && $pass_percentage < 100){
+            $total_rest_per = round((($total_rest / $this->required_students_number) * 100), 1);
+            $pass_percentage = $total_rest_per;
+            $plus_percentage = 0;
+        }
+
+
+        if($total_pass > $this->required_students_number && $this->required_students_number>0){
+            $super_plus = $total_pass - $this->required_students_number;
+            $plus_percentage = round(($super_plus/$this->required_students_number)*100,2);
+        }
+
+
+
+
 
         $review_result = array(
             'name' => $this->name,
             'required_students_number' =>  $required,
             'data' =>  $data,
             'total_pass' => $total_pass,
-            'total_rest' => abs($total_rest),
+            'total_rest' => $total_rest,
             'total_plus' => $total_plus,
 
 

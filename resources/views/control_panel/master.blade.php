@@ -357,7 +357,7 @@
                                                 padding: 1px 5px;
                                                 border-radius: 100px;
                                                 color: black;"
-                                        >{{count(\App\Models\Course::get())}}</span>
+                                        >{{\App\Models\Course::count()}}</span>
 
                                     </a>
                                 @endif
@@ -386,7 +386,7 @@
                                                 padding: 1px 5px;
                                                 border-radius: 100px;
                                                 color: black;"
-                                        >{{count(\App\Models\CourseStudent::whereHas('course')->get())}}</span>
+                                        >{{\App\Models\CourseStudent::whereHas('course')->count()}}</span>
                                     </a>
                                 @endif
                             <!-- item-->
@@ -399,7 +399,7 @@
                                                 padding: 1px 5px;
                                                 border-radius: 100px;
                                                 color: black;"
-                                        >{{count(\App\Models\Book::get())}}</span>
+                                        >{{\App\Models\Book::count()}}</span>
                                     </a>
                                 @endif
                             <!-- item-->

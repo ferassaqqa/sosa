@@ -130,7 +130,6 @@ class CircleMonthlyReport extends Model
         parent::boot();
         static::deleting(function($circleMonthlyReport) {
             $circleMonthlyReport->circleMonthlyReportStudents()->delete();
-//            $bookPlan->hours()->delete();
         });
     }
 }

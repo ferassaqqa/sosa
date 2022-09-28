@@ -8,6 +8,8 @@ use App\Http\Requests\controlPanel\users\circleStudents\updateCircleStudentsRequ
 use App\Models\Area;
 use App\Models\Place;
 use App\Models\User;
+use App\Models\Circle;
+use App\Models\CircleStudent;
 use App\Models\UserExtraData;
 use App\Models\UserNote;
 use App\Models\UserOldCourse;
@@ -278,16 +280,39 @@ class circleStudentsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(User $circleStudent)
-    {
-//        dd($circleStudent);
-        if(!$circleStudent->circle_student_current_circle){
-            if ($circleStudent->hasRole('طالب تحفيظ')){
-                $circleStudent->removeRole('طالب تحفيظ');
+//     public function destroy(User $circleStudent)
+//     {
+// //        dd($circleStudent);
+//         if(!$circleStudent->circle_student_current_circle){
+//             if ($circleStudent->hasRole('طالب تحفيظ')){
+//                 $circleStudent->removeRole('طالب تحفيظ');
+//             }
+//             return response()->json(['msg' => 'تم حذف بيانات الطالب من الحلقة بنجاح', 'title' => 'حذف', 'type' => 'success']);
+//         }else{
+// on(['msg' => 'لا يمكن حذف الطالب بعد انتهاء الحلقة', 'title' => 'خطأ!', 'type' => 'danger']);
+//         }
+
+//     }
+
+public function destroy(User $user, Circle $circle)
+{
+
+    checkPermissionHelper('حذف بيانات الطالب');
+
+    if ($circle->status != 'منتهية') {
+
+        $circleStudent = CircleStudent::where('student_id', $user->id)
+            ->where('circle_id', $circle->id)->first();
+        $circleStudent->delete();
+        $studentCircles = CircleStudent::where('student_id', $user->id)->count();
+        if (!$studentCircles) {
+            if ($user->hasRole('طالب دورات علمية')) {
+                $user->removeRole('طالب دورات علمية');
             }
-            return response()->json(['msg' => 'تم حذف بيانات الطالب من الحلقة بنجاح', 'title' => 'حذف', 'type' => 'success']);
-        }else{
-            return response()->json(['msg' => 'لا يمكن حذف الطالب بعد انتهاء الحلقة', 'title' => 'خطأ!', 'type' => 'danger']);
         }
+        return response()->json(['msg' => 'تم حذف بيانات الطالب من الحلقة بنجاح', 'title' => 'حذف', 'type' => 'success']);
+    } else {
+        return response()->json(['msg' => 'لا يمكن حذف الطالب بعد انتهاء الحلقة', 'title' => 'خطأ!', 'type' => 'danger']);
     }
+}
 }

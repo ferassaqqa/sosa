@@ -227,7 +227,7 @@
                                     <th scope="col">اسم محفظ الحلقة</th>
                                     <th scope="col">رقم الهوية</th>
                                     <th scope="col">نوع الحلقة</th>
-
+                                    <th scope="col">عدد الطلاب</th>
 
                                     <th scope="col">المشرف العام</th>
                                     <th scope="col">المشرف الميداني</th>
@@ -382,6 +382,9 @@
                     },
                     {
                         "mData": "id_num"
+                    },
+                    {
+                        "mData": "student_count"
                     },
                     {
                         "mData": "contract_type"

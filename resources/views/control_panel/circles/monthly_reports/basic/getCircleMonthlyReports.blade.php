@@ -66,10 +66,10 @@
 
                 {{--<h4 class="card-title mb-4" style="display: inline-block;"> </h4>--}}
                 <div class="dropdown d-inline-block user-dropdown mb-3">
-                    {{-- <button class="btn btn-primary"  onclick="createCircleMonthlyReports()">
+                    <button class="btn btn-primary"  onclick="createCircleMonthlyReports({{$circle->id}})">
                         <i class="mdi mdi-plus"></i>
                         اضافة
-                    </button> --}}
+                    </button>
                 </div>
                 <div class="">
                     <table class="table table-centered table-nowrap mb-0" id="dataTable1">
@@ -92,18 +92,18 @@
 
                         @foreach ($circleMonthlyReports as $key => $report)
 
-                      
+
 
                         <tr>
                         <td>{{$key+1}}</td>
                         <td> <a href="#!" data-url="{{ route('circleMonthlyReports.updateCircleMonthlyReports',$report->id) }}" onclick="showReport(this)"> {{  $report->date}} </a></td>
                         <td>
-                            {!!  ($report->is_delivered)? '<i  style="color:green; font-size: 25px;" class="mdi mdi-check-bold "></i>' : '<i style="color:red" class="mdi mdi-block-helper "></i>' !!} 
+                            {!!  ($report->is_delivered)? '<i  style="color:green; font-size: 25px;" class="mdi mdi-check-bold "></i>' : '<i style="color:red" class="mdi mdi-block-helper "></i>' !!}
                         </td>
                         <td>
                             {{ ($report->is_delivered)?$report->delivered->name.' '.$report->delivered_at:'' }}
                         </td>
-                        <td>                           
+                        <td>
                             {!! ($report->is_approved)?'<i  style="color:green;  font-size: 25px;" class="mdi mdi-check-all "></i>' : '<i style="color:red" class="mdi mdi-block-helper "></i>' !!}
                         </td>
                         <td>
@@ -133,7 +133,45 @@
 
 <script>
 
+function createCircleMonthlyReports($circle_id) {
 
+
+    // Swal.fire(
+    //     {
+    //         title:"هل أنت متأكد من تسليم التقرير",
+    //         text:"لن تتمكن من تعديل البيانات لاحقاً",
+    //         icon:"warning",
+    //         showCancelButton:!0,
+    //         confirmButtonText:"نعم تسليم التقرير",
+    //         cancelButtonText:"إلغاء",
+    //         confirmButtonClass:"btn btn-success mt-2",
+    //         cancelButtonClass:"btn btn-danger ms-2 mt-2",
+    //         buttonsStyling:!1
+    //     })
+    //     .then(
+    //         function(t){
+    //             if(t.value) {
+    //                 if(typeof $circle_id !='undefined') {
+
+                        $.get('createCircleMonthlyReports/' + $circle_id , function (data) {
+                            // if(data.type == 'danger') {
+                            //     Swal.fire('خطأ !',data.msg,'error');
+                            // }else {
+                            //     $(this).parent().parent().remove();
+                            //     getCircleMonthlyReports();
+                            // }
+                        });
+                //     }else{
+                //         $(this).parent().parent().remove();
+                //     }
+                //     Swal.fire({title: "تم تسليم التقرير", text: "التقرير تم تسليمه", icon: "success"});
+                // }else {
+                //     Swal.fire({title: "لم تتم العملية!", text: " ", icon: "error"});
+                // }
+            // }
+        // );
+
+}
 
 function approveCircleMonthlyReport  (obj){
         var url = obj.getAttribute('data-url');
@@ -206,77 +244,77 @@ function approveCircleMonthlyReport  (obj){
         // } );
 
     });
-    function createCircleMonthlyReports() {
-        @if($teacher->current_circle)
-            Swal.fire({
-                customClass: 'swal-wide',
-                title: 'ادخل شهر التقرير الشهري',
-                html: '<div class="input-group" id="datepicker1">'+
-                '                    <input type="text" class="form-control" placeholder="تاريخ التقرير"'+
-                '                           name="date" id="date"'+
-                '                           data-date-format="dd-mm-yyyy" data-date-container="#datepicker1" data-provide="datepicker"'+
-                '                           data-date-autoclose="true">'+
-                '                    <span class="input-group-text"><i class="mdi mdi-calendar"></i></span>'+
-                '                </div>',
-                inputPlaceholder: 'ادخل شهر التقرير الشهري',
-                showCancelButton:true,
-                showCloseButton:true,
-                confirmButtonText: 'اضافة',
-                cancelButtonText: 'الغاء',
-                showLoaderOnConfirm: true,
-                preConfirm: function(value){
-                    var date = document.getElementById('date');
-                    if(date && date.value != '') {
-                        $('.bs-example-modal-xl').modal('hide');
-                        $('.user_modal_content')
-                            .html(
-                                '<div class="spinner-border text-success" role="status" style="margin:25px auto;">' +
-                                '   <span class="sr-only">يرجى الانتظار ...</span>' +
-                                '</div>'
-                            );
-                        return fetch('/createCircleMonthlyReports/{{$circle->id}}/' + date.value)
-                            .then(function (response) {
-                                return response.json();
-                            }).then(function (responseJson) {
-                                // console.log(responseJson);
-                                if (responseJson.errors) {
-                                    Swal.showValidationMessage(
-                                        responseJson.msg
-                                    );
-                                    // throw new Error('Something went wrong')
-                                } else {
-                                    Swal.close();
-                                    // console.log(responseJson,responseJson.view);
-                                    $('.bs-example-modal-xl').modal('show');
-                                    $('#user_modal_content').html(responseJson.view);
-                                }
-                                // Do something with the response
-                            })
-                            .catch(function (errors) {
-                                // Swal.showValidationMessage(
-                                //     'لا يوجد اتصال بالشبكة'
-                                // )
-                            });
-                    }else{
-                        Swal.showValidationMessage(
-                            'ادخل تاريخ شهر التقرير'
-                        );
-                    }
-                },
-                allowOutsideClick: function(){!Swal.isLoading();}
-            }).then(function(result){
-                // console.log(result);
-                if (result.isConfirmed) {
-                    // if(result.value.errors == 0) {
-                    // $('.bs-example-modal-xl').modal('show');
-                    // $('#user_modal_content').html(result.value.view);
-                    // }
-                }
-            });
-        @else
-            Swal.fire('عذرا ! لا يوجد حلقات قائمة للمحفظ .','لا يوجد حلقات','error');
-        @endif
-    }
+    // function createCircleMonthlyReports() {
+    //     @if($teacher->current_circle)
+    //         Swal.fire({
+    //             customClass: 'swal-wide',
+    //             title: 'ادخل شهر التقرير الشهري',
+    //             html: '<div class="input-group" id="datepicker1">'+
+    //             '                    <input type="text" class="form-control" placeholder="تاريخ التقرير"'+
+    //             '                           name="date" id="date"'+
+    //             '                           data-date-format="dd-mm-yyyy" data-date-container="#datepicker1" data-provide="datepicker"'+
+    //             '                           data-date-autoclose="true">'+
+    //             '                    <span class="input-group-text"><i class="mdi mdi-calendar"></i></span>'+
+    //             '                </div>',
+    //             inputPlaceholder: 'ادخل شهر التقرير الشهري',
+    //             showCancelButton:true,
+    //             showCloseButton:true,
+    //             confirmButtonText: 'اضافة',
+    //             cancelButtonText: 'الغاء',
+    //             showLoaderOnConfirm: true,
+    //             preConfirm: function(value){
+    //                 var date = document.getElementById('date');
+    //                 if(date && date.value != '') {
+    //                     $('.bs-example-modal-xl').modal('hide');
+    //                     $('.user_modal_content')
+    //                         .html(
+    //                             '<div class="spinner-border text-success" role="status" style="margin:25px auto;">' +
+    //                             '   <span class="sr-only">يرجى الانتظار ...</span>' +
+    //                             '</div>'
+    //                         );
+    //                     return fetch('/createCircleMonthlyReports/{{$circle->id}}/' + date.value)
+    //                         .then(function (response) {
+    //                             return response.json();
+    //                         }).then(function (responseJson) {
+    //                             // console.log(responseJson);
+    //                             if (responseJson.errors) {
+    //                                 Swal.showValidationMessage(
+    //                                     responseJson.msg
+    //                                 );
+    //                                 // throw new Error('Something went wrong')
+    //                             } else {
+    //                                 Swal.close();
+    //                                 // console.log(responseJson,responseJson.view);
+    //                                 $('.bs-example-modal-xl').modal('show');
+    //                                 $('#user_modal_content').html(responseJson.view);
+    //                             }
+    //                             // Do something with the response
+    //                         })
+    //                         .catch(function (errors) {
+    //                             // Swal.showValidationMessage(
+    //                             //     'لا يوجد اتصال بالشبكة'
+    //                             // )
+    //                         });
+    //                 }else{
+    //                     Swal.showValidationMessage(
+    //                         'ادخل تاريخ شهر التقرير'
+    //                     );
+    //                 }
+    //             },
+    //             allowOutsideClick: function(){!Swal.isLoading();}
+    //         }).then(function(result){
+    //             // console.log(result);
+    //             if (result.isConfirmed) {
+    //                 // if(result.value.errors == 0) {
+    //                 // $('.bs-example-modal-xl').modal('show');
+    //                 // $('#user_modal_content').html(result.value.view);
+    //                 // }
+    //             }
+    //         });
+    //     @else
+    //         Swal.fire('عذرا ! لا يوجد حلقات قائمة للمحفظ .','لا يوجد حلقات','error');
+    //     @endif
+    // }
     function deleteCircleMonthlyReport (obj){
         var url = obj.getAttribute('data-url');
         // console.log(url);

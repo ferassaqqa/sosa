@@ -483,10 +483,17 @@ class User extends Authenticatable
     {
         return $this->current_circle ? $this->current_circle->id : 0;
     }
+    // public function circles()
+    // {
+    //     return $this->hasMany(Circle::class, 'teacher_id');
+    // }
+
     public function circles()
     {
-        return $this->hasMany(Circle::class, 'teacher_id');
+        // return $this->belongsToMany(Circle::class, CircleStudent::class);
+        return $this->belongsToMany(Circle::class,'circle_students','circle_id','student_id');
     }
+
     public function circlesForPermissions()
     {
         return $this->hasMany(Circle::class, 'teacher_id')->withoutGlobalScope('relatedCircles');
@@ -1211,6 +1218,10 @@ class User extends Authenticatable
     public function deleteCourseStudent($course_id)
     {
         return '<button type="button" class="btn btn-danger btn-sm" data-url="' . route('courseStudents.destroy', ['user' => $this->id, 'course' => $course_id]) . '" onclick="deleteCourseStudent(this)"><i class="mdi mdi-trash-can"></i></button>';
+    }
+    public function deleteCircleStudent($circle_id)
+    {
+        return '<button type="button" class="btn btn-danger btn-sm" data-url="' . route('circleStudents.destroy', ['user' => $this->id, 'circle' => $circle_id]) . '" onclick="deleteCircleStudent(this)"><i class="mdi mdi-trash-can"></i></button>';
     }
     public function deleteAsaneedCourseStudent($user_id, $course_id)
     {

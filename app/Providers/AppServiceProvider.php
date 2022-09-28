@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Area;
 use App\Models\Book;
+use App\Models\Circle;
 use App\Models\BookPlanHour;
 use App\Models\BookPlanYear;
 use App\Models\BookPlanYearSemester;
@@ -173,6 +174,15 @@ class AppServiceProvider extends ServiceProvider
         Validator::extend('not_teacher', function ($attribute, $value, $parameters, $validator) {
             $course = Course::find($parameters[0]);
             if ($course->teacher_id_num == $value) {
+                return false;
+            }else{
+                return true;
+            }
+        }, ' لا يمكن اضافة المعلم  كطالب في دورته ');
+
+        Validator::extend('not_teacher_circle', function ($attribute, $value, $parameters, $validator) {
+            $circle = Circle::find($parameters[0]);
+            if ($circle->teacher_id_num == $value) {
                 return false;
             }else{
                 return true;

@@ -31,7 +31,7 @@ class CircleObserver
             $book = CircleBooks::orderBy('location', 'ASC')->first();
 
 
-            for ($i=0; $i < 7; $i++) {
+            for ($i=0; $i < 1; $i++) {
 
                 $report = CircleMonthlyReport::create([
                     'circle_id' => $circle->id,
@@ -42,23 +42,23 @@ class CircleObserver
                 ]);
                     $report->save();
 
-                $students = $circle->students;
+                // $students = $circle->students;
 
-                foreach ($students as $key => $student) {
+                // foreach ($students as $key => $student) {
 
-                    $student = CircleMonthlyReportStudent::create([
-                        'circle_monthly_report_id' => $report->id,
-                        'student_id' => $student->id,
-                        'book_id' => $book->id,
-                        'previous_from' => 0,
-                        'previous_to' => 0,
-                        'current_from' => 1,
-                        'current_to' => 0
+                //     $student = CircleMonthlyReportStudent::create([
+                //         'circle_monthly_report_id' => $report->id,
+                //         'student_id' => $student->id,
+                //         'book_id' => $book->id,
+                //         'previous_from' => 0,
+                //         'previous_to' => 0,
+                //         'current_from' => 1,
+                //         'current_to' => 0
 
-                    ]);
-                        $student->save();
+                //     ]);
+                //         $student->save();
 
-                }
+                // }
 
 
                 }

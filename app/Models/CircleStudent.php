@@ -12,15 +12,16 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class CircleStudent extends Model
 {
     use LogsActivity;
-    protected $fillable = ['student_id','circle_id'];
+    protected $fillable = ['student_id','circle_id','created_by','created_at'];
 
 
-//     public function circle(){
-//         return $this->belongsTo(Circle::class);
-//     }
-//     public function user(){
-//         return $this->belongsTo(User::class)->withoutGlobalScope('relatedUsers');
-//     }
+
+    public function circle(){
+        return $this->belongsTo(Circle::class);
+    }
+    public function user(){
+        return $this->belongsTo(User::class,'student_id','id');
+    }
 //     public function getUserNameAttribute(){
 //         return $this->user ? $this->user->name : '';
 //     }
@@ -228,40 +229,15 @@ class CircleStudent extends Model
 //      * End permissions Scopes
 //      */
 
-//     protected static function booted()
-//     {
-//         parent::booted();
-//         if(!Auth::guest()) {
-//             $user = Auth::user();
-//             if($_SERVER['REMOTE_ADDR'] == "82.205.28.65"){
-// //                dd($user);
-//             }
-//             static::addGlobalScope('relatedCourseStudents', function (Builder $builder) use ($user) {
-//                 if ($user) {
-//                     if ($user->hasRole('رئيس الدائرة')) {
-//                         return $builder;
-//                     } else if ($user->hasRole('مدير الدائرة') || $user->hasRole('مساعد اداري')) {
-//                         return $builder;
-//                     } else if ($user->hasRole('مشرف عام')) {
-//                         return $builder->permissionssubarea(0, $user->area_supervisor_area_id);
-//                     } else if ($user->hasRole('مشرف ميداني')) {
-//                         return $builder->permissionssubarea($user->sub_area_supervisor_area_id, 0);
-//                     } else if ($user->hasRole('محفظ') || $user->hasRole('معلم') || $user->hasRole('شيخ اسناد')) {
-//                         $builder->whereHas('user',function($query) use($user){
-//                             $query->where('teacher_id', $user->id)->orWhere('id', $user->id);
-//                         });
-//                     }else if($user->hasRole('مدير دائرة التخطيط والجودة')){
-//                         return $builder;
-//                     }else if($user->hasRole('رئيس قسم الاختبارات')){
-//                         return $builder;
-//                     } else {
-//                         $builder->where('id', $user->id);
-//                     }
-//                 } else {
-
-//                 }
-//             });
-//         }
-//     }
+    protected static function booted()
+    {
+        parent::boot();
+        static::creating(function($model)
+        {
+            $user = Auth::user();
+            $model->created_by = $user->id;
+            $model->created_at = now();
+        });
+    }
 
 }

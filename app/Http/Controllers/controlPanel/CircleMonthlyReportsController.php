@@ -108,8 +108,13 @@ class CircleMonthlyReportsController extends Controller
     }
 
 
+    public function createCircleMonthlyReports(Circle $circle){
+            dd($circle);
+    }
 
-    public function createCircleMonthlyReports(Circle $circle,$date){
+
+
+    public function createCircleMonthlyReportsOld(Circle $circle,$date){
         // if(Carbon::parse($date)->isFuture() && !Carbon::parse($date)->isCurrentMonth()){
         //     return response()->json(['view' => '', 'errors' => 1, 'msg' => 'لا يمكن اضافة تقرير شهري لشهر في المستقبل']);
         // }elseif (Carbon::parse($date)->lt(Carbon::parse($circle->start_date)->startOfMonth())){
@@ -271,7 +276,9 @@ class CircleMonthlyReportsController extends Controller
         $prevDate = Carbon::parse($date)->subMonths(1)->format('Y-m-d');
         $prevFirstDay = Carbon::parse($prevDate)->startOfMonth()->format('Y-m-d');
         $prevLastDay = Carbon::parse($prevDate)->endOfMonth()->format('Y-m-d');
-        $circlePrevMonthlyReport = CircleMonthlyReport::where('circle_id', $circleMonthlyReport->circle->id)->where('date', $prevDate)->first();
+        // $circlePrevMonthlyReport = CircleMonthlyReport::where('circle_id', $circleMonthlyReport->circle->id)->where('date', $prevDate)->first();
+        $circlePrevMonthlyReport = CircleMonthlyReport::where('id', $circleMonthlyReport->id)->first();
+
         $circlePrevMonthlyReport = ($circlePrevMonthlyReport)? $circlePrevMonthlyReport : '';
 
         // dd($circlePrevMonthlyReport);

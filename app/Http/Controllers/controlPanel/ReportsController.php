@@ -36,6 +36,7 @@ class ReportsController extends Controller
         $books_ids = CourseProject::where('year', $year)->limit(1)->pluck('books')->first();
         $safwa_books = Book::select('id', 'name')->whereIn('id', json_decode($books_ids))->get();
 
+
         return view('control_panel.reports.courseAreaReport', compact('areas', 'in_plane_books', 'asaneed_books', 'safwa_books'));
     }
 
@@ -569,10 +570,10 @@ class ReportsController extends Controller
 
         // dd($result_report_in_plane);
 
-        $total_in_plan_row = '<tr>
-                                <td></td>
-                                <td>المجموع</td>
-                                <td>' . $required_students_number . '</td>';
+        $total_in_plan_row = '<tr style="background-color: #f3f3f4;">
+
+                                <td style="font-size:18px;" colspan="2"><b>المجموع</b></td>
+                                <td  style="font-size:18px;" >' . $required_students_number . '</td>';
 
 
         // if ($_REQUEST['area_id']  || Auth::user()->hasRole('مشرف عام')) {
@@ -589,12 +590,23 @@ class ReportsController extends Controller
         $plus_percentage =  ($required_students_number > 0) ? round((($plus_students_number / $required_students_number) * 100), 2) : 0;
 
 
-        $total_in_plan_row .=  '<td>' . $pass_students_number . '</td>
-                                <td>' . $rest_students_number . '</td>
+        // $total_rest = abs($total_rest);
+        if($rest_students_number > 0 ){
+            $total_rest_per = round((($rest_students_number / $required_students_number) * 100), 1);
+            $total_percentage -= $total_rest_per;
+        }
 
 
-                                <td><b>' . $total_percentage . ' % </b></td>
-                                <td><b>' . $plus_percentage . ' % </b></td>
+        if($pass_students_number > $required_students_number && $required_students_number >0){
+            $super_plus = $pass_students_number - $required_students_number;
+            $plus_percentage = round(($super_plus/$required_students_number)*100,2);
+        }
+
+
+        $total_in_plan_row .=  '<td  style="font-size:18px;" >' . $pass_students_number . '</td>
+                                <td  style="font-size:18px;" >' . $rest_students_number . '</td>
+                                <td  style="font-size:18px;" ><b>' . $total_percentage . ' % </b></td>
+                                <td  style="font-size:18px;" ><b>' . $plus_percentage . ' % </b></td>
 
                             </tr>';
 
@@ -603,10 +615,14 @@ class ReportsController extends Controller
 
         array_push($in_plane_books_value, $total_in_plan_row);
 
-        // dd($in_plane_books_value);
 
 
-        return $in_plane_books_value;
+        $result['row'] = $in_plane_books_value;
+        $result['plan_required_number'] = $required_students_number;
+        $result['plan_passed_number'] = $pass_students_number;
+        $result['plan_passed_percentage'] = $total_percentage;
+
+        return $result;
     }
 
     private function courseAreaPlanProgressView(Request $request)
@@ -626,10 +642,10 @@ class ReportsController extends Controller
 
         if ($book_id) {
             $in_plane_books = Book::where('id', $book_id)->where('year', $year)->where('required_students_number', '>', 0)->where('included_in_plan', 'داخل الخطة')->get();
-            $out_plane_books = Book::where('id', $book_id)->where('year', $year)->where('required_students_number', '>', 0)->where('included_in_plan', 'خارج الخطة')->get();
+            $out_plane_books = Book::where('id', $book_id)->where('year', $year)->where('included_in_plan', 'خارج الخطة')->get();
         } else {
             $in_plane_books = Book::where('year', $year)->where('required_students_number', '>', 0)->where('included_in_plan', 'داخل الخطة')->get();
-            $out_plane_books = Book::where('year', $year)->where('required_students_number', '>', 0)->where('included_in_plan', 'خارج الخطة')->get();
+            $out_plane_books = Book::where('year', $year)->where('included_in_plan', 'خارج الخطة')->get();
         }
 
         if ($area_id) {
@@ -658,31 +674,56 @@ class ReportsController extends Controller
         $colspan = count($areas) * 2;
 
 
+        $plan_total_required = 0;
+        $plan_total_passed = 0;
+
+        $in_plan_percentage = 0;
+        $safwa_plan_percentage = 0;
+
+        $all_books_count = count($in_plane_books);
+        $safwa_books_count = count($project);
+        $in_plan_books_count = $all_books_count - $safwa_books_count;
+
+
+
         if (count($in_plane_books)) {
-            $in_plane_books_value = $this->getTotalRowCourseAreaPlanProgress($in_plane_books, false, $project,$colspan);
+            $plan_result = $this->getTotalRowCourseAreaPlanProgress($in_plane_books, false, $project,$colspan);
+
+            $in_plane_books_value = $plan_result['row'];
+            $plan_total_required += $plan_result['plan_required_number'];
+            $plan_total_passed += $plan_result['plan_passed_number'];
+            $in_plan_percentage = round(($plan_result['plan_passed_percentage'] * $in_plan_books_count)/$all_books_count , 2);
         }
         if (count($in_plane_books)) {
-            $project_books_value = $this->getTotalRowCourseAreaPlanProgress($in_plane_books, true, $project,$colspan);
+            $plan_result = $this->getTotalRowCourseAreaPlanProgress($in_plane_books, true, $project,$colspan);
+            $project_books_value = $plan_result['row'];
+            $plan_total_required += $plan_result['plan_required_number'];
+            $plan_total_passed += $plan_result['plan_passed_number'];
+            // $safwa_plan_percentage = $plan_result['plan_passed_percentage'];
+
+            $safwa_plan_percentage = round(($plan_result['plan_passed_percentage'] * $safwa_books_count)/$all_books_count , 2);
+
         }
         if (count($out_plane_books)) {
-            $out_plane_books_value = $this->getTotalRowCourseAreaPlanProgress($out_plane_books, false, $project,$colspan);
+            $plan_result = $this->getTotalRowCourseAreaPlanProgress($out_plane_books, false, $project,$colspan);
+            $out_plane_books_value = $plan_result['row'];
+            // $plan_total_required += $plan_result['plan_required_number'];
+            // $plan_total_passed += $plan_result['plan_passed_number'];
+            // $out_plan_percentage = $plan_result['plan_passed_percentage'];
         }
 
 
 
         $status = 'منتهية'; if($sub_area_id == 'all'){$sub_area_id =0;}
-        $all_students = CourseStudent::book($book_id)->subarea($sub_area_id, $area_id)->course($status)->where('mark', '>', 0)->count();
-        $passed_students =  CourseStudent::book($book_id)->subarea($sub_area_id, $area_id)->course($status)->whereBetween('mark', [60, 101])->count();
-        $failed_students = CourseStudent::book($book_id)->subarea($sub_area_id, $area_id)->course($status)->whereBetween('mark', [0, 59])->count();
 
-
+        $total_plan_percentage = $in_plan_percentage + $safwa_plan_percentage;
 
 
         return [
             'view' => view('control_panel.reports.departments.courses.courseAreaPlanProgress', compact(
-                'all_students',
-                'passed_students',
-                'failed_students',
+                'plan_total_required',
+                'plan_total_passed',
+                'total_plan_percentage',
                 'colspan',
                 'area_des',
                 'areas',

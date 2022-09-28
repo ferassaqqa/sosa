@@ -118,7 +118,7 @@
                     }
                     Swal.fire({title: "تم تسليم التقرير", text: "التقرير تم تسليمه", icon: "success"});
                 }else {
-                    Swal.fire({title: "لم يتم الحذف!", text: "البيانات لم تحذف.", icon: "error"});
+                    Swal.fire({title: "لم تتم العملية!", text: " ", icon: "error"});
                 }
             }
         );

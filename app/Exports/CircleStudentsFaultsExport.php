@@ -30,12 +30,10 @@ class CircleStudentsFaultsExport implements FromCollection,WithHeadings,WithStyl
     {
         $collection = new Collection();
         foreach(Self::$faults as $key => $failure){
-        //    dd($failure);
             $collection[$key] = array_merge([
                 '#'=>$failure->row()
             ],$failure->values());
         }
-    //    dd($collection);
         return $collection;
     }
     public function headings(): array
@@ -49,7 +47,7 @@ class CircleStudentsFaultsExport implements FromCollection,WithHeadings,WithStyl
     {
         $sheet->setRightToLeft(true);
         return [
-            // Style the first row as bold text.
+
             'A1:Z1'    => [
                 'font' => ['bold' => true],
                 'borders' => [
@@ -89,24 +87,14 @@ class CircleStudentsFaultsExport implements FromCollection,WithHeadings,WithStyl
     public static function afterSheet(AfterSheet $event)
     {
         foreach(Self::$faults as $key => $failure){
-//            $user = User::where('id_num',$failure->values()['rkm_alhoy'])->first();
             try {
-//                if($user) {
-////                    $event->sheet
-////                        ->getDelegate()
-////                        ->setHyperlink('B' . $failure->row(),new Hyperlink(route('roles.restoreItemFromExcel',$role->id)));
-//                    $event->sheet
-//                        ->getDelegate()
-//                        ->getComment('B' . $failure->row())
-//                        ->getText()
-//                        ->createTextRun($failure->errors()[0].'، البيانات المتشابهة محذوفة.');
-//                }else{
+
                 $event->sheet
                     ->getDelegate()
                     ->getComment('B' .($key+2))
                     ->getText()
                     ->createTextRun($failure->errors()[0]);
-//                }
+
             } catch (\PhpOffice\PhpSpreadsheet\Exception $e) {
 
             }

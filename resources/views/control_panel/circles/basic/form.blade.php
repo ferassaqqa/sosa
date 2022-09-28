@@ -93,11 +93,11 @@
 
 
     </div>
-    <label for="included_in_plan" class="col-md-2 col-form-label">قيمة الكفالة:</label>
+    {{-- <label for="included_in_plan" class="col-md-2 col-form-label">قيمة الكفالة:</label>
     <div class="col-md-4">
         <input type="text" class="form-control" placeholder="قيمة الكفالة" name="contarct_salary"
         value="{{!! $circle->contract_salary }} ">
-    </div>
+    </div> --}}
 </div>
 
 <div class="mb-3 row">
