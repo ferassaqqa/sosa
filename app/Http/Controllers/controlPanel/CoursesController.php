@@ -45,9 +45,9 @@ class CoursesController extends Controller
                 return response()->json(['msg'=>'يوجد طلب مسبق لهذه الدورة','title'=>'خطأ','type'=>'info']);
         }else{
             $students_count = $course->students->count();
-            $has_exam = Exam::where('examable_id',$course->id)->where('examable_type','App\Models\Course')->exists();
-            if($students_count >= 10 && !$has_exam){
-                $course->exam()->create();
+            // $has_exam = Exam::where('examable_id',$course->id)->where('examable_type','App\Models\Course')->exists();
+            if($students_count >= 10){
+                $course->exam()->firstOrCreate();
                 return response()->json(['msg'=>'تم ارسال الطلب بنجاح','title'=>'اضافة','type'=>'success']);
 
             }else{

@@ -221,8 +221,8 @@ class CourseStudentsImport implements
 
     if($students_count > 10 ){
         SELF::$course->update(['status'=>'قائمة']);
-        $has_exam = Exam::where('examable_id', SELF::$course->id )->exists();
-        if(!$has_exam){SELF::$course->exam()->create();}
+        // $has_exam = Exam::where('examable_id', SELF::$course->id )->exists();
+        SELF::$course->exam()->firstOrCreate();
     }
 
 

@@ -31,7 +31,7 @@ class CircleObserver
             $book = CircleBooks::orderBy('location', 'ASC')->first();
 
 
-            for ($i=0; $i < 1; $i++) {
+            for ($i=0; $i < 7; $i++) {
 
                 $report = CircleMonthlyReport::create([
                     'circle_id' => $circle->id,
