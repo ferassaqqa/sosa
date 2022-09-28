@@ -142,14 +142,13 @@ class CourseStudentsImport implements
                 $old_user->assignRole('طالب دورات علمية');
             }
 
-            $studentCourses = CourseStudent::where(['user_id' => $old_user->id,'course_id' => $course->id])->first();
-            if(!$studentCourses){
+            $studentCourses = CourseStudent::where(['user_id' => $old_user->id, 'course_id' => $course->id])->first();
+            if (!$studentCourses) {
                 CourseStudent::create([
                     'user_id' => $old_user->id,
                     'course_id' => $course->id
                 ]);
             }
-
         } else {  //empty old user
 
             $user_validity_check = getGetDataFromIdentityNum($id_num);
@@ -167,7 +166,7 @@ class CourseStudentsImport implements
                         'course_id' => $course->id
                     ]);
                 }
-            }else{
+            } else {
 
                 // $error = [
                 //     'row' => $row,
@@ -179,14 +178,14 @@ class CourseStudentsImport implements
                 // $error = ['rkm_alhoy' =>  'خظأ في رقم الهوية'];
                 // $this->errors[] = new Failure(5, 'team', $error, $row);
 
-                    // $error = ['خظأ في رقم الهوية'];
-                    // $failures = new Failure($id_num, 'rkm_alhoy', $error, $row);
+                // $error = ['خظأ في رقم الهوية'];
+                // $failures = new Failure($id_num, 'rkm_alhoy', $error, $row);
 
-                    // $this->errors[] = $failures->jsonSerialize();
+                // $this->errors[] = $failures->jsonSerialize();
 
-                    // dd($this->errors);
+                // dd($this->errors);
 
-                    // throw new \Maatwebsite\Excel\Validators\ValidationException(\Illuminate\Validation\ValidationException::withMessages($error), $failures);
+                // throw new \Maatwebsite\Excel\Validators\ValidationException(\Illuminate\Validation\ValidationException::withMessages($error), $failures);
 
             }
         }
@@ -209,47 +208,45 @@ class CourseStudentsImport implements
     {
         // Need to access $finaldata here and send mail to user
         // Log::info('after import excel file');
-    //     $importer = $event->getConcernable(); // This class
-    // // $import_id = $importer->import_id; // Access class properties
+        //     $importer = $event->getConcernable(); // This class
+        // // $import_id = $importer->import_id; // Access class properties
 
-    //     dd($importer);
+        //     dd($importer);
 
-    // $importer = $event->getConcernable();
-    // dd($importer);
+        // $importer = $event->getConcernable();
+        // dd($importer);
 
-    $students_count = SELF::$course->students->count();
+        $students_count = SELF::$course->students->count();
 
-    if($students_count > 10 ){
-        SELF::$course->update(['status'=>'قائمة']);
-        // $has_exam = Exam::where('examable_id', SELF::$course->id )->exists();
-        SELF::$course->exam()->firstOrCreate();
+        if ($students_count > 10) {
+            SELF::$course->update(['status' => 'قائمة']);
+            // $has_exam = Exam::where('examable_id', SELF::$course->id )->exists();
+            SELF::$course->exam()->firstOrCreate();
+        }
     }
 
 
+
+    // this function returns all validation errors after import:
+    public function getErrors()
+    {
+        return $this->errors;
     }
 
-
-
-       // this function returns all validation errors after import:
-       public function getErrors()
-       {
-           return $this->errors;
-       }
-
-       public function rules(): array
-       {
-           return [
+    public function rules(): array
+    {
+        return [
             // '*.rkm_alhoy' => 'required|numeric|not_teacher:' . SELF::$course->id.'|is_id_valid:' . SELF::$course->id,
             '*.rkm_alhoy' => 'required|numeric|not_teacher:' . SELF::$course->id,
-           ];
-       }
+        ];
+    }
 
-       public function validationMessages()
-       {
+    public function validationMessages()
+    {
         return [
             'rkm_alhoy.required' => 'رقم الهوية مطلوب',
             'rkm_alhoy.numeric' => 'رقم الهوية من نوع عدد',
             'rkm_alhoy.unique' => 'رقم هوية الطالب مسجله من قبل',
         ];
-       }
+    }
 }
