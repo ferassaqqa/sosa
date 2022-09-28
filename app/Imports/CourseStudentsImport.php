@@ -65,55 +65,6 @@ class CourseStudentsImport implements
         return 1000;
     }
 
-    // public function registerEvents(): array
-    // {
-
-    //     // ,ImportExcelRequest $request
-    //     return [
-    //         // Handle by a closure.
-    //         AfterImport::class => function(AfterImport $event) {
-    //             // $creator = $event->reader->getProperties()->getCreator();
-
-    //         //  dd($event);
-
-    //         // $course = Self::$course;
-
-    //         // $students_count = $course->students->count();
-    //         // if($students_count < 10 ){
-    //         //     return response()->json(['status'=>'info','msg'=>'<span>
-    //         //                 تم استيراد ملف الدورة بنجاح. يرجى العلم بان الحد الادنى لحجز موعد اختيار هو 10 طلاب للدورة الواحدة</span> ']);
-    //         // }else{
-    //         // $course->update(['status'=>'قائمة']);
-    //         // $has_exam = Exam::where('examable_id', $course->id )->exists();
-    //         // // if(!$has_exam){$course->exam()->create($request->all());}
-
-    //         // return response()->json(['status'=>'success','msg'=>'تم استيراد ملف دورة '. $course->book_name . ' للمعلم ' . $course->name.' بنجاح.']);
-    //         // }
-
-    //         },
-
-    //     ];
-    // }
-
-    // public static function afterSheet(AfterSheet $event)
-    // {
-    //     // app('log')->info('NewsPost import finished');
-    //         $course = Self::$course;
-
-    //         $students_count = $course->students->count();
-
-    //         dd($students_count);
-    //         if($students_count < 10 ){
-    //             return response()->json(['status'=>'info','msg'=>'<span>
-    //                         تم استيراد ملف الدورة بنجاح. يرجى العلم بان الحد الادنى لحجز موعد اختيار هو 10 طلاب للدورة الواحدة</span> ']);
-    //         }else{
-    //         $course->update(['status'=>'قائمة']);
-    //         $has_exam = Exam::where('examable_id', $course->id )->exists();
-    //         // if(!$has_exam){$course->exam()->create($request->all());}
-
-    //         return response()->json(['status'=>'success','msg'=>'تم استيراد ملف دورة '. $course->book_name . ' للمعلم ' . $course->name.' بنجاح.']);
-    //         }
-    // }
 
 
     public function model(array $row)
@@ -166,61 +117,20 @@ class CourseStudentsImport implements
                         'course_id' => $course->id
                     ]);
                 }
-            } else {
-
-                // $error = [
-                //     'row' => $row,
-                //     'attribute' => 'rkm_alhoy',
-                //     'errors' => 'خظأ في رقم الهوية',
-                // ];
-                // $this->errors[] = $error;
-
-                // $error = ['rkm_alhoy' =>  'خظأ في رقم الهوية'];
-                // $this->errors[] = new Failure(5, 'team', $error, $row);
-
-                // $error = ['خظأ في رقم الهوية'];
-                // $failures = new Failure($id_num, 'rkm_alhoy', $error, $row);
-
-                // $this->errors[] = $failures->jsonSerialize();
-
-                // dd($this->errors);
-
-                // throw new \Maatwebsite\Excel\Validators\ValidationException(\Illuminate\Validation\ValidationException::withMessages($error), $failures);
-
             }
         }
     }
 
-    // public function withValidator($validator)
-    // {
-    //     $validator->after(function ($validator) {
-    //         if ($this->somethingElseIsInvalid()) {
-    //             $validator->errors()->add('field', 'Something is wrong with this field!');
-    //         }
-    //     });
 
-    //     // or...
-
-    //     $validator->sometimes('*.email', 'required', $this->someConditionalRequirement());
-    // }
 
     public static function afterImport(AfterImport $event)
     {
-        // Need to access $finaldata here and send mail to user
-        // Log::info('after import excel file');
-        //     $importer = $event->getConcernable(); // This class
-        // // $import_id = $importer->import_id; // Access class properties
 
-        //     dd($importer);
-
-        // $importer = $event->getConcernable();
-        // dd($importer);
 
         $students_count = SELF::$course->students->count();
 
         if ($students_count > 10) {
             SELF::$course->update(['status' => 'قائمة']);
-            // $has_exam = Exam::where('examable_id', SELF::$course->id )->exists();
             SELF::$course->exam()->firstOrCreate();
         }
     }
@@ -236,7 +146,6 @@ class CourseStudentsImport implements
     public function rules(): array
     {
         return [
-            // '*.rkm_alhoy' => 'required|numeric|not_teacher:' . SELF::$course->id.'|is_id_valid:' . SELF::$course->id,
             '*.rkm_alhoy' => 'required|numeric|not_teacher:' . SELF::$course->id,
         ];
     }
