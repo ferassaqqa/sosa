@@ -117,7 +117,7 @@ class CourseReviewUpdate extends Command
                     })->book($book->id)
                         ->subarea(0, $area->id)
                         ->course('منتهية')->whereBetween('mark', [60, 101])->count();
-                    $total_primary_points = $primary * $total_point;
+                    $total_primary_points = $primary * $primary_point;
 
 
                     $middle = CourseStudent::whereHas('user', function ($query) {
@@ -127,7 +127,7 @@ class CourseReviewUpdate extends Command
                     })->book($book->id)
                         ->subarea(0, $area->id)
                         ->course('منتهية')->whereBetween('mark', [60, 101])->count();
-                    $total_middle_points = $middle * $total_point;
+                    $total_middle_points = $middle * $middle_point;
 
 
                     $high = CourseStudent::whereHas('user', function ($query) {
@@ -136,22 +136,34 @@ class CourseReviewUpdate extends Command
                     })->book($book->id)
                         ->subarea(0, $area->id)
                         ->course('منتهية')->whereBetween('mark', [60, 101])->count();
-                    $total_high_points = $high * $total_point;
+                    $total_high_points = $high * $high_point;
 
                     $total_points = $total_primary_points + $total_middle_points + $total_high_points;
-                    $required_student_total = floor($book->required_students_number * ($area->percentage / 100));
-                    $total_required_point = $required_student_total * $total_point;
+
+                    // $required_student_total = floor($book->required_students_number * ($area->percentage / 100));
+                    // $total_required_point = $required_student_total * $total_point;
+
+            $requierd_number = json_decode($book->required_students_number_array);
+            $required_student_primary = floor($requierd_number[0] * ($area->percentage / 100)) * $primary_point;
+            $required_student_middle = floor($requierd_number[1] * ($area->percentage / 100)) * $middle_point;
+            $required_student_high = floor($requierd_number[2] * ($area->percentage / 100)) * $high_point;
+            $total_required_point = $required_student_primary + $required_student_middle +  $required_student_high;
 
 
 
-                    $point_percentage = $total_required_point ? round((($total_points / $total_required_point) * 100), 2) : 0;
-                    $point_percentage = $point_percentage > 100 ? 100 : $point_percentage;
+                    // $point_percentage = $total_required_point ? round((($total_points / $total_required_point) * 100), 2) : 0;
+                    // $point_percentage = $point_percentage > 100 ? 100 : $point_percentage;
 
+                    $point_percentage = $total_required_point ? round((($total_points / $total_required_point) * 3), 2) : 0;
+                    $point_percentage = $point_percentage > 3 ? 3 : $point_percentage;
 
+                    // echo $book->name .' '.$total_points.' '.$total_required_point.' '.$point_percentage; exit;
                     array_push($area_total_books_percentage, $point_percentage);
                     /*end graduate class */
                 }
             }
+
+
 
 
 
@@ -174,9 +186,13 @@ class CourseReviewUpdate extends Command
             $surplus_graduates_2 = sprintf('%.2f', $surplus_graduates_2);
 
 
-
             $total_avg = array_sum($area_total_books_percentage) / count($area_total_books_percentage);
-            $graduate_class = $total_avg * 0.03;
+
+            // $total_avg = avg($area_total_books_percentage);
+
+            // $graduate_class = $total_avg * 0.03;
+            $graduate_class = $total_avg;
+
             $graduate_class = sprintf('%.2f', $graduate_class);
 
 
@@ -225,7 +241,7 @@ class CourseReviewUpdate extends Command
             //     'safwa_score_2' => $safwa_score,
             //     'created_at' => Carbon::now()
             // ]);
-            
+
             Review::insert([
                 'area_id' => $area->id,
                 'sub_area_id' => 0,

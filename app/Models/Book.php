@@ -82,7 +82,7 @@ class Book extends Model
 
         if ($area_id) {
             $areas = Area::where('id', $area_id)->get();
-            $this->required_students_number  = floor(floor($this->required_students_number * $areas[0]->percentage) / 100);
+            $this->required_students_number  = ceil($this->required_students_number * $areas[0]->percentage / 100) ;
         } else {
             $areas = Area::whereNull('area_id')->get();
         }
@@ -97,14 +97,14 @@ class Book extends Model
         }
 
 
-
+        $required = 0;
         $rest = 0;
         $subarea_required = 0;
         // $all_areas_total_array = array();
         foreach ($areas as $key => $area) {
 
             if ($sub_areas) {
-                $required = floor(($area->percentage * $this->required_students_number)) / 100;
+                $required = ceil(($area->percentage * $this->required_students_number)/ 100) ;
                 foreach ($sub_areas as $key => $sub_area) {
                     $pass = CourseStudent::book($this->id)
                         ->subarea($sub_area->id, $area->id)
@@ -112,10 +112,10 @@ class Book extends Model
                         ->whereBetween('mark', [60, 101])->count();
 
 
-                    $subarea_required = floor(($sub_area->percentage *   $this->required_students_number)) / 100;
+                    $subarea_required = ceil(($sub_area->percentage *   $this->required_students_number) / 100);
 
                     $rest = $pass - $subarea_required;
-                    $rest = $this->required_students_number ? floor($rest) : 0;
+                    $rest = $this->required_students_number ? ceil($rest) : 0;
 
                     $icon = '';
                     if ($rest < 0) {
@@ -143,12 +143,12 @@ class Book extends Model
                 if($area_id){
                     $required = $this->required_students_number;
                 }else{
-                    $required = floor(($area->percentage * $this->required_students_number)) / 100;
+                    $required = ceil(($area->percentage * $this->required_students_number) / 100);
                 }
 
 
                 $rest = $pass - $required;
-                $rest = $this->required_students_number ? floor($rest) : 0;
+                $rest = $this->required_students_number ? ceil($rest) : 0;
 
                 $icon = '';
                 if ($rest < 0) {
@@ -169,38 +169,45 @@ class Book extends Model
 
 
 
-        $pass_percentage = $this->required_students_number ? round((($total_pass / $this->required_students_number) * 100), 2) : 0;
-        $plus_percentage = $this->required_students_number ? round((($total_plus / $this->required_students_number) * 100), 2) : 0;
-
+        $pass_percentage = $this->required_students_number ? round((($total_pass / $required) * 100), 2) :0;
 
         if ($pass_percentage > 100) {
             $pass_percentage = 100;
         }
 
-
         if($subarea_required && $sub_area_id !='all'){
-            $required = floor($subarea_required);
+            $required = ceil($subarea_required);
         }else{
             $required = $this->required_students_number;
         }
 
+
+        $plus_percentage = $required ? round((($total_plus / $required) * 100), 2) : 0;
+
+
         $total_rest = abs($total_rest);
         if($total_rest > 0 && $pass_percentage == 100){
-            $total_rest_per = round((($total_rest / $this->required_students_number) * 100), 1);
+            $total_rest_per = round((($total_rest / $required) * 100), 1);
             $pass_percentage -= $total_rest_per;
         }elseif($total_rest > 0 && $pass_percentage < 100){
-            $total_rest_per = round((($total_rest / $this->required_students_number) * 100), 1);
-            $pass_percentage = $total_rest_per;
+            $total_rest_per = round((($total_rest / $required) * 100), 1);
+            $pass_percentage = abs($total_rest_per -100);
             $plus_percentage = 0;
+        }else{
+            $pass_percentage = 100;
         }
 
 
-        if($total_pass > $this->required_students_number && $this->required_students_number>0){
-            $super_plus = $total_pass - $this->required_students_number;
-            $plus_percentage = round(($super_plus/$this->required_students_number)*100,2);
+
+
+        if($total_pass > $required && $required>0){
+            $super_plus = $total_pass - $required;
+            $plus_percentage = round(($super_plus/$required)*100,2);
         }
 
-
+        if($total_pass == 0){
+            $pass_percentage = 0;
+        }
 
 
 
@@ -239,14 +246,16 @@ class Book extends Model
         self::$counter++;
 
         $requierd_number = json_decode($this->required_students_number_array);
+        $primary_point = 1;
+        $middle_point = 2;
+        $high_point = 3;
 
         if ($area_id > 0) {
             $area = Area::find($area_id);
-            $required_student_primary = floor($requierd_number[0] * ($area->percentage / 100));
-            $required_student_middle = floor($requierd_number[1] * ($area->percentage / 100));
-            $required_student_high = floor($requierd_number[2] * ($area->percentage / 100));
-
-            $required_student_total = floor($this->required_students_number * ($area->percentage / 100));
+            $required_student_primary = ceil($requierd_number[0] * ($area->percentage / 100));
+            $required_student_middle = ceil($requierd_number[1] * ($area->percentage / 100));
+            $required_student_high = ceil($requierd_number[2] * ($area->percentage / 100));
+            $required_student_total = ceil($this->required_students_number * ($area->percentage / 100));
         } else {
             $required_student_primary = $requierd_number[0];
             $required_student_middle = $requierd_number[1];
@@ -255,13 +264,11 @@ class Book extends Model
         }
 
         if ($sub_area_id > 0) {
-
             $area = Area::find($sub_area_id);
-            $required_student_primary = floor($required_student_primary * ($area->percentage / 100));
-            $required_student_middle = floor($required_student_middle * ($area->percentage / 100));
-            $required_student_high = floor($required_student_high * ($area->percentage / 100));
-
-            $required_student_total = floor($required_student_total * ($area->percentage / 100));
+            $required_student_primary = ceil($required_student_primary * ($area->percentage / 100));
+            $required_student_middle = ceil($required_student_middle * ($area->percentage / 100));
+            $required_student_high = ceil($required_student_high * ($area->percentage / 100));
+            $required_student_total = ceil($required_student_total * ($area->percentage / 100));
         }
         //
         // $pass = CourseStudent::book($this->id)

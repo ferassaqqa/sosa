@@ -5,11 +5,34 @@
     }
 </style>
 
-@if ($_REQUEST['area_id'])
-    {{ $colspan = 2 }}
-@else
-    {{ $colspan = 14 }}
-@endif
+
+
+
+<div style="color: #9fa4a4; font-size: 2rem; text-align:center;">{{ $area_des }}</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-centered table_bordered" style="font-size: 18px;">
+                    <thead>
+                        <tr>
+                            <th>العدد المطلوب</th>
+                            <th>العدد المنجز</th>
+                            <th>نسبة الانجاز</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr id="main_statistics" style="font-size: 2rem; ">
+                            <td>{{ $required_students_number }}</td>
+                            <td>{{ $pass_students_number }}</td>
+                            <td>{{ $total_percentage }} %</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="row">
     <div class="col-lg-12">
@@ -36,8 +59,8 @@
                                     <td rowspan="3"> <b> إجمالي العدد المطلوب </b></td>
 
 
-                                    <td colspan="{{$colspan}}"> <b> إنجاز المناطق الكبرى </b></td>
-                                    
+                                    <td colspan="{{$colspan}}"> <b> {{$title_desc}}</b></td>
+
 
                                     <td rowspan="3"> <b>إجمالي الإنجاز</b></td>
                                     <td rowspan="3"> <b> إجمالي المتبقي </b></td>

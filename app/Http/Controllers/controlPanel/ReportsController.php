@@ -395,15 +395,35 @@ class ReportsController extends Controller
     {
 
         $area_id = $_REQUEST ? $_REQUEST['area_id'] : 0;
+        $sub_area_id = $_REQUEST ? $_REQUEST['sub_area_id'] : 0;
         $asaneed_book_id = $_REQUEST ? $_REQUEST['asaneed_book_id'] : 0;
         $asaneedResult = array();
         $value = array();
+        $area_des = '';
+        $title_desc = 'إنجاز المناطق الكبرى	';
 
-
+        $area_des = 'تقرير الإنجاز العام  لخطة الأسانيد - ' . 'قسم الأسانيد';
         if ($area_id) {
             $areas = Area::where('id', $area_id)->get();
+            $area_des .= ' - ' . 'منطقة ' . $areas[0]->name;
         } else {
             $areas = Area::whereNull('area_id')->get();
+            $area_des .= ' - ' . 'جميع المناطق الكبرى';
+        }
+
+        if ($sub_area_id) {
+            if ($sub_area_id == 'all') {
+                $areas = Area::where('area_id', $area_id)->get();
+            } else {
+                $areas = Area::where('id', $sub_area_id)->get();
+                $area_des .= ' - ' . $areas[0]->name;
+            }
+            $title_desc = 'إنجاز المناطق المحلية';
+        }
+
+        $colspan = count($areas) * 2;
+        if ($sub_area_id == 'all') {
+            $sub_area_id = 0;
         }
 
         if ($asaneed_book_id) {
@@ -452,9 +472,9 @@ class ReportsController extends Controller
                     <td>' . $row['name'] . '</td>
                     <td>' . $row['required_students_number'] . '</td>
                    ' . $row['data'] . '
-                    <td>' . $row['total_pass'] . '</td>
+                    <td><b>' . $row['total_pass'] . '</b></td>
                     <td>' . $row['total_rest'] . '</td>
-                    <td>' . $row['pass_percentage'] . ' %</td>
+                    <td><b>' . $row['pass_percentage'] . ' %</b></td>
                     <td>' . $row['plus_percentage'] . ' %</td>
                 </tr>
                 ';
@@ -462,40 +482,62 @@ class ReportsController extends Controller
             array_push($value, $item);
         }
 
-        $total_row = '<tr>
-                        <td></td>
-                        <td>المجموع</td>
-                        <td>' . $required_students_number . '</td>';
+        $total_row = '<tr  style="background-color: #f3f3f4;">
+
+        <td style="font-size:18px;" colspan="2"><b>المجموع</b></td>
+        <td  style="font-size:18px;" ><b>' . $required_students_number . '</b></td>';
 
 
-        if ($_REQUEST['area_id']) {
-            $total_row .= '<td colspan="2"></td>';
-        } else {
-            $total_row .= '<td colspan="14"></td>';
-        }
+
+        $total_row .= '<td colspan="' . $colspan . '"></td>';
+
 
         $total_percentage =  ($required_students_number > 0) ? round((($pass_students_number / $required_students_number) * 100), 2) : 0;
         if ($total_percentage > 100) {
             $total_percentage = 100;
         }
 
-        $plus_percentage =  ($plus_students_number > 0) ? round((($plus_students_number / $required_students_number) * 100), 2) : 0;
+        $plus_percentage =  ($required_students_number > 0) ? round((($plus_students_number / $required_students_number) * 100), 2) : 0;
 
 
-        $total_row .=  '<td>' . $pass_students_number . '</td>
-                                <td>' . $rest_students_number . '</td>
-                                <td><b>' . $total_percentage . ' % </b></td>
-                                <td><b>' . $plus_percentage . ' % </b></td>
-                        </tr>';
+        if($rest_students_number > 0 ){
+            $total_rest_per = round((($rest_students_number / $required_students_number) * 100), 1);
+            $total_percentage = abs($total_rest_per -100);
+        }
+
+
+        if ($pass_students_number > $required_students_number && $required_students_number > 0) {
+            $super_plus = $pass_students_number - $required_students_number;
+            $plus_percentage = round(($super_plus / $required_students_number) * 100, 2);
+        }
+
+
+        $total_row .=  '<td  style="font-size:18px;" ><b>' . $pass_students_number . '</b></td>
+        <td  style="font-size:18px;" ><b>' . $rest_students_number . '</b></td>
+        <td  style="font-size:18px;" ><b>' . $total_percentage . ' % </b></td>
+        <td  style="font-size:18px;" ><b>' . $plus_percentage . ' % </b></td>
+
+    </tr>';
 
         array_push($value, $total_row);
 
+
+
         return [
-            'view' => view('control_panel.reports.departments.asaneed.asaneedAreaPlanProgress', compact('value', 'areas'))->render()
+            'view' => view('control_panel.reports.departments.asaneed.asaneedAreaPlanProgress', compact(
+                'required_students_number',
+                'pass_students_number',
+                'total_percentage',
+                'colspan',
+                'area_des',
+                'value',
+                'areas',
+                'title_desc'
+            ))->render()
         ];
     }
 
-    private function getTotalRowCourseAreaPlanProgress($required_result = array(), $safwa_flag = false, $safwa_array = array(),$colspan)
+    private function getTotalRowCourseAreaPlanProgress($required_result = array(), $safwa_flag = false, $safwa_array = array(), $colspan)
     {
 
         $result_report_in_plane = array();
@@ -550,15 +592,15 @@ class ReportsController extends Controller
 
 
                 $item = '
-                <tr>
+                <tr >
                     <td>' . $i . '</td>
                     <td>' . $row['name'] . '</td>
                     <td>' . $row['required_students_number'] . '</td>
                    ' . $row['data'] . '
-                    <td>' . $row['total_pass'] . '</td>
+                    <td><b>' . $row['total_pass'] . '</b></td>
                     <td>' . $row['total_rest'] . '</td>
 
-                    <td>' . $row['pass_percentage'] . ' %</td>
+                    <td><b>' . $row['pass_percentage'] . ' %</b></td>
                     <td>' . $row['plus_percentage'] . ' %</td>
 
                 </tr>
@@ -573,13 +615,13 @@ class ReportsController extends Controller
         $total_in_plan_row = '<tr style="background-color: #f3f3f4;">
 
                                 <td style="font-size:18px;" colspan="2"><b>المجموع</b></td>
-                                <td  style="font-size:18px;" >' . $required_students_number . '</td>';
+                                <td  style="font-size:18px;" ><b>' . $required_students_number . '</b></td>';
 
 
         // if ($_REQUEST['area_id']  || Auth::user()->hasRole('مشرف عام')) {
         //     $total_in_plan_row .= '<td colspan="2"></td>';
         // } else {
-            $total_in_plan_row .= '<td colspan="'.$colspan.'"></td>';
+        $total_in_plan_row .= '<td colspan="' . $colspan . '"></td>';
         // }
 
         $total_percentage =  ($required_students_number > 0) ? round((($pass_students_number / $required_students_number) * 100), 2) : 0;
@@ -591,20 +633,25 @@ class ReportsController extends Controller
 
 
         // $total_rest = abs($total_rest);
+        // if ($rest_students_number > 0) {
+        //     $total_rest_per = round((($rest_students_number / $required_students_number) * 100), 1);
+        //     $total_percentage -= $total_rest_per;
+        // }
+
         if($rest_students_number > 0 ){
             $total_rest_per = round((($rest_students_number / $required_students_number) * 100), 1);
-            $total_percentage -= $total_rest_per;
+            $total_percentage = abs($total_rest_per -100);
         }
 
 
-        if($pass_students_number > $required_students_number && $required_students_number >0){
+        if ($pass_students_number > $required_students_number && $required_students_number > 0) {
             $super_plus = $pass_students_number - $required_students_number;
-            $plus_percentage = round(($super_plus/$required_students_number)*100,2);
+            $plus_percentage = round(($super_plus / $required_students_number) * 100, 2);
         }
 
 
-        $total_in_plan_row .=  '<td  style="font-size:18px;" >' . $pass_students_number . '</td>
-                                <td  style="font-size:18px;" >' . $rest_students_number . '</td>
+        $total_in_plan_row .=  '<td  style="font-size:18px;" ><b>' . $pass_students_number . '</b></td>
+                                <td  style="font-size:18px;" ><b>' . $rest_students_number . '</b></td>
                                 <td  style="font-size:18px;" ><b>' . $total_percentage . ' % </b></td>
                                 <td  style="font-size:18px;" ><b>' . $plus_percentage . ' % </b></td>
 
@@ -651,16 +698,16 @@ class ReportsController extends Controller
         if ($area_id) {
             $areas = Area::where('id', $area_id)->get();
             $area_des = 'منطقة ' . $areas[0]->name;
-        }
-        else {
+        } else {
             $areas = Area::whereNull('area_id')->get();
             $area_des = 'جميع المناطق الكبرى';
         }
 
-        if($sub_area_id){
-            if($sub_area_id == 'all'){
+        if ($sub_area_id) {
+            if ($sub_area_id == 'all') {
                 $areas = Area::where('area_id', $area_id)->get();
-            }else{
+                $area_des .= ' - جميع المناطق المحلية';
+            } else {
                 $areas = Area::where('id', $sub_area_id)->get();
                 $area_des .= ' - ' . $areas[0]->name;
             }
@@ -687,25 +734,24 @@ class ReportsController extends Controller
 
 
         if (count($in_plane_books)) {
-            $plan_result = $this->getTotalRowCourseAreaPlanProgress($in_plane_books, false, $project,$colspan);
+            $plan_result = $this->getTotalRowCourseAreaPlanProgress($in_plane_books, false, $project, $colspan);
 
             $in_plane_books_value = $plan_result['row'];
             $plan_total_required += $plan_result['plan_required_number'];
             $plan_total_passed += $plan_result['plan_passed_number'];
-            $in_plan_percentage = round(($plan_result['plan_passed_percentage'] * $in_plan_books_count)/$all_books_count , 2);
+            $in_plan_percentage = round(($plan_result['plan_passed_percentage'] * $in_plan_books_count) / $all_books_count, 2);
         }
         if (count($in_plane_books)) {
-            $plan_result = $this->getTotalRowCourseAreaPlanProgress($in_plane_books, true, $project,$colspan);
+            $plan_result = $this->getTotalRowCourseAreaPlanProgress($in_plane_books, true, $project, $colspan);
             $project_books_value = $plan_result['row'];
             $plan_total_required += $plan_result['plan_required_number'];
             $plan_total_passed += $plan_result['plan_passed_number'];
             // $safwa_plan_percentage = $plan_result['plan_passed_percentage'];
 
-            $safwa_plan_percentage = round(($plan_result['plan_passed_percentage'] * $safwa_books_count)/$all_books_count , 2);
-
+            $safwa_plan_percentage = round(($plan_result['plan_passed_percentage'] * $safwa_books_count) / $all_books_count, 2);
         }
         if (count($out_plane_books)) {
-            $plan_result = $this->getTotalRowCourseAreaPlanProgress($out_plane_books, false, $project,$colspan);
+            $plan_result = $this->getTotalRowCourseAreaPlanProgress($out_plane_books, false, $project, $colspan);
             $out_plane_books_value = $plan_result['row'];
             // $plan_total_required += $plan_result['plan_required_number'];
             // $plan_total_passed += $plan_result['plan_passed_number'];
@@ -714,7 +760,10 @@ class ReportsController extends Controller
 
 
 
-        $status = 'منتهية'; if($sub_area_id == 'all'){$sub_area_id =0;}
+        $status = 'منتهية';
+        if ($sub_area_id == 'all') {
+            $sub_area_id = 0;
+        }
 
         $total_plan_percentage = $in_plan_percentage + $safwa_plan_percentage;
 

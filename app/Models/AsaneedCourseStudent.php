@@ -18,6 +18,7 @@ class AsaneedCourseStudent extends Model
     }
 
 
+
     public function scopeBook($query,$book_id){
         if ($book_id) {
         $query =
@@ -74,7 +75,7 @@ class AsaneedCourseStudent extends Model
 
     public function getEstimationAttribute(){
         $mark = $this->mark;
-        if(60<=$mark && $mark<70){ return '<span style="color:#b3b300">ضعيف</span>'; }
+        if(60<=$mark && $mark<70){ return '<span style="color:#b3b300">متوسط</span>'; }
         elseif(70<=$mark && $mark<75){ return '<span style="color:lawngreen">جيد</span>'; }
         elseif(75<=$mark && $mark<80){ return '<span style="color:lightgreen">جيد مرتفع</span>'; }
         elseif(80<=$mark && $mark<85){ return '<span style="color:forestgreen">جيد جدا</span>'; }
@@ -132,31 +133,35 @@ class AsaneedCourseStudent extends Model
             $user = Auth::user();
 
             static::addGlobalScope('relatedAsannedStudents', function (Builder $builder) use ($user) {
-                if ($user) {
-                    if ($user->hasRole('رئيس الدائرة')) {
-                        return $builder;
-                    } else if ($user->hasRole('مدير الدائرة') || $user->hasRole('مساعد اداري')) {
-                        return $builder;
-                    } else if ($user->hasRole('مشرف عام')) {
-                        return $builder->permissionssubarea(0, $user->area_supervisor_area_id);
-                    } else if ($user->hasRole('مشرف ميداني')) {
-                        return $builder->permissionssubarea($user->sub_area_supervisor_area_id, 0);
-                    } else if ($user->hasRole('محفظ') || $user->hasRole('معلم') || $user->hasRole('شيخ اسناد')) {
-                        $builder->whereHas('user',function($query) use($user){
-                            $query->where('teacher_id', $user->id)->orWhere('id', $user->id);
-                        });
-                    }else if($user->hasRole('مدير دائرة التخطيط والجودة')){
-                        return $builder;
-                    }else if($user->hasRole('رئيس قسم الاختبارات')){
-                        return $builder;
-                    }else if ($user->hasRole('مدير فرع')) {
-                        return $builder->permissionssubarea(0, $user->branch_supervisor_area_id);
-                    }
 
-                    else {
-                        $builder->where('id', $user->id);
-                    }
-                }
+                $builder->whereHas('asaneedCourse');
+                $builder->whereHas('user');
+
+                // if ($user) {
+                //     if ($user->hasRole('رئيس الدائرة')) {
+                //         return $builder;
+                //     } else if ($user->hasRole('مدير الدائرة') || $user->hasRole('مساعد اداري')) {
+                //         return $builder;
+                //     } else if ($user->hasRole('مشرف عام')) {
+                //         return $builder->permissionssubarea(0, $user->area_supervisor_area_id);
+                //     } else if ($user->hasRole('مشرف ميداني')) {
+                //         return $builder->permissionssubarea($user->sub_area_supervisor_area_id, 0);
+                //     } else if ($user->hasRole('محفظ') || $user->hasRole('معلم') || $user->hasRole('شيخ اسناد')) {
+                //         $builder->whereHas('user',function($query) use($user){
+                //             $query->where('teacher_id', $user->id)->orWhere('id', $user->id);
+                //         });
+                //     }else if($user->hasRole('مدير دائرة التخطيط والجودة')){
+                //         return $builder;
+                //     }else if($user->hasRole('رئيس قسم الاختبارات')){
+                //         return $builder;
+                //     }else if ($user->hasRole('مدير فرع')) {
+                //         return $builder->permissionssubarea(0, $user->branch_supervisor_area_id);
+                //     }
+
+                //     else {
+                //         $builder->where('id', $user->id);
+                //     }
+                // }
             });
         }
     }

@@ -66,7 +66,7 @@
         @csrf
     </form>
     @endif
- 
+
 </div>
 
 <div class="modal-footer">
@@ -92,7 +92,7 @@
         var mark = obj.value;
         var student_estimation = document.getElementById('student_estimation_'+student_id);
         if(60<=mark && mark<70){
-            student_estimation.innerHTML =  '<span style="color:#b3b300">ضعيف</span>';
+            student_estimation.innerHTML =  '<span style="color:#b3b300">متوسط</span>';
         }else if(70<=mark && mark<75){
             student_estimation.innerHTML =  '<span style="color:lawngreen">جيد</span>';
         }else if(75<=mark && mark<80){

@@ -48,7 +48,7 @@
     </div>
 
 </div>
-<h3>  كتب خارج الخطة  </h3>
+<h3>  برنامج الصفوة </h3>
 <div class="row">
     <div class="row justify-content-md-center">
 
@@ -86,10 +86,12 @@
     </div>
 </div>
 
+
+@if (isset($project_books_value) && count($project_books_value) > 0)
 <div class="row">
     <div class="row justify-content-md-center">
 
-                        <h3>  برنامج الصفوة  </h3>
+                        <h3>  الكتب الفائضة </h3>
                         <table class="table table-centered   table-nowrap mb-0"  style="font-size: 18px">
 
                             <thead>
@@ -125,5 +127,5 @@
                         </table>
     </div>
 </div>
-
+@endif
 

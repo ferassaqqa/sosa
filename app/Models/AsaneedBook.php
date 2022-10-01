@@ -66,84 +66,160 @@ class AsaneedBook extends Model
         $total_pass = 0;
         $total_rest = 0;
         $total_plus = 0;
+        $required_students_number = 0;
+        $subarea_required = 0;
 
         if ($area_id) {
             $areas = Area::where('id', $area_id)->get();
+            $number_of_areas = Area::whereNull('area_id')->withoutGlobalScope('relatedAreas')->count();
             // $this->required_students_number  = floor(floor($this->required_students_number * $areas[0]->percentage) / 100);
-            $this->required_students_number  = floor($this->required_students_number/$number_of_areas);
+            // $required_students_number  = floor($this->required_students_number / $number_of_areas);
+            $this->required_students_number  = floor($this->required_students_number / $number_of_areas);
 
+            $number_of_sub_areas = Area::where('area_id', $area_id)->count();
         } else {
             $areas = Area::whereNull('area_id')->get();
         }
 
-        if ($sub_area_id) {
-            $number_of_sub_areas = Area::where('area_id',$area_id)->count();
-            // $areas = Area::where('id', $sub_area_id)->get();
-            // $this->required_students_number  = floor(floor($this->required_students_number * $areas[0]->percentage) / 100);
+        // if ($sub_area_id) {
+        //     $number_of_sub_areas = Area::where('area_id',$area_id)->count();
+        //     // $areas = Area::where('id', $sub_area_id)->get();
+        //     // $this->required_students_number  = floor(floor($this->required_students_number * $areas[0]->percentage) / 100);
 
-            $this->required_students_number  = floor($this->required_students_number / $number_of_sub_areas);
+        //     $this->required_students_number  = floor($this->required_students_number / $number_of_sub_areas);
+        // }
+        $sub_areas = [];
+
+        if ($sub_area_id) {
+            if ($sub_area_id == 'all') {
+                $sub_areas = Area::where('area_id', $area_id)->get();
+            } else {
+                $sub_areas = Area::where('id', $sub_area_id)->get();
+            }
+            // $this->required_students_number  = floor($this->required_students_number / $number_of_sub_areas);
+            // $required_students_number  = floor($this->required_students_number / $number_of_sub_areas);
+
+            // dd($this->required_students_number);
         }
+
+        // if ($sub_area_id == 'all' && !$area_id) {
+        //     $sub_area_id = 0;
+        //     $sub_areas = [];
+        // }
 
         $rest = 0;
 
         foreach ($areas as $key => $area) {
 
-            $pass = AsaneedCourseStudent::whereHas('asaneedCourse')->book($this->id)->subarea($sub_area_id, $area->id)->count();
+            if ($sub_areas) {
 
+                $subarea_required = ceil($this->required_students_number / $number_of_sub_areas);
+                $required = ceil($this->required_students_number / $number_of_sub_areas);
+
+                // dd($required);
+
+                foreach ($sub_areas as $key => $sub_area) {
+                    $pass = AsaneedCourseStudent::whereHas('asaneedCourse')->book($this->id)->subarea($sub_area->id, $area->id)->count();
+                    $rest = $pass - $required;
+                    $rest = ceil($rest);
+                    $rest = $this->required_students_number ? ceil($rest) : 0;
+
+                    $icon = '';
+                    if ($rest < 0) {
+                        $color = '#cc0000';
+                        $total_rest += $rest;
+                        $icon = '-';
+                    } else {
+                        $color =  '#009933';
+                        $total_plus += $rest;
+                        $icon = '+';
+                    }
+
+                    $total_pass += $pass;
+                    $data .= '<td>' . $pass . '</td>
+                    <td  style="color:' . $color . '"><b>' . $icon . ' ' . abs($rest) . '</b></td>';
+                }
+            } else {
+                $pass = AsaneedCourseStudent::whereHas('asaneedCourse')->book($this->id)->subarea(0, $area->id)->count();
+                // $required = floor($this->required_students_number / $number_of_areas);
                 if($area_id){
-                    $rest = $this->required_students_number ? $pass - $this->required_students_number : 0;
+                    $required = $this->required_students_number;
                 }else{
-                    $rest = $this->required_students_number ? $pass - floor($this->required_students_number / $number_of_areas) : 0;
+                    $required = ceil($this->required_students_number / $number_of_areas);
                 }
 
-            $color =  '#009933';
-            if ($rest < 0) {
-                $color = '#cc0000';
-            }
+                $rest = $pass - $required;
+                $rest = $this->required_students_number ? ceil($rest) : 0;
 
-            $icon = '';
-            if ($rest < 0) {
-                $color = '#cc0000';
-                $total_rest += $rest;
-                $icon = '-';
-            } else {
                 $color =  '#009933';
-                $total_plus += $rest;
-                $icon = '+';
+                if ($rest < 0) {
+                    $color = '#cc0000';
+                }
+
+                $icon = '';
+                if ($rest < 0) {
+                    $color = '#cc0000';
+                    $total_rest += $rest;
+                    $icon = '-';
+                } else {
+                    $color =  '#009933';
+                    $total_plus += $rest;
+                    $icon = '+';
+                }
+
+                $total_pass += $pass;
+                $data .= '<td>' . $pass . '</td>
+                            <td  style="color:' . $color . '"><b>' . $icon . ' ' . abs($rest) . '</b></td>';
             }
-
-            // $total_pass +=$pass;
-            // $total_rest +=$rest;
-
-            $total_pass += $pass;
-            $data .= '<td>' . $pass . '</td>
-                        <td  style="color:' . $color . '"><b>' . $icon . ' ' . abs($rest) . '</b></td>';
         }
 
+        // $required_students_number = $required;
+        // $pass_percentage = $this->required_students_number ? round((($total_pass / $this->required_students_number) * 100), 2) : 0;
 
-        // $pass_percentage = $this->required_students_number? round((($total_pass/$this->required_students_number) * 100), 2):0;
-
-
-        $pass_percentage = $this->required_students_number ? round((($total_pass / $this->required_students_number) * 100), 2) : 0;
-        $plus_percentage = $this->required_students_number ? round((($total_plus / $this->required_students_number) * 100), 2) : 0;
-
+        $pass_percentage = round((($total_pass / $required) * 100), 2);
 
         if ($pass_percentage > 100) {
             $pass_percentage = 100;
         }
 
+        if($subarea_required && $sub_area_id !='all'){
+            $required = ceil($subarea_required);
+        }else{
+            $required = $this->required_students_number;
+        }
+
+        $plus_percentage = $required ? round((($total_plus / $required) * 100), 2) : 0;
+
+
+        $total_rest = abs($total_rest);
+        if($total_rest > 0 && $pass_percentage == 100){
+            $total_rest_per = round((($total_rest / $required) * 100), 1);
+            $pass_percentage -= $total_rest_per;
+        }elseif($total_rest > 0 && $pass_percentage < 100){
+            $total_rest_per = round((($total_rest / $required) * 100), 1);
+            $pass_percentage = abs($total_rest_per -100);
+            $plus_percentage = 0;
+        }else{
+            $pass_percentage = 100;
+
+        }
+
+        if($total_pass > $required && $required>0){
+            $super_plus = $total_pass - $required;
+            $plus_percentage = round(($super_plus/$required)*100,2);
+        }
+
+
 
         $review_result = array(
             'name' => $this->name,
-            'required_students_number' =>  $this->required_students_number,
+            'required_students_number' => $required,
             'data' =>  $data,
             'total_pass' => $total_pass,
-            'total_rest' => abs($total_rest),
+            'total_rest' => $total_rest,
             'pass_percentage' => $pass_percentage,
             'plus_percentage' => $plus_percentage,
             'total_plus' => $total_plus,
-
-
             'id' => $this->id,
         );
 
@@ -173,8 +249,7 @@ class AsaneedBook extends Model
             $area = Area::find($area_id);
             // $required_student_total = floor($this->required_students_number * ($area->percentage / 100));
 
-            $required_student_total = floor($this->required_students_number/$number_of_areas);
-
+            $required_student_total = floor($this->required_students_number / $number_of_areas);
         } else {
             $required_student_total = $this->required_students_number;
         }
@@ -183,7 +258,7 @@ class AsaneedBook extends Model
             $area = Area::find($sub_area_id);
             // $required_student_total = floor($required_student_total * ($area->percentage / 100));
 
-            $number_of_sub_areas = Area::where('area_id',$area_id)->count();
+            $number_of_sub_areas = Area::where('area_id', $area_id)->count();
             $required_student_total  = floor($this->required_students_number / $number_of_sub_areas);
         }
 
@@ -205,15 +280,13 @@ class AsaneedBook extends Model
 
 
         return [
-                    'name' => $this->name,
-                    'required_student_total' => $required_student_total,
-                    'total_pass' => $total_pass,
-                    'completed_num_percentage' => $completed_num_percentage,
-                    'excess_num_percentage' => $excess_num_percentage,
-                    'id' => $this->id,
+            'name' => $this->name,
+            'required_student_total' => $required_student_total,
+            'total_pass' => $total_pass,
+            'completed_num_percentage' => $completed_num_percentage,
+            'excess_num_percentage' => $excess_num_percentage,
+            'id' => $this->id,
         ];
-
-
     }
 
 

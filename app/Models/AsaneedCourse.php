@@ -66,6 +66,16 @@ class AsaneedCourse extends Model
     public function teacher(){
         return $this->belongsTo(User::class,'teacher_id');
     }
+
+    public function scopeStatus($query,$status)
+    {
+        if($status) {
+            return $query->where('status',$status);
+        }else{
+            return $query;
+        }
+    }
+    
     public function getTeacherMobileAttribute(){
 //        dd($this->teacher);
         return $this->teacher ? $this->teacher->mobile : '';

@@ -383,7 +383,7 @@ function getAreaPlacesForCourseExam($area_id,$place_id){
 function markEstimation($mark)
 {
     if (60 <= $mark && $mark < 70) {
-        return '<span style="color:#b3b300">ضعيف</span>';
+        return '<span style="color:#b3b300">متوسط</span>';
     } elseif (70 <= $mark && $mark < 75) {
         return '<span style="color:lawngreen">جيد</span>';
     } elseif (75 <= $mark && $mark < 80) {

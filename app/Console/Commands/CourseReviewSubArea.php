@@ -125,7 +125,7 @@ class CourseReviewSubArea extends Command
                         })->book($book->id)
                             ->subarea($sub_area->id, $area->id)
                             ->course('منتهية')->whereBetween('mark', [60, 101])->count();
-                        $total_primary_points = $primary * $total_point;
+                        $total_primary_points = $primary * $primary_point;
 
 
                         $middle = CourseStudent::whereHas('user', function ($query) {
@@ -135,7 +135,7 @@ class CourseReviewSubArea extends Command
                         })->book($book->id)
                             ->subarea($sub_area->id, $area->id)
                             ->course('منتهية')->whereBetween('mark', [60, 101])->count();
-                        $total_middle_points = $middle * $total_point;
+                        $total_middle_points = $middle * $middle_point;
 
 
                         $high = CourseStudent::whereHas('user', function ($query) {
@@ -144,7 +144,7 @@ class CourseReviewSubArea extends Command
                         })->book($book->id)
                             ->subarea($sub_area->id, $area->id)
                             ->course('منتهية')->whereBetween('mark', [60, 101])->count();
-                        $total_high_points = $high * $total_point;
+                        $total_high_points = $high * $high_point;
 
                         $total_points = $total_primary_points + $total_middle_points + $total_high_points;
                         $required_student_total = floor($area_required_number * ($sub_area->percentage / 100));
