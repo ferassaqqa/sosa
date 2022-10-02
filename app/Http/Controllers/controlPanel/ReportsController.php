@@ -754,7 +754,7 @@ class ReportsController extends Controller
             $plan_result = $this->getTotalRowCourseAreaPlanProgress($out_plane_books, false, $project, $colspan);
             $out_plane_books_value = $plan_result['row'];
             // $plan_total_required += $plan_result['plan_required_number'];
-            // $plan_total_passed += $plan_result['plan_passed_number'];
+            $plan_total_passed += $plan_result['plan_passed_number'];
             // $out_plan_percentage = $plan_result['plan_passed_percentage'];
         }
 
@@ -1014,7 +1014,7 @@ class ReportsController extends Controller
             array_push($result, $item);
         }
 
-        $total = ($total_required > 0) ? floor(($total_pass_var / $total_required) * 100) : 0;
+        $total = ($total_required > 0) ? ceil(($total_pass_var / $total_required) * 100) : 0;
 
         $complet_percentage = ($total > 100) ? 100 : $total;
 

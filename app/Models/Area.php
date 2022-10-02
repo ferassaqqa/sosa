@@ -341,7 +341,7 @@ class Area extends Model
 
 
 
-                $required = floor($book->required_students_number /7 );
+                $required = ceil($book->required_students_number / 7);
                 $total_required += $required;
 
                 $rest =  $pass - $required;
@@ -351,10 +351,10 @@ class Area extends Model
                     $total_pass += $pass;
                 }
 
-                if($pass > $required){
-                    $score = round($book->percentage,2);
-                }else{
-                    $score = round(($pass / $required) * $book->percentage ,2);
+                if ($pass > $required) {
+                    $score = round($book->percentage, 2);
+                } else {
+                    $score = round(($pass / $required) * $book->percentage, 2);
                 }
 
                 $book_score[$book->id] = $score;
@@ -362,23 +362,24 @@ class Area extends Model
         }
 
         // $total_surplus_graduates_by_area =  $total_pass - $total_required;
-        $requeried_number_to_get_20 = round($total_required * 0.2 , 2 );
+        $requeried_number_to_get_20 = round($total_required * 0.2, 2);
         $total_surplus_graduates_by_area =  $total__pass - $total_required;
 
 
         $surplus_graduates_2 = 0;
-        if($total_surplus_graduates_by_area >= $requeried_number_to_get_20){
+        if ($total_surplus_graduates_by_area >= $requeried_number_to_get_20) {
             $surplus_graduates_2 = 2;
-        }elseif($total_surplus_graduates_by_area >0 && $total_surplus_graduates_by_area < $requeried_number_to_get_20){
+        } elseif ($total_surplus_graduates_by_area > 0 && $total_surplus_graduates_by_area < $requeried_number_to_get_20) {
             $surplus_graduates_2 = round(
-                ($total_surplus_graduates_by_area * 2) / $requeried_number_to_get_20
-                ,2);
+                ($total_surplus_graduates_by_area * 2) / $requeried_number_to_get_20,
+                2
+            );
         }
 
 
         // $total_surplus_graduates_all_area = $this->getSurplusGraduatesForAllAreasAsaneed();
         // $surplus_graduates_2 = ($total_surplus_graduates_by_area > 0) ? ($total_surplus_graduates_by_area / $total_surplus_graduates_all_area) * 2 : 0;
-        $surplus_graduates_2 = round($surplus_graduates_2,2);
+        $surplus_graduates_2 = round($surplus_graduates_2, 2);
 
 
 
@@ -386,7 +387,7 @@ class Area extends Model
 
         $total_score = 0;
         foreach ($book_score as $key => $score) {
-            $total_score+=$score;
+            $total_score += $score;
         }
         $total_score += $surplus_graduates_2;
 
@@ -395,13 +396,10 @@ class Area extends Model
         $book_score['superplus_graduates'] = $surplus_graduates_2;
         $book_score['total_score_10'] = $total_score;
         $book_score['id'] = $this->id;
-        $book_score['total_score_100'] = round($total_score * 10 ,2);
+        $book_score['total_score_100'] = round($total_score * 10, 2);
         $book_score['name'] = $this->name;
 
         return $book_score;
-
-
-
     }
 
     public function getCourseReviewsRowDataAttribute()
@@ -412,24 +410,24 @@ class Area extends Model
         $sub_area_id = $_REQUEST['sub_area_id'] ? $_REQUEST['sub_area_id'] : 0;
 
 
-        if(!$area_id && !$sub_area_id){
-            $query = Review::where('area_id',$this->id)->where('sub_area_id',0);
-        }else
+        if (!$area_id && !$sub_area_id) {
+            $query = Review::where('area_id', $this->id)->where('sub_area_id', 0);
+        } else
 
-        if($area_id && !$sub_area_id){
-            $query = Review::where('area_id',$area_id)->where('sub_area_id',0);
-        }else
+        if ($area_id && !$sub_area_id) {
+            $query = Review::where('area_id', $area_id)->where('sub_area_id', 0);
+        } else
 
-        if($area_id && $sub_area_id == 'all'){
-            $query = Review::where('sub_area_id',$this->id);
-        }else
+        if ($area_id && $sub_area_id == 'all') {
+            $query = Review::where('sub_area_id', $this->id);
+        } else
 
-        if($area_id && $sub_area_id != 'all' && $sub_area_id > 0){
-            $query = Review::where('area_id',$area_id)->where('sub_area_id',$sub_area_id);
-        }else
+        if ($area_id && $sub_area_id != 'all' && $sub_area_id > 0) {
+            $query = Review::where('area_id', $area_id)->where('sub_area_id', $sub_area_id);
+        } else
 
-        if(!$area_id && $sub_area_id == 'allSubAreas'){
-            $query = Review::where('sub_area_id',$this->id);
+        if (!$area_id && $sub_area_id == 'allSubAreas') {
+            $query = Review::where('sub_area_id', $this->id);
         }
 
         if ($report_date) {
@@ -439,7 +437,7 @@ class Area extends Model
 
         $review = $query->latest()->first();
 
-        if($review){
+        if ($review) {
             $percentage_38 = $review->plan_score_38;
             $test_quality_5 = $review->test_quality_5;
             $surplus_graduates_2 = $review->super_plus_2;
@@ -447,7 +445,7 @@ class Area extends Model
             $students_category_3 = $review->students_category_3;
             $percentage_50 = $percentage_38 + $test_quality_5 + $surplus_graduates_2 + $students_category_3 + $safwa_graduates_2;
             $percentage_total = ($percentage_50 * 2);
-        }else{
+        } else {
             $percentage_38 = 0;
             $test_quality_5 = 0;
             $surplus_graduates_2 = 0;
@@ -460,43 +458,41 @@ class Area extends Model
         $created_at = $review ? $review->created_at : '';
         $is_sub_area = ($review && $review->sub_area_id > 0) ? true : false;
 
-            $review_result = array(
-                'name' => $this->name,
-                'safwa_graduates_2' =>  $safwa_graduates_2,
-                'surplus_graduates_2' =>  $surplus_graduates_2,
-                'students_category_3' =>  $students_category_3,
-                'test_quality_5' =>  $test_quality_5,
-                'percentage_38' =>  $percentage_38,
-                'percentage_50' =>  $percentage_50,
-                'percentage_total' => $percentage_total,
-                'created_at' => $created_at,
-                'is_sub_area' => $is_sub_area,
-                'id' => $this->id
-            );
+        $review_result = array(
+            'name' => $this->name,
+            'safwa_graduates_2' =>  $safwa_graduates_2,
+            'surplus_graduates_2' =>  $surplus_graduates_2,
+            'students_category_3' =>  $students_category_3,
+            'test_quality_5' =>  $test_quality_5,
+            'percentage_38' =>  $percentage_38,
+            'percentage_50' =>  $percentage_50,
+            'percentage_total' => $percentage_total,
+            'created_at' => $created_at,
+            'is_sub_area' => $is_sub_area,
+            'id' => $this->id
+        );
 
 
-            return $review_result;
-
-
-
+        return $review_result;
     }
 
 
-    private function getSafwaPassedStudentsByArea($area_id,$safwa_books_ids){
+    private function getSafwaPassedStudentsByArea($area_id, $safwa_books_ids)
+    {
 
 
-            $limit = 500;
-            $users = User::subarea(0, $area_id)->limit($limit)
+        $limit = 500;
+        $users = User::subarea(0, $area_id)->limit($limit)
             ->whereHas('courses', function ($query) use ($safwa_books_ids) {
-                    $query->whereIntegerInRaw('book_id', $safwa_books_ids);
-                    $query->whereBetween('mark', [60, 101]);
-                })
-                ->pluck('id')->toArray();
+                $query->whereIntegerInRaw('book_id', $safwa_books_ids);
+                $query->whereBetween('mark', [60, 101]);
+            })
+            ->pluck('id')->toArray();
 
 
-            $result = array();
-            foreach ($users as $index => $user) {
-                $count =  DB::table('course_students')
+        $result = array();
+        foreach ($users as $index => $user) {
+            $count =  DB::table('course_students')
                 ->leftJoin('courses', 'courses.id', '=', 'course_students.course_id')
                 ->whereIntegerInRaw('book_id', $safwa_books_ids)
                 ->where('course_students.user_id', '=', $user)
@@ -504,27 +500,24 @@ class Area extends Model
                 ->distinct('courses.book_id')
                 ->count();
 
-                array_push($result, $count);
-            }
+            array_push($result, $count);
+        }
 
-            $result =array_count_values($result);
-            ksort($result);
+        $result = array_count_values($result);
+        ksort($result);
 
-            $key = array_key_last($result);
-            $value = $result[array_key_last($result)];
-            if($value >= 15 ){$value = 15;}
+        $key = array_key_last($result);
+        $value = $result[array_key_last($result)];
+        if ($value >= 15) {
+            $value = 15;
+        }
 
-            // echo $key.' '.$value; exit;
+        // echo $key.' '.$value; exit;
 
-          return   round((($key * $value) / 90)*2,2);
-
-
-
-
-
+        return   round((($key * $value) / 90) * 2, 2);
     }
 
-    public function getSurplusGraduatesForAllSubArea($area_id = 0,$arae_percentage = 0)
+    public function getSurplusGraduatesForAllSubArea($area_id = 0, $arae_percentage = 0)
     {
 
         $year = date("Y");
@@ -534,23 +527,29 @@ class Area extends Model
         $total_pass_all = 0;
         $total_required = 0;
 
-            foreach ($books as $key => $book) {
-                if ($book->required_students_number == 0) {
-                    continue;
-                } else {
-                $pass = CourseStudent::book($book->id)->subarea(0, $area_id)
-                    ->whereBetween('mark', [60, 101])->count();
-                $area_required_number = floor(($arae_percentage * $book->required_students_number)  / 100);
-                $total_pass_all +=  $pass;
-                $total_required +=  $area_required_number;
+        foreach ($books as $key => $book) {
+            // if ($book->required_students_number == 0) {
+            //     continue;
+            // } else {
+            $pass = CourseStudent::book($book->id)->subarea(0, $area_id)->course('منتهية')
+                ->whereBetween('mark', [60, 101])->count();
+            $area_required_number = ceil(($arae_percentage * $book->required_students_number)  / 100);
+            $total_pass_all +=  $pass;
+            $total_required +=  $area_required_number;
 
-                }
+            // }
         }
+
+        // if($area_id == 4 ){
+        //     echo  $total_pass_all .' '. $total_required.' '.$arae_percentage; exit;
+        // }
 
 
         return $total_pass_all - $total_required;
 
-            // echo $total_pass_all.' '.$total_required;  exit;
+        // echo $total_pass_all.' '.$total_required;  exit;
+
+
 
 
     }
@@ -565,25 +564,29 @@ class Area extends Model
         $total_pass_all = 0;
         $total_required = 0;
 
+        // $areas = Area::whereNull('area_id')->get();
+        // foreach ($areas as $key => $area) {
             foreach ($books as $key => $book) {
-                if ($book->required_students_number == 0) {
-                    continue;
-                } else {
-                $pass = CourseStudent::book($book->id)
+                // if ($book->required_students_number == 0) {
+                //     continue;
+                // } else {
+                $pass = CourseStudent::book($book->id)->course('منتهية')
                     ->whereBetween('mark', [60, 101])->count();
 
                 $total_pass_all +=  $pass;
                 $total_required +=  $book->required_students_number;
 
-                }
-        }
+                // }
+            }
+        // }
 
 
+
+        // dd(count( $books));
         return $total_pass_all - $total_required;
 
-            // echo $total_pass_all.' '.$total_required;  exit;
-
-
+        // echo $total_pass_all . ' ' . $total_required;
+        // exit;
     }
 
     private function getSurplusGraduatesForAllAreasAsaneed()
@@ -595,25 +598,24 @@ class Area extends Model
         $total_pass_all = 0;
         $total_required = 0;
 
-            foreach ($books as $key => $book) {
-                if ($book->required_students_number == 0) {
-                    continue;
-                } else {
+        foreach ($books as $key => $book) {
+            if ($book->required_students_number == 0) {
+                continue;
+            } else {
 
 
                 $pass = AsaneedCourseStudent::book($book->id)
                     ->count();
 
                 $total_pass_all +=  $pass;
-                $total_required +=  floor($book->required_students_number/7);
-
-                }
+                $total_required +=  ceil($book->required_students_number / 7);
+            }
         }
 
 
         return $total_pass_all - $total_required;
 
-            // echo $total_pass_all.' '.$total_required;  exit;
+        // echo $total_pass_all.' '.$total_required;  exit;
 
 
     }

@@ -72,9 +72,9 @@ class AsaneedBook extends Model
         if ($area_id) {
             $areas = Area::where('id', $area_id)->get();
             $number_of_areas = Area::whereNull('area_id')->withoutGlobalScope('relatedAreas')->count();
-            // $this->required_students_number  = floor(floor($this->required_students_number * $areas[0]->percentage) / 100);
-            // $required_students_number  = floor($this->required_students_number / $number_of_areas);
-            $this->required_students_number  = floor($this->required_students_number / $number_of_areas);
+            // $this->required_students_number  = ceil(ceil($this->required_students_number * $areas[0]->percentage) / 100);
+            // $required_students_number  = ceil($this->required_students_number / $number_of_areas);
+            $this->required_students_number  = ceil($this->required_students_number / $number_of_areas);
 
             $number_of_sub_areas = Area::where('area_id', $area_id)->count();
         } else {
@@ -84,9 +84,9 @@ class AsaneedBook extends Model
         // if ($sub_area_id) {
         //     $number_of_sub_areas = Area::where('area_id',$area_id)->count();
         //     // $areas = Area::where('id', $sub_area_id)->get();
-        //     // $this->required_students_number  = floor(floor($this->required_students_number * $areas[0]->percentage) / 100);
+        //     // $this->required_students_number  = ceil(ceil($this->required_students_number * $areas[0]->percentage) / 100);
 
-        //     $this->required_students_number  = floor($this->required_students_number / $number_of_sub_areas);
+        //     $this->required_students_number  = ceil($this->required_students_number / $number_of_sub_areas);
         // }
         $sub_areas = [];
 
@@ -96,8 +96,8 @@ class AsaneedBook extends Model
             } else {
                 $sub_areas = Area::where('id', $sub_area_id)->get();
             }
-            // $this->required_students_number  = floor($this->required_students_number / $number_of_sub_areas);
-            // $required_students_number  = floor($this->required_students_number / $number_of_sub_areas);
+            // $this->required_students_number  = ceil($this->required_students_number / $number_of_sub_areas);
+            // $required_students_number  = ceil($this->required_students_number / $number_of_sub_areas);
 
             // dd($this->required_students_number);
         }
@@ -141,7 +141,7 @@ class AsaneedBook extends Model
                 }
             } else {
                 $pass = AsaneedCourseStudent::whereHas('asaneedCourse')->book($this->id)->subarea(0, $area->id)->count();
-                // $required = floor($this->required_students_number / $number_of_areas);
+                // $required = ceil($this->required_students_number / $number_of_areas);
                 if($area_id){
                     $required = $this->required_students_number;
                 }else{
@@ -247,19 +247,19 @@ class AsaneedBook extends Model
 
         if ($area_id > 0) {
             $area = Area::find($area_id);
-            // $required_student_total = floor($this->required_students_number * ($area->percentage / 100));
+            // $required_student_total = ceil($this->required_students_number * ($area->percentage / 100));
 
-            $required_student_total = floor($this->required_students_number / $number_of_areas);
+            $required_student_total = ceil($this->required_students_number / $number_of_areas);
         } else {
             $required_student_total = $this->required_students_number;
         }
 
         if ($sub_area_id > 0) {
             $area = Area::find($sub_area_id);
-            // $required_student_total = floor($required_student_total * ($area->percentage / 100));
+            // $required_student_total = ceil($required_student_total * ($area->percentage / 100));
 
             $number_of_sub_areas = Area::where('area_id', $area_id)->count();
-            $required_student_total  = floor($this->required_students_number / $number_of_sub_areas);
+            $required_student_total  = ceil($this->required_students_number / $number_of_sub_areas);
         }
 
 

@@ -83,7 +83,7 @@ class CourseReviewUpdate extends Command
                     /* start percenage_38*/
                     $rest = 0;
                     $coll = CourseStudent::book($book->id)
-                        ->subarea(0, $area->id)
+                        ->subarea(0, $area->id)->course('منتهية')
                         ->whereBetween('mark', [60, 101]);
 
                     $pass = $coll->count();
