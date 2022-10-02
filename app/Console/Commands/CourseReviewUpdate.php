@@ -57,7 +57,7 @@ class CourseReviewUpdate extends Command
         $project = json_decode($project);
 
 
-
+        $total_surplus_graduates_all_area = $areas[0]->getSurplusGraduatesForAllAreas();
 
         foreach ($areas as $key => $area) {
 
@@ -179,7 +179,7 @@ class CourseReviewUpdate extends Command
 
 
             $total_surplus_graduates_by_area =  $total_pass_all - $total_required;
-            $total_surplus_graduates_all_area = $area->getSurplusGraduatesForAllAreas();
+
 
 
             $surplus_graduates_2 = ($total_surplus_graduates_by_area > 0) ? ($total_surplus_graduates_by_area / $total_surplus_graduates_all_area) * 2 : 0;
